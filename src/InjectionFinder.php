@@ -31,7 +31,7 @@ class InjectionFinder
      */
     public function getConstructorInjection(\ReflectionClass $class)
     {
-        $constructor = $this->injectionPolicy->getConstructor($class);
+        $constructor = $class->getConstructor();
         return $constructor ? $this->createMethodInjection($constructor) : null;
     }
 
@@ -59,7 +59,7 @@ class InjectionFinder
     {
         $injections = [];
 
-        $properties = $this->injectionPolicy->getInjectableMethods($class);
+        $properties = $this->injectionPolicy->getInjectableProperties($class);
         foreach ($properties as $property) {
             $injections[] = $this->createPropertyInjection($property);
         }

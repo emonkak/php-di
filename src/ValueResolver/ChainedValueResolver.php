@@ -31,7 +31,7 @@ class ChainedValueResolver implements ValueResolverInterface
      */
     public function getPropertyValue(\ReflectionProperty $property)
     {
-        return $this->first->getPropertyValue($param)
-            ?: $this->second->getPropertyValue($param);
+        return $this->first->getPropertyValue($property)
+            ?: $this->second->getPropertyValue($property);
     }
 }

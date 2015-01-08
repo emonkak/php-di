@@ -32,5 +32,11 @@ interface InjectionPolicyInterface
      * @param \ReflectionClass $class
      * @return boolean
      */
+    public function isInjectable(\ReflectionClass $class);
+
+    /**
+     * @param \ReflectionClass $class
+     * @return boolean
+     */
     public function isSingleton(\ReflectionClass $class);
 }

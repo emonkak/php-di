@@ -36,7 +36,7 @@ class Container
             new DefaultValueResolver()
         );
         $this->injectionFinder = new InjectionFinder($this->valueResolver, $injectionPolicy);
-        $this->InjectionPolicy = $injectionPolicy;
+        $this->injectionPolicy = $injectionPolicy;
     }
 
     /**
@@ -82,11 +82,10 @@ class Container
         if (!$concreteClass->isSubclassOf($abstractClass)) {
             throw new \InvalidArgumentException("`$abstract` is not sub-class of `$concrete`");
         }
-        $binding = new ObjectBinding($concreteClass);
-        if ($this->InjectionPolicy->isSingleton($concreteClass)) {
-            $binding = new SingletonBinding($binding);
-        }
+
+        $binding = $this->getBindingByClass($concreteClass);
         $this->bindings[$abstractClass->getName()] = $binding;
+
         return $this;
     }
 
@@ -117,9 +116,9 @@ class Container
      * @param string $tag
      * @return Container
      */
-    public function undefined($key)
+    public function undefined($key, $tag)
     {
-        $this->values[$key] = UndefinedValue::getInstance();
+        $this->values[$key] = new UndefinedValue($tag);
         return $this;
     }
 
@@ -141,11 +140,7 @@ class Container
             } catch (\ReflectionException $e) {
                 throw new \InvalidArgumentException('Key not registered: ' . $key, $e);
             }
-
-            $binding = new ObjectBinding($class);
-            if ($this->InjectionPolicy->isSingleton($class)) {
-                $binding = new SingletonBinding($binding);
-            }
+            $binding = $this->getBindingByClass($class);
         }
 
         $value = $binding->toInjectableValue($this);
@@ -160,5 +155,25 @@ class Container
     public function has($key)
     {
         return isset($this->values[$key]) || isset($this->bindings[$key]) || class_exists($key);
+    }
+
+    /**
+     * @return InjectableValueInterface
+     */
+    private function getBindingByClass(\ReflectionClass $class)
+    {
+        if (!$this->injectionPolicy->isInjectable($class)) {
+            throw new \InvalidArgumentException(
+                sprintf('Class "%s" does not be injectable.', $class->getName())
+            );
+        }
+
+        $binding = new ObjectBinding($class);
+
+        if ($this->injectionPolicy->isSingleton($class)) {
+            $binding = new SingletonBinding($binding);
+        }
+
+        return $binding;
     }
 }

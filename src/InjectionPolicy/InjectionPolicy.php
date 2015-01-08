@@ -7,14 +7,6 @@ class InjectionPolicy implements InjectionPolicyInterface
     /**
      * {@inheritDoc}
      */
-    public function getConstructor(\ReflectionClass $class)
-    {
-        return $class->getConstructor();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getInjectableMethods(\ReflectionClass $class)
     {
         return [];
@@ -42,7 +34,15 @@ class InjectionPolicy implements InjectionPolicyInterface
      */
     public function getPropertyKey(\ReflectionProperty $prop)
     {
-        return $prop->getName();
+        return '$' . $prop->getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isInjectable(\ReflectionClass $class)
+    {
+        return $class->isInstantiable();
     }
 
     /**

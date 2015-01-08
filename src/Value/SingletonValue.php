@@ -19,6 +19,14 @@ class SingletonValue implements InjectableValueInterface
     /**
      * {@inheritDoc}
      */
+    public function accept(InjectableValueVisitorInterface $visitor)
+    {
+        return $this->source->accept($visitor);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function materialize()
     {
         if (!$this->isCached) {

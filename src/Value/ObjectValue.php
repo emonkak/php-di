@@ -34,6 +34,14 @@ class ObjectValue implements InjectableValueInterface
     /**
      * {@inheritDoc}
      */
+    public function accept(InjectableValueVisitorInterface $visitor)
+    {
+        return $visitor->visitObjectValue($this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function materialize()
     {
         $instance = $this->class->newInstanceWithoutConstructor();
@@ -51,6 +59,38 @@ class ObjectValue implements InjectableValueInterface
         }
 
         return $instance;
+    }
+
+    /**
+     * @return \ReflectionClass
+     */
+    public function getClass()
+    {
+        return $this->class;
+    }
+
+    /**
+     * @return MethodInjection
+     */
+    public function getConstructorInjection()
+    {
+        return $this->constructorInjection;
+    }
+
+    /**
+     * @return MethodInjection[]
+     */
+    public function getMethodInjections()
+    {
+        return $this->methodInjections;
+    }
+
+    /**
+     * @return PropertyInjection[]
+     */
+    public function getPropertyInjections()
+    {
+        return $this->propertyInjections;
     }
 
     /**

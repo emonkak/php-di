@@ -18,6 +18,14 @@ class LazyValue implements InjectableValueInterface
     /**
      * {@inheritDoc}
      */
+    public function accpet(InjectableValueVisitorInterface $visitor)
+    {
+        return $visitor->visitValue($this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function materialize()
     {
         if (!$this->evaluated) {

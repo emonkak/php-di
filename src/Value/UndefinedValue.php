@@ -6,28 +6,37 @@ use Emonkak\Di\Injector;
 
 class UndefinedValue implements InjectableValueInterface
 {
-    private function __construct() {}
+    private $tag;
 
     /**
-     * @return UndefinedValue
+     * @param string $tag
      */
-    public static function getInstance()
+    public function __construct($tag)
     {
-        static $instance;
-
-        if (!isset($instance)) {
-            $instance = new self();
-        }
-
-        return $instance;
+        $this->tag = $tag;
     }
 
     /**
-     * @param Injector $injector
+     * {@inheritDoc}
+     */
+    public function accept(InjectableValueVisitorInterface $visitor)
+    {
+        return $visitor->visitUndefinedValue($this);
+    }
+
+    /**
      * @return mixed
      */
-    public function materialize(Injector $injector)
+    public function materialize()
     {
-        return new \RuntimeException('Undefined can not be materialized.');
+        return new \RuntimeException('This value can not be materialized.');
+    }
+
+    /**
+     * @return string
+     */
+    public function getTag()
+    {
+        return $this->tag;
     }
 }
