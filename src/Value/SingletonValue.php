@@ -16,4 +16,13 @@ class SingletonValue extends ObjectValue
         }
         return $this->instance;
     }
+
+    /**
+     * @see \Serializable
+     * @return string
+     */
+    public function __sleep()
+    {
+        return ['class', 'constructorInjection', 'methodInjections', 'propertyInjections'];
+    }
 }

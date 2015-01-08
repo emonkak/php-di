@@ -2,9 +2,9 @@
 
 namespace Emonkak\Di\Value;
 
-use Emonkak\Di\Injector;
+use Emonkak\Di\Value\InjectableValueInterface;
 
-class LazyValue implements InjectableValueInterface
+class LazyValue implements InjectableValueInterface, \Serializable
 {
     private $factory;
     private $value;
@@ -18,7 +18,7 @@ class LazyValue implements InjectableValueInterface
     /**
      * {@inheritDoc}
      */
-    public function accpet(InjectableValueVisitorInterface $visitor)
+    public function accept(InjectableValueVisitorInterface $visitor)
     {
         return $visitor->visitValue($this);
     }
@@ -33,5 +33,23 @@ class LazyValue implements InjectableValueInterface
             $this->value = call_user_func($this->factory);
         }
         return $this->value;
+    }
+
+    /**
+     * @see \Serializable
+     * @return string
+     */
+    public function serialize()
+    {
+        return serialize($this->materialize());
+    }
+
+    /**
+     * @see \Serializable
+     * @return string
+     */
+    public function unserialize($value)
+    {
+        return new ImmediateValue(unserialize($value));
     }
 }
