@@ -6,5 +6,8 @@ use Emonkak\Di\Injector;
 
 interface InjectableValueInterface
 {
-    public function materialize(Injector $injector);
+    /**
+     * @return mixed
+     */
+    public function materialize();
 }

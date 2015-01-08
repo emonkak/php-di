@@ -14,10 +14,9 @@ class ImmediateValue implements InjectableValueInterface
     }
 
     /**
-     * @param Injector $injector
-     * @return mixed
+     * {@inheritDoc}
      */
-    public function materialize(Injector $injector)
+    public function materialize()
     {
         return $this->value;
     }

@@ -27,4 +27,10 @@ interface InjectionPolicyInterface
      * @return string
      */
     public function getPropertyKey(\ReflectionProperty $prop);
+
+    /**
+     * @param \ReflectionClass $class
+     * @return boolean
+     */
+    public function isSingleton(\ReflectionClass $class);
 }

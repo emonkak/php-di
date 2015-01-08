@@ -6,24 +6,23 @@ use Emonkak\Di\Injector;
 
 class LazyValue implements InjectableValueInterface
 {
-    private $func;
+    private $factory;
     private $value;
     private $evaluated = false;
 
-    public function __construct(callable $func)
+    public function __construct(callable $factory)
     {
-        $this->func = $func;
+        $this->factory = $factory;
     }
 
     /**
-     * @param Injector $injector
-     * @return mixed
+     * {@inheritDoc}
      */
-    public function materialize(Injector $injector)
+    public function materialize()
     {
         if (!$this->evaluated) {
             $this->evaluated = true;
-            $this->value = call_user_func($this->func);
+            $this->value = call_user_func($this->factory);
         }
         return $this->value;
     }

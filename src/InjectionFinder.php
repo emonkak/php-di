@@ -4,6 +4,7 @@ namespace Emonkak\Di;
 
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Injection\MethodInjection;
+use Emonkak\Di\Injection\ParameterInjection;
 use Emonkak\Di\Injection\PropertyInjection;
 use Emonkak\Di\ValueResolver\ValueResolverInterface;
 
@@ -26,16 +27,21 @@ class InjectionFinder
 
     /**
      * @param \ReflectionClass $class
+     * @return MethodInjection|null
+     */
+    public function getConstructorInjection(\ReflectionClass $class)
+    {
+        $constructor = $this->injectionPolicy->getConstructor($class);
+        return $constructor ? $this->createMethodInjection($constructor) : null;
+    }
+
+    /**
+     * @param \ReflectionClass $class
      * @return MethodInjection[]
      */
     public function getMethodInjections(\ReflectionClass $class)
     {
         $injections = [];
-
-        $constructor = $this->injectionPolicy->getConstructor($class);
-        if ($constructor) {
-            $injections[] = $this->createMethodInjection($constructor);
-        }
 
         $methods = $this->injectionPolicy->getInjectableMethods($class);
         foreach ($methods as $method) {
@@ -67,15 +73,20 @@ class InjectionFinder
      */
     private function createMethodInjection(\ReflectionMethod $method)
     {
-        $values = [];
+        $params = [];
         foreach ($method->getParameters() as $param) {
             $value = $this->valueResolver->getParameterValue($param);
             if ($value === null) {
-                throw new \LogicException('The parameter can not be resolved.');
+                throw new \LogicException(sprintf(
+                    'Parameter "$%s" of "%s::%s()" can not be resolved.',
+                    $param->getName(),
+                    $method->getDeclaringClass()->getName(),
+                    $method->getName()
+                ));
             }
-            $values[] = $value;
+            $params[] = new ParameterInjection($param, $value);
         }
-        return new MethodInjection($method, $values);
+        return new MethodInjection($method, $params);
     }
 
     /**
@@ -86,7 +97,11 @@ class InjectionFinder
     {
         $value = $this->valueResolver->getPropertyValue($property);
         if ($value === null) {
-            throw new \LogicException('The parameter can not be resolved.');
+            throw new \LogicException(sprintf(
+                'Property "%s::$%s" can not be resolved.',
+                $property->getDeclaringClass()->getName(),
+                $property->getName()
+            ));
         }
         return new PropertyInjection($property, $value);
     }

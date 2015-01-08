@@ -3,13 +3,15 @@
 namespace Emonkak\Di;
 
 use Emonkak\Di\Binding\AliasBinding;
-use Emonkak\Di\Binding\TypeBinding;
+use Emonkak\Di\Binding\ObjectBinding;
+use Emonkak\Di\Binding\SingletonBinding;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\ValueResolver\ChainedValueResolver;
 use Emonkak\Di\ValueResolver\ContainerValueResolver;
 use Emonkak\Di\ValueResolver\DefaultValueResolver;
 use Emonkak\Di\ValueResolver\ValueResolverInterface;
 use Emonkak\Di\Value\ImmediateValue;
+use Emonkak\Di\Value\LazyValue;
 use Emonkak\Di\Value\UndefinedValue;
 
 class Container
@@ -17,6 +19,8 @@ class Container
     private $valueResolver;
 
     private $injectionFinder;
+
+    private $injectionPolicy;
 
     private $values = [];
 
@@ -32,6 +36,7 @@ class Container
             new DefaultValueResolver()
         );
         $this->injectionFinder = new InjectionFinder($this->valueResolver, $injectionPolicy);
+        $this->InjectionPolicy = $injectionPolicy;
     }
 
     /**
@@ -77,7 +82,11 @@ class Container
         if (!$concreteClass->isSubclassOf($abstractClass)) {
             throw new \InvalidArgumentException("`$abstract` is not sub-class of `$concrete`");
         }
-        $this->bindings[$abstractClass->getName()] = new TypeBinding($concreteClass);
+        $binding = new ObjectBinding($concreteClass);
+        if ($this->InjectionPolicy->isSingleton($concreteClass)) {
+            $binding = new SingletonBinding($binding);
+        }
+        $this->bindings[$abstractClass->getName()] = $binding;
         return $this;
     }
 
@@ -93,7 +102,19 @@ class Container
     }
 
     /**
+     * @param string   $key
+     * @param callable $factory
+     * @return Container
+     */
+    public function factory($key, callable $factory)
+    {
+        $this->values[$key] = new LazyValue($factory);
+        return $this;
+    }
+
+    /**
      * @param string $key
+     * @param string $tag
      * @return Container
      */
     public function undefined($key)
@@ -115,10 +136,16 @@ class Container
         if (isset($this->bindings[$key])) {
             $binding = $this->bindings[$key];
         } else {
-            if (!class_exists($key)) {
-                throw new \InvalidArgumentException('Key not registered: ' . $key);
+            try {
+                $class = new \ReflectionClass($key);
+            } catch (\ReflectionException $e) {
+                throw new \InvalidArgumentException('Key not registered: ' . $key, $e);
             }
-            $binding = new TypeBinding(new \ReflectionClass($key));
+
+            $binding = new ObjectBinding($class);
+            if ($this->InjectionPolicy->isSingleton($class)) {
+                $binding = new SingletonBinding($binding);
+            }
         }
 
         $value = $binding->toInjectableValue($this);

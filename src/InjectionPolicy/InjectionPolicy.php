@@ -44,4 +44,12 @@ class InjectionPolicy implements InjectionPolicyInterface
     {
         return $prop->getName();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isSingleton(\ReflectionClass $class)
+    {
+        return true;
+    }
 }

@@ -2,16 +2,14 @@
 
 namespace Emonkak\Di\Injection;
 
-use Emonkak\Di\Value\InjectableValueInterface;
-
 class MethodInjection
 {
     private $method;
     private $params;
 
     /**
-     * @param \ReflectionMethod          $method
-     * @param InjectableValueInterface[] $params
+     * @param \ReflectionMethod    $method
+     * @param ParameterInjection[] $params
      */
     public function __construct(\ReflectionMethod $method, array $params)
     {
@@ -28,10 +26,10 @@ class MethodInjection
     }
 
     /**
-     * @return InjectableValueInterface[]
+     * @return ParameterInjection[]
      */
-    public function getParams()
+    public function getParameters()
     {
-        return $this->parms;
+        return $this->params;
     }
 }

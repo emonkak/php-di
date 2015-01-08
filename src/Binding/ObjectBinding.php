@@ -5,7 +5,7 @@ namespace Emonkak\Di\Binding;
 use Emonkak\Di\Container;
 use Emonkak\Di\Value\ObjectValue;
 
-class TypeBinding implements BindingInterface
+class ObjectBinding implements BindingInterface
 {
     private $target;
 
@@ -23,8 +23,14 @@ class TypeBinding implements BindingInterface
     public function toInjectableValue(Container $container)
     {
         $injectionFinder = $container->getInjectionFinder();
+        $constructorInjection = $injectionFinder->getConstructorInjection($this->target);
         $methodInjections = $injectionFinder->getMethodInjections($this->target);
         $propertyInjections = $injectionFinder->getPropertyInjections($this->target);
-        return new ObjectValue($this->target, $methodInjections, $propertyInjections);
+        return new ObjectValue(
+            $this->target,
+            $constructorInjection,
+            $methodInjections,
+            $propertyInjections
+        );
     }
 }
