@@ -7,14 +7,14 @@ use Emonkak\Di\Value\SingletonValue;
 
 class SingletonBinding implements BindingInterface
 {
-    private $source;
+    private $target;
 
     /**
-     * @param BindingInterface $source
+     * @param \ReflectionClass $target
      */
-    public function __construct(BindingInterface $source)
+    public function __construct(\ReflectionClass $target)
     {
-        $this->source = $source;
+        $this->target = $target;
     }
 
     /**
@@ -22,7 +22,15 @@ class SingletonBinding implements BindingInterface
      */
     public function toInjectableValue(Container $container)
     {
-        $value = $this->source->toInjectableValue($container);
-        return new SingletonValue($value);
+        $injectionFinder = $container->getInjectionFinder();
+        $constructorInjection = $injectionFinder->getConstructorInjection($this->target);
+        $methodInjections = $injectionFinder->getMethodInjections($this->target);
+        $propertyInjections = $injectionFinder->getPropertyInjections($this->target);
+        return new SingletonValue(
+            $this->target,
+            $constructorInjection,
+            $methodInjections,
+            $propertyInjections
+        );
     }
 }

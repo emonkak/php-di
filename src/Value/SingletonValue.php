@@ -2,37 +2,18 @@
 
 namespace Emonkak\Di\Value;
 
-class SingletonValue implements InjectableValueInterface
+class SingletonValue extends ObjectValue
 {
-    private $source;
-    private $cache;
-    private $isCached = false;
-
-    /**
-     * @param InjectableValueInterface $source
-     */
-    public function __construct(InjectableValueInterface $source)
-    {
-        $this->source = $source;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function accept(InjectableValueVisitorInterface $visitor)
-    {
-        return $this->source->accept($visitor);
-    }
+    private $instance;
 
     /**
      * {@inheritDoc}
      */
     public function materialize()
     {
-        if (!$this->isCached) {
-            $this->isCached = true;
-            $this->cache = $this->source->materialize();
+        if ($this->instance === null) {
+            $this->instance = parent::materialize();
         }
-        return $this->cache;
+        return $this->instance;
     }
 }

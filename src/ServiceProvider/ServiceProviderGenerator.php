@@ -7,6 +7,7 @@ use Emonkak\Di\Injection\PropertyInjection;
 use Emonkak\Di\Value\InjectableValueInterface;
 use Emonkak\Di\Value\InjectableValueVisitorInterface;
 use Emonkak\Di\Value\ObjectValue;
+use Emonkak\Di\Value\SingletonValue;
 use Emonkak\Di\Value\UndefinedValue;
 
 class ServiceProviderGenerator implements InjectableValueVisitorInterface
@@ -53,20 +54,24 @@ EOL;
             [$this->dumpReturn()]
         ));
 
+            $factory = <<<EOL
+function(\$c) {
+$procedures
+        }
+EOL;
+
         if (count($methodCalls) > 0 || count($propertySetters) > 0) {
             $className = $value->getClass()->getName();
-            $this->definitions[$key] = <<<EOL
-        \$c['$key'] = Closure::bind(function(\$c) {
-$procedures;
-        }, \$this, '$className');
-EOL;
-        } else {
-            $this->definitions[$key] = <<<EOL
-        \$c['$key'] = function(\$c) {
-$procedures;
-        };
-EOL;
+            $factory = 'Closure::bind(' . $factory . ", \$this, '$className')";
         }
+
+        if (!($value instanceof SingletonValue)) {
+            $factory = '$c->factory(' . $factory . ')';
+        }
+
+        $this->definitions[$key] = <<<EOL
+        \$c['$key'] = $factory;
+EOL;
 
         return $key;
     }
@@ -177,7 +182,7 @@ EOL;
     private function dumpReturn()
     {
         return <<<EOL
-            return \$o
+            return \$o;
 EOL;
     }
 }

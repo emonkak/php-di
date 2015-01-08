@@ -168,10 +168,10 @@ class Container
             );
         }
 
-        $binding = new ObjectBinding($class);
-
         if ($this->injectionPolicy->isSingleton($class)) {
-            $binding = new SingletonBinding($binding);
+            $binding = new SingletonBinding($class);
+        } else {
+            $binding = new ObjectBinding($class);
         }
 
         return $binding;
