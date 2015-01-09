@@ -162,11 +162,10 @@ class Container
         if (isset($this->bindings[$key])) {
             $binding = $this->bindings[$key];
         } else {
-            try {
-                $class = new \ReflectionClass($key);
-            } catch (\ReflectionException $e) {
-                throw new \InvalidArgumentException('Key not registered: ' . $key, $e);
+            if (!class_exists($key)) {
+                throw new \InvalidArgumentException('Key not registered: ' . $key);
             }
+            $class = new \ReflectionClass($key);
             $binding = $this->getBindingByClass($class);
         }
 
