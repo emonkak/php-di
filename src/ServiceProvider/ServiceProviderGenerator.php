@@ -2,6 +2,7 @@
 
 namespace Emonkak\Di\ServiceProvider;
 
+use Emonkak\Di\Container;
 use Emonkak\Di\Injection\MethodInjection;
 use Emonkak\Di\Injection\PropertyInjection;
 use Emonkak\Di\Value\InjectableValueInterface;
@@ -12,17 +13,27 @@ use Emonkak\Di\Value\UndefinedValue;
 
 class ServiceProviderGenerator implements InjectableValueVisitorInterface
 {
+    private $container;
+
     private $definitions = [];
+
+    /**
+     * @param Container $container
+     */
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+    }
 
     /**
      * @{inheritDoc}
      */
     public function visitValue(InjectableValueInterface $value)
     {
-        $key = spl_object_hash($value);
         $concrete = $value->materialize();
         $serialized = addslashes(serialize($concrete));
 
+        $key = $this->container->getKey($value);
         $this->definitions[$key] = <<<EOL
         \$c['$key'] = unserialize('$serialized');
 EOL;
@@ -46,7 +57,6 @@ EOL;
             $propertySetters[] = $this->dumpPropertySet($properyInjection);
         }
 
-        $key = spl_object_hash($value);
         $procedures = implode("\n", array_merge(
             [$this->dumpNewInstance($value)],
             $methodCalls,
@@ -69,6 +79,7 @@ EOL;
             $factory = '$c->factory(' . $factory . ')';
         }
 
+        $key = $this->container->getKey($value);
         $this->definitions[$key] = <<<EOL
         \$c['$key'] = $factory;
 EOL;

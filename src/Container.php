@@ -11,6 +11,7 @@ use Emonkak\Di\ValueResolver\ContainerValueResolver;
 use Emonkak\Di\ValueResolver\DefaultValueResolver;
 use Emonkak\Di\ValueResolver\ValueResolverInterface;
 use Emonkak\Di\Value\ImmediateValue;
+use Emonkak\Di\Value\InjectableValueInterface;
 use Emonkak\Di\Value\LazyValue;
 use Emonkak\Di\Value\UndefinedValue;
 
@@ -22,9 +23,11 @@ class Container
 
     private $injectionPolicy;
 
+    private $bindings = [];
+
     private $values = [];
 
-    private $bindings = [];
+    private $keys;
 
     /**
      * @param InjectionPolicyInterface $injectionPolicy
@@ -37,6 +40,7 @@ class Container
         );
         $this->injectionFinder = new InjectionFinder($this->valueResolver, $injectionPolicy);
         $this->injectionPolicy = $injectionPolicy;
+        $this->keys = new \SplObjectStorage();
     }
 
     /**
@@ -50,7 +54,18 @@ class Container
     /**
      * @param ValueResolverInterface $valueResolver
      */
-    public function addValueResolver(ValueResolverInterface $valueResolver)
+    public function appendValueResolver(ValueResolverInterface $valueResolver)
+    {
+        $this->valueResolver = new ChainedValueResolver(
+            $this->valueResolver,
+            $valueResolver
+        );
+    }
+
+    /**
+     * @param ValueResolverInterface $valueResolver
+     */
+    public function prependValueResolver(ValueResolverInterface $valueResolver)
     {
         $this->valueResolver = new ChainedValueResolver(
             $valueResolver,
@@ -96,7 +111,19 @@ class Container
      */
     public function set($key, $value)
     {
-        $this->values[$key] = new ImmediateValue($value);
+        $this->setValue($key, new ImmediateValue($value));
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param InjectableValueInterface $value
+     * @return Container
+     */
+    public function setValue($key, InjectableValueInterface $value)
+    {
+        $this->values[$key] = $value;
+        $this->keys[$value] = $key;
         return $this;
     }
 
@@ -107,7 +134,7 @@ class Container
      */
     public function factory($key, callable $factory)
     {
-        $this->values[$key] = new LazyValue($factory);
+        $this->setValue($key, new LazyValue($factory));
         return $this;
     }
 
@@ -118,7 +145,7 @@ class Container
      */
     public function undefined($key, $tag)
     {
-        $this->values[$key] = new UndefinedValue($tag);
+        $this->setValue($key, new UndefinedValue($tag));
         return $this;
     }
 
@@ -144,8 +171,17 @@ class Container
         }
 
         $value = $binding->toInjectableValue($this);
-        $this->values[$key] = $value;
+        $this->setValue($key, $value);
         return $value;
+    }
+
+    /**
+     * @param InjectableValueInterface $value
+     * @return string
+     */
+    public function getKey(InjectableValueInterface $value)
+    {
+        return $this->keys[$value];
     }
 
     /**
