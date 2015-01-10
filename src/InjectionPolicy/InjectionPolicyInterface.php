@@ -2,6 +2,8 @@
 
 namespace Emonkak\Di\InjectionPolicy;
 
+use Emonkak\Di\Scope\ScopeInterface;
+
 interface InjectionPolicyInterface
 {
     /**
@@ -30,13 +32,13 @@ interface InjectionPolicyInterface
 
     /**
      * @param \ReflectionClass $class
-     * @return boolean
+     * @return ScopeInterface
      */
-    public function isInjectable(\ReflectionClass $class);
+    public function getScope(\ReflectionClass $class);
 
     /**
      * @param \ReflectionClass $class
      * @return boolean
      */
-    public function isSingleton(\ReflectionClass $class);
+    public function isInjectable(\ReflectionClass $class);
 }

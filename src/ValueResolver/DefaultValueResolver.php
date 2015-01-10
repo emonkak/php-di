@@ -28,7 +28,7 @@ class DefaultValueResolver implements ValueResolverInterface
         $values = $class->getDefaultProperties();
 
         if (isset($values[$name])) {
-            return $values[$name];
+            return new ImmediateValue($values[$name]);
         }
 
         return null;

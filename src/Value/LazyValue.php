@@ -7,9 +7,12 @@ use Emonkak\Di\Value\InjectableValueInterface;
 class LazyValue implements InjectableValueInterface, \Serializable
 {
     private $factory;
-    private $value;
+    private $result;
     private $evaluated = false;
 
+    /**
+     * @var callable $factory
+     */
     public function __construct(callable $factory)
     {
         $this->factory = $factory;
@@ -30,9 +33,9 @@ class LazyValue implements InjectableValueInterface, \Serializable
     {
         if (!$this->evaluated) {
             $this->evaluated = true;
-            $this->value = call_user_func($this->factory);
+            $this->result = call_user_func($this->factory);
         }
-        return $this->value;
+        return $this->result;
     }
 
     /**
@@ -50,7 +53,7 @@ class LazyValue implements InjectableValueInterface, \Serializable
      */
     public function unserialize($value)
     {
-        return new self(function () use ($value) {
+        return new self(function() use ($value) {
             return unserialize($value);
         });
     }

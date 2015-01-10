@@ -2,10 +2,11 @@
 
 namespace Emonkak\Di;
 
-use Emonkak\Di\Binding\AliasBinding;
-use Emonkak\Di\Binding\ObjectBinding;
-use Emonkak\Di\Binding\SingletonBinding;
+use Emonkak\Di\Definition\AliasDefinition;
+use Emonkak\Di\Definition\BindingDefinition;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\Scope\PrototypeScope;
+use Emonkak\Di\Scope\ScopeInterface;
 use Emonkak\Di\ValueResolver\ChainedValueResolver;
 use Emonkak\Di\ValueResolver\ContainerValueResolver;
 use Emonkak\Di\ValueResolver\DefaultValueResolver;
@@ -23,7 +24,7 @@ class Container
 
     private $injectionPolicy;
 
-    private $bindings = [];
+    private $definitions = [];
 
     private $values = [];
 
@@ -53,6 +54,7 @@ class Container
 
     /**
      * @param ValueResolverInterface $valueResolver
+     * @return Container
      */
     public function appendValueResolver(ValueResolverInterface $valueResolver)
     {
@@ -60,10 +62,12 @@ class Container
             $this->valueResolver,
             $valueResolver
         );
+        return $this;
     }
 
     /**
      * @param ValueResolverInterface $valueResolver
+     * @return Container
      */
     public function prependValueResolver(ValueResolverInterface $valueResolver)
     {
@@ -71,25 +75,29 @@ class Container
             $valueResolver,
             $this->valueResolver
         );
+        return $this;
     }
 
     /**
      * @param string $key
      * @param string $target
+     * @param ScopeInterface $scope
      * @return Container
      */
-    public function alias($key, $target)
+    public function alias($key, $target, ScopeInterface $scope = null)
     {
-        $this->bindings[$key] = new AliasBinding($target);
+        $scope = $scope ?: PrototypeScope::getInstance();
+        $this->definitions[$key] = new AliasDefinition($target, $scope);
         return $this;
     }
 
     /**
      * @param string $abstract
      * @param string $concrete
+     * @param ScopeInterface|null $scope
      * @return Container
      */
-    public function bind($abstract, $concrete)
+    public function bind($abstract, $concrete, ScopeInterface $scope = null)
     {
         $abstractClass = new \ReflectionClass($abstract);
         $concreteClass = new \ReflectionClass($concrete);
@@ -98,8 +106,9 @@ class Container
             throw new \InvalidArgumentException("`$abstract` is not sub-class of `$concrete`");
         }
 
-        $binding = $this->getBindingByClass($concreteClass);
-        $this->bindings[$abstractClass->getName()] = $binding;
+        $key = $abstractClass->getName();
+        $definition = $this->getDefinitionByClass($concreteClass, $scope);
+        $this->definitions[$key] = $definition;
 
         return $this;
     }
@@ -159,17 +168,17 @@ class Container
             return $this->values[$key];
         }
 
-        if (isset($this->bindings[$key])) {
-            $binding = $this->bindings[$key];
+        if (isset($this->definitions[$key])) {
+            $definition = $this->definitions[$key];
         } else {
             if (!class_exists($key)) {
                 throw new \InvalidArgumentException('Key not registered: ' . $key);
             }
             $class = new \ReflectionClass($key);
-            $binding = $this->getBindingByClass($class);
+            $definition = $this->getDefinitionByClass($class);
         }
 
-        $value = $binding->toInjectableValue($this);
+        $value = $definition->resolve($this);
         $this->setValue($key, $value);
         return $value;
     }
@@ -180,7 +189,7 @@ class Container
      */
     public function getKey(InjectableValueInterface $value)
     {
-        return $this->keys[$value];
+        return isset($this->keys[$value]) ? $this->keys[$value] : null;
     }
 
     /**
@@ -189,13 +198,15 @@ class Container
      */
     public function has($key)
     {
-        return isset($this->values[$key]) || isset($this->bindings[$key]) || class_exists($key);
+        return isset($this->values[$key]) || isset($this->definitions[$key]) || class_exists($key);
     }
 
     /**
+     * @param \ReflectionClass    $class
+     * @param ScopeInterface|null $scope
      * @return InjectableValueInterface
      */
-    private function getBindingByClass(\ReflectionClass $class)
+    private function getDefinitionByClass(\ReflectionClass $class, ScopeInterface $scope = null)
     {
         if (!$this->injectionPolicy->isInjectable($class)) {
             throw new \InvalidArgumentException(
@@ -203,12 +214,8 @@ class Container
             );
         }
 
-        if ($this->injectionPolicy->isSingleton($class)) {
-            $binding = new SingletonBinding($class);
-        } else {
-            $binding = new ObjectBinding($class);
-        }
+        $scope = $scope ?: $this->injectionPolicy->getScope($class);
 
-        return $binding;
+        return new BindingDefinition($class, $scope);
     }
 }

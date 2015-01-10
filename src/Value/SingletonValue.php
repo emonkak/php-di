@@ -2,9 +2,27 @@
 
 namespace Emonkak\Di\Value;
 
-class SingletonValue extends ObjectValue
+class SingletonValue implements ObjectValueInterface
 {
+    private $value;
+
     private $instance;
+
+    /**
+     * @param ObjectValueInterface $value
+     */
+    public function __construct(ObjectValueInterface $value)
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function accept(InjectableValueVisitorInterface $visitor)
+    {
+        return $visitor->visitObjectValue($this);
+    }
 
     /**
      * {@inheritDoc}
@@ -12,9 +30,41 @@ class SingletonValue extends ObjectValue
     public function materialize()
     {
         if ($this->instance === null) {
-            $this->instance = parent::materialize();
+            $this->instance = $this->value->materialize();
         }
         return $this->instance;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getClass()
+    {
+        return $this->value->getClass();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getConstructorInjection()
+    {
+        return $this->value->getConstructorInjection();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getMethodInjections()
+    {
+        return $this->value->getMethodInjections();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPropertyInjections()
+    {
+        return $this->value->getPropertyInjections();
     }
 
     /**
@@ -23,6 +73,6 @@ class SingletonValue extends ObjectValue
      */
     public function __sleep()
     {
-        return ['class', 'constructorInjection', 'methodInjections', 'propertyInjections'];
+        return ['value'];
     }
 }

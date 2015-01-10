@@ -2,6 +2,8 @@
 
 namespace Emonkak\Di\InjectionPolicy;
 
+use Emonkak\Di\Scope\SingletonScope;
+
 class InjectionPolicy implements InjectionPolicyInterface
 {
     /**
@@ -40,16 +42,16 @@ class InjectionPolicy implements InjectionPolicyInterface
     /**
      * {@inheritDoc}
      */
-    public function isInjectable(\ReflectionClass $class)
+    public function getScope(\ReflectionClass $class)
     {
-        return $class->isInstantiable();
+        return SingletonScope::getInstance();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function isSingleton(\ReflectionClass $class)
+    public function isInjectable(\ReflectionClass $class)
     {
-        return true;
+        return $class->isInstantiable();
     }
 }

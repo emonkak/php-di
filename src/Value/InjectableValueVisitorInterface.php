@@ -11,10 +11,10 @@ interface InjectableValueVisitorInterface
     public function visitValue(InjectableValueInterface $value);
 
     /**
-     * @param ObjectValue $value
+     * @param ObjectValueInterface $value
      * @return mixed
      */
-    public function visitObjectValue(ObjectValue $value);
+    public function visitObjectValue(ObjectValueInterface $value);
 
     /**
      * @param UndefinedValue $value

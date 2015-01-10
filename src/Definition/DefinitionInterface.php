@@ -1,15 +1,15 @@
 <?php
 
-namespace Emonkak\Di\Binding;
+namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\Container;
 use Emonkak\Di\Value\InjectableValueInterface;
 
-interface BindingInterface
+interface DefinitionInterface
 {
     /**
      * @param Container $container
      * @return InjectableValueInterface
      */
-    public function toInjectableValue(Container $container);
+    public function resolve(Container $container);
 }

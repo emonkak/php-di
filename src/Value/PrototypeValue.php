@@ -6,7 +6,7 @@ use Emonkak\Di\Injection\MethodInjection;
 use Emonkak\Di\Injection\PropertyInjection;
 use Emonkak\Di\Injector;
 
-class ObjectValue implements InjectableValueInterface
+class PrototypeValue implements ObjectValueInterface
 {
     protected $class;
     protected $constructorInjection;
@@ -14,10 +14,10 @@ class ObjectValue implements InjectableValueInterface
     protected $propertyInjections;
 
     /**
-     * @param \ReflectionClass    $class
-     * @param MethodInjection     $constructorInjection
-     * @param MethodInjection[]   $methodInjections
-     * @param PropertyInjection[] $propertyInjections
+     * @param \ReflectionClass     $class
+     * @param MethodInjection|null $constructorInjection
+     * @param MethodInjection[]    $methodInjections
+     * @param PropertyInjection[]  $propertyInjections
      */
     public function __construct(
         \ReflectionClass $class,
@@ -62,7 +62,7 @@ class ObjectValue implements InjectableValueInterface
     }
 
     /**
-     * @return \ReflectionClass
+     * {@inheritDoc}
      */
     public function getClass()
     {
@@ -70,7 +70,7 @@ class ObjectValue implements InjectableValueInterface
     }
 
     /**
-     * @return MethodInjection
+     * {@inheritDoc}
      */
     public function getConstructorInjection()
     {
@@ -78,7 +78,7 @@ class ObjectValue implements InjectableValueInterface
     }
 
     /**
-     * @return MethodInjection[]
+     * {@inheritDoc}
      */
     public function getMethodInjections()
     {
@@ -86,7 +86,7 @@ class ObjectValue implements InjectableValueInterface
     }
 
     /**
-     * @return PropertyInjection[]
+     * {@inheritDoc}
      */
     public function getPropertyInjections()
     {
@@ -110,8 +110,8 @@ class ObjectValue implements InjectableValueInterface
     }
 
     /**
-     * @param mixed           $instance
-     * @param MethodInjection $propertyInjection
+     * @param mixed             $instance
+     * @param PropertyInjection $propertyInjection
      */
     private function injectForProperty($instance, PropertyInjection $propertyInjection)
     {

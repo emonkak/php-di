@@ -7,7 +7,7 @@ use Emonkak\Di\Injection\MethodInjection;
 use Emonkak\Di\Injection\PropertyInjection;
 use Emonkak\Di\Value\InjectableValueInterface;
 use Emonkak\Di\Value\InjectableValueVisitorInterface;
-use Emonkak\Di\Value\ObjectValue;
+use Emonkak\Di\Value\ObjectValueInterface;
 use Emonkak\Di\Value\SingletonValue;
 use Emonkak\Di\Value\UndefinedValue;
 
@@ -26,7 +26,7 @@ class ServiceProviderGenerator implements InjectableValueVisitorInterface
     }
 
     /**
-     * @{inheritDoc}
+     * {@inheritDoc}
      */
     public function visitValue(InjectableValueInterface $value)
     {
@@ -42,9 +42,9 @@ EOL;
     }
 
     /**
-     * @{inheritDoc}
+     * {@inheritDoc}
      */
-    public function visitObjectValue(ObjectValue $value)
+    public function visitObjectValue(ObjectValueInterface $value)
     {
         $methodCalls = [];
         $propertySetters = [];
@@ -88,7 +88,7 @@ EOL;
     }
 
     /**
-     * @{inheritDoc}
+     * {@inheritDoc}
      */
     public function visitUndefinedValue(UndefinedValue $value)
     {
@@ -119,10 +119,10 @@ EOL;
     }
 
     /**
-     * @param ObjectValue $value
+     * @param ObjectValueInterface $value
      * @return string
      */
-    private function dumpNewInstance(ObjectValue $value)
+    private function dumpNewInstance(ObjectValueInterface $value)
     {
         $paramExprs = [];
 
