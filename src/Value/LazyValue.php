@@ -50,6 +50,8 @@ class LazyValue implements InjectableValueInterface, \Serializable
      */
     public function unserialize($value)
     {
-        return new ImmediateValue(unserialize($value));
+        return new self(function () use ($value) {
+            return unserialize($value);
+        });
     }
 }
