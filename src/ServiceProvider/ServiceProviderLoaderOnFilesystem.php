@@ -2,7 +2,6 @@
 
 namespace Emonkak\Di\ServiceProvider;
 
-use Composer\Autoload\ClassLoader;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -22,21 +21,21 @@ class ServiceProviderLoaderOnFilesystem implements ServiceProviderLoaderInterfac
     private $filesystem;
 
     /**
-     * @var ClassLoader
+     * @param string $path
      */
-    private $classLoader;
+    private static function includeFile($path)
+    {
+        include $path;
+    }
 
     /**
      * @param string      $dir The directory where to put the service provider
      * @param Filesystem  $filesystem
-     * @param ClassLoader $classLoader
      */
-    public function __construct($dir, Filesystem $filesystem = null, ClassLoader $classLoader = null)
+    public function __construct($dir, Filesystem $filesystem = null)
     {
         $this->dir = $dir;
         $this->filesystem = $filesystem ?: new Filesystem();
-        $this->classLoader = $classLoader ?: new ClassLoader();
-        $this->classLoader->add('', $dir);
     }
 
     /**
@@ -44,11 +43,15 @@ class ServiceProviderLoaderOnFilesystem implements ServiceProviderLoaderInterfac
      */
     public function load($className)
     {
-        if (!$this->classLoader->loadClass($className)) {
+        $path = $this->toFilePath($className);
+
+        if (!$this->filesystem->exists($path)) {
             throw new FileNotFoundException(
-                "Failed to load `$className` because the file does not exist."
+                sprintf('Failed to load "%s" because the file does not exist.', $path)
             );
         }
+
+        self::includeFile($path);
     }
 
     /**
