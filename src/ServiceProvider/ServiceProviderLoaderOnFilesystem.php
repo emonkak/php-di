@@ -4,7 +4,6 @@ namespace Emonkak\Di\ServiceProvider;
 
 use Composer\Autoload\ClassLoader;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -47,7 +46,7 @@ class ServiceProviderLoaderOnFilesystem implements ServiceProviderLoaderInterfac
     {
         if (!$this->classLoader->loadClass($className)) {
             throw new FileNotFoundException(
-                "Failed to load `$className` because file does not exist."
+                "Failed to load `$className` because the file does not exist."
             );
         }
     }
