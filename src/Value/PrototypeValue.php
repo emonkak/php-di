@@ -8,10 +8,13 @@ use Emonkak\Di\Injector;
 
 class PrototypeValue implements ObjectValueInterface
 {
-    protected $class;
-    protected $constructorInjection;
-    protected $methodInjections;
-    protected $propertyInjections;
+    private $class;
+
+    private $constructorInjection;
+
+    private $methodInjections;
+
+    private $propertyInjections;
 
     /**
      * @param \ReflectionClass     $class

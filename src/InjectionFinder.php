@@ -68,13 +68,13 @@ class InjectionFinder
     }
 
     /**
-     * @param \ReflectionMethod $mehtod
-     * @return MethodInjection
+     * @param \ReflectionFunctionAbstract $function
+     * @return ParameterInjection[]
      */
-    private function createMethodInjection(\ReflectionMethod $method)
+    public function getParameterInjections(\ReflectionFunctionAbstract $function)
     {
         $params = [];
-        foreach ($method->getParameters() as $param) {
+        foreach ($function->getParameters() as $param) {
             $value = $this->valueResolver->getParameterValue($param);
             if ($value === null) {
                 throw new \LogicException(sprintf(
@@ -86,6 +86,16 @@ class InjectionFinder
             }
             $params[] = new ParameterInjection($param, $value);
         }
+        return $params;
+    }
+
+    /**
+     * @param \ReflectionMethod $mehtod
+     * @return MethodInjection
+     */
+    private function createMethodInjection(\ReflectionMethod $method)
+    {
+        $params = $this->getParameterInjections($method);
         return new MethodInjection($method, $params);
     }
 

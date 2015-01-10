@@ -4,6 +4,7 @@ namespace Emonkak\Di;
 
 use Emonkak\Di\Definition\AliasDefinition;
 use Emonkak\Di\Definition\BindingDefinition;
+use Emonkak\Di\Definition\FactoryDefinition;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\PrototypeScope;
 use Emonkak\Di\Scope\ScopeInterface;
@@ -13,7 +14,6 @@ use Emonkak\Di\ValueResolver\DefaultValueResolver;
 use Emonkak\Di\ValueResolver\ValueResolverInterface;
 use Emonkak\Di\Value\ImmediateValue;
 use Emonkak\Di\Value\InjectableValueInterface;
-use Emonkak\Di\Value\LazyValue;
 use Emonkak\Di\Value\UndefinedValue;
 
 class Container
@@ -53,6 +53,14 @@ class Container
     }
 
     /**
+     * @return InjectionPolicy
+     */
+    public function getInjectionPolicy()
+    {
+        return $this->injectionPolicy;
+    }
+
+    /**
      * @param ValueResolverInterface $valueResolver
      * @return Container
      */
@@ -82,53 +90,22 @@ class Container
      * @param string $key
      * @param string $target
      * @param ScopeInterface $scope
-     * @return Container
+     * @return AliasDefinition
      */
-    public function alias($key, $target, ScopeInterface $scope = null)
+    public function alias($key, $target)
     {
-        $scope = $scope ?: PrototypeScope::getInstance();
-        $this->definitions[$key] = new AliasDefinition($target, $scope);
-        return $this;
-    }
-
-    /**
-     * @param string $abstract
-     * @param string $concrete
-     * @param ScopeInterface|null $scope
-     * @return Container
-     */
-    public function bind($abstract, $concrete, ScopeInterface $scope = null)
-    {
-        $abstractClass = new \ReflectionClass($abstract);
-        $concreteClass = new \ReflectionClass($concrete);
-
-        if (!$concreteClass->isSubclassOf($abstractClass)) {
-            throw new \InvalidArgumentException("`$abstract` is not sub-class of `$concrete`");
-        }
-
-        $key = $abstractClass->getName();
-        $definition = $this->getDefinitionByClass($concreteClass, $scope);
-
-        $this->definitions[$key] = $definition;
-
-        return $this;
+        return $this->definitions[$key] = new AliasDefinition($target);
     }
 
     /**
      * @param string $target
-     * @param ScopeInterface|null $scope
-     * @return Container
+     * @return BindingDefinition
      */
-    public function register($target, ScopeInterface $scope = null)
+    public function bind($target)
     {
         $targetClass = new \ReflectionClass($target);
-
         $key = $targetClass->getName();
-        $definition = $this->getDefinitionByClass($targetClass, $scope);
-
-        $this->definitions[$key] = $definition;
-
-        return $this;
+        return $this->definitions[$key] = new BindingDefinition($targetClass);
     }
 
     /**
@@ -151,17 +128,6 @@ class Container
     {
         $this->values[$key] = $value;
         $this->keys[$value] = $key;
-        return $this;
-    }
-
-    /**
-     * @param string   $key
-     * @param callable $factory
-     * @return Container
-     */
-    public function factory($key, callable $factory)
-    {
-        $this->setValue($key, new LazyValue($factory));
         return $this;
     }
 
@@ -189,13 +155,15 @@ class Container
             $definition = $this->definitions[$key];
         } else {
             if (!class_exists($key)) {
-                throw new \InvalidArgumentException('Key not registered: ' . $key);
+                throw new \InvalidArgumentException(
+                    sprintf('The key "%s" does not registered in this container.', $key)
+                );
             }
             $class = new \ReflectionClass($key);
-            $definition = $this->getDefinitionByClass($class);
+            $definition = new BindingDefinition($class);
         }
 
-        $value = $definition->resolve($this);
+        $value = $definition->get($this);
         $this->setValue($key, $value);
         return $value;
     }
@@ -216,23 +184,5 @@ class Container
     public function has($key)
     {
         return isset($this->values[$key]) || isset($this->definitions[$key]) || class_exists($key);
-    }
-
-    /**
-     * @param \ReflectionClass    $class
-     * @param ScopeInterface|null $scope
-     * @return InjectableValueInterface
-     */
-    private function getDefinitionByClass(\ReflectionClass $class, ScopeInterface $scope = null)
-    {
-        if (!$this->injectionPolicy->isInjectableClass($class)) {
-            throw new \InvalidArgumentException(
-                sprintf('Class "%s" does not be injectable.', $class->getName())
-            );
-        }
-
-        $scope = $scope ?: $this->injectionPolicy->getScope($class);
-
-        return new BindingDefinition($class, $scope);
     }
 }

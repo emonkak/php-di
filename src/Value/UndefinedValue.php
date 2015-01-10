@@ -2,8 +2,6 @@
 
 namespace Emonkak\Di\Value;
 
-use Emonkak\Di\Injector;
-
 class UndefinedValue implements InjectableValueInterface
 {
     /**

@@ -8,6 +8,7 @@ use Emonkak\Di\Injection\PropertyInjection;
 use Emonkak\Di\Value\InjectableValueInterface;
 use Emonkak\Di\Value\InjectableValueVisitorInterface;
 use Emonkak\Di\Value\ObjectValueInterface;
+use Emonkak\Di\Value\ProviderValue;
 use Emonkak\Di\Value\SingletonValue;
 
 class ServiceProviderGenerator implements InjectableValueVisitorInterface
@@ -112,8 +113,8 @@ EOL;
         $constructorInjection = $value->getConstructorInjection();
         if ($constructorInjection) {
             foreach ($constructorInjection->getParameters() as $param) {
-                $key = $param->getValue()->accept($this);
-                $paramExprs[] = $this->dumpValueExpr($key);
+                $paramKey = $param->getValue()->accept($this);
+                $paramExprs[] = $this->dumpValueExpr($paramKey);
             }
         }
 
@@ -134,8 +135,8 @@ EOL;
         $paramExprs = [];
 
         foreach ($methodInjection->getParameters() as $param) {
-            $key = $param->getValue()->accept($this);
-            $paramExprs[] = $this->dumpValueExpr($key);
+            $paramKey = $param->getValue()->accept($this);
+            $paramExprs[] = $this->dumpValueExpr($paramKey);
         }
 
         $methodName = $methodInjection->getMethod()->getName();
@@ -152,12 +153,12 @@ EOL;
      */
     private function dumpPropertySet(PropertyInjection $properyInjection)
     {
-        $key = $properyInjection->getValue()->accept($this);
-        $valueExpr = $this->dumpValueExpr($key);
+        $properyKey = $properyInjection->getValue()->accept($this);
+        $properyExpr = $this->dumpValueExpr($properyKey);
         $properyName = $properyInjection->getProperty()->getName();
 
         return <<<EOL
-            \$o->$properyName = $valueExpr;
+            \$o->$properyName = $properyExpr;
 EOL;
     }
 

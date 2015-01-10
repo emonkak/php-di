@@ -6,37 +6,71 @@ use Emonkak\Di\Container;
 use Emonkak\Di\Scope\ScopeInterface;
 use Emonkak\Di\Value\PrototypeValue;
 
-class BindingDefinition implements DefinitionInterface
+class BindingDefinition extends AbstractDefinition
 {
-    private $class;
-
-    private $scope;
+    /**
+     * @var \ReflectionClass
+     */
+    private $target;
 
     /**
-     * @param \ReflectionClass $class
-     * @param ScopeInterface   $scope
+     * @param string $target
      */
-    public function __construct(\ReflectionClass $class, ScopeInterface $scope)
+    public function __construct(\ReflectionClass $target)
     {
-        $this->class = $class;
-        $this->scope = $scope;
+        $this->target = $target;
+    }
+
+    /**
+     * @param string $target
+     */
+    public function to($target)
+    {
+        return $this->toReflection(new \ReflectionClass($target));
+    }
+
+    /**
+     * @param \ReflectionClass $target
+     * @return BindingDefinition
+     */
+    public function toReflection(\ReflectionClass $target)
+    {
+        if (!$target->isSubclassOf($this->target)) {
+            throw new \InvalidArgumentException(
+                sprintf('"%s" is not sub-class of "%s".', $target->getName(), $this->target->getName())
+            );
+        }
+        $this->target = $target;
+        return $this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function resolve(Container $container)
+    protected function resolve(Container $container)
     {
+        $injectionPolicy = $container->getInjectionPolicy();
+        if (!$injectionPolicy->isInjectableClass($this->target)) {
+            throw new \LogicException(
+                sprintf('The class "%s" is not injectable.', $this->target->getName())
+            );
+        }
+
         $injectionFinder = $container->getInjectionFinder();
-        $constructorInjection = $injectionFinder->getConstructorInjection($this->class);
-        $methodInjections = $injectionFinder->getMethodInjections($this->class);
-        $propertyInjections = $injectionFinder->getPropertyInjections($this->class);
-        $value = new PrototypeValue(
-            $this->class,
-            $constructorInjection,
-            $methodInjections,
-            $propertyInjections
+        return new PrototypeValue(
+            $this->target,
+            $injectionFinder->getConstructorInjection($this->target),
+            $injectionFinder->getMethodInjections($this->target),
+            $injectionFinder->getPropertyInjections($this->target)
         );
-        return $this->scope->get($value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function resolveScope(Container $container)
+    {
+        $injectionPolicy = $container->getInjectionPolicy();
+        return $injectionPolicy->getScope($this->target);
     }
 }

@@ -11,5 +11,5 @@ interface DefinitionInterface
      * @param Container $container
      * @return InjectableValueInterface
      */
-    public function resolve(Container $container);
+    public function get(Container $container);
 }

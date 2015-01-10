@@ -128,7 +128,7 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
     {
         foreach ($this->reader->getClassAnnotations($class) as $annotation) {
             if ($annotation instanceof Inject) {
-                return $annotation->isInjectable();
+                return true;
             }
         }
         return $this->fallback->isInjectableClass($class);
@@ -142,7 +142,7 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
     {
        foreach ($this->reader->getMethodAnnotations($method) as $annotation) {
             if ($annotation instanceof Inject) {
-                return $annotation->isInjectable();
+                return true;
             }
         }
         return false;
@@ -156,7 +156,7 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
     {
        foreach ($this->reader->getPropertyAnnotations($prop) as $annotation) {
             if ($annotation instanceof Inject) {
-                return $annotation->isInjectable();
+                return true;
             }
         }
         return false;

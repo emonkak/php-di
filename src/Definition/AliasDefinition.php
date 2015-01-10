@@ -3,30 +3,33 @@
 namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\Container;
-use Emonkak\Di\Scope\ScopeInterface;
+use Emonkak\Di\Scope\PrototypeScope;
 
-class AliasDefinition implements DefinitionInterface
+class AliasDefinition extends AbstractDefinition
 {
     private $target;
 
-    private $scope;
-
     /**
      * @param string $target
-     * @param ScopeInterface $scope
      */
-    public function __construct($target, ScopeInterface $scope)
+    public function __construct($target)
     {
         $this->target = $target;
-        $this->scope = $scope;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function resolve(Container $container)
+    protected function resolve(Container $container)
     {
-        $value = $container->get($this->target);
-        return $this->scope->get($value);
+        return $container->get($this->target);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function resolveScope(Container $container)
+    {
+        return PrototypeScope::getInstance();
     }
 }

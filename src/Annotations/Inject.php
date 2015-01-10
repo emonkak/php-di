@@ -8,16 +8,4 @@ namespace Emonkak\Di\Annotations;
  */
 class Inject
 {
-    /**
-     * @var bool
-     */
-    public $value = true;
-
-    /**
-     * @return boolean
-     */
-    public function isInjectable()
-    {
-        return $this->value;
-    }
 }

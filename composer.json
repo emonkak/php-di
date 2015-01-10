@@ -19,7 +19,11 @@
     },
     "autoload": {
         "psr-4": {
-            "Emonkak\\Di\\": "src/",
+            "Emonkak\\Di\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "Emonkak\\Di\\Tests\\": "tests/"
         }
     }

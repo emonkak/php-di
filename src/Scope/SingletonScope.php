@@ -6,7 +6,6 @@ use Emonkak\Di\Value\InjectableValueInterface;
 use Emonkak\Di\Value\InjectableValueVisitorInterface;
 use Emonkak\Di\Value\ObjectValueInterface;
 use Emonkak\Di\Value\SingletonValue;
-use Emonkak\Di\Value\UndefinedValue;
 
 class SingletonScope implements ScopeInterface, InjectableValueVisitorInterface
 {
