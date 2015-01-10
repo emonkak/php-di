@@ -70,7 +70,7 @@ $procedures
         }
 EOL;
 
-        if (count($methodCalls) > 0 || count($propertySetters) > 0) {
+        if (count($propertySetters) > 0) {
             $className = $value->getClass()->getName();
             $factory = 'Closure::bind(' . $factory . ", \$this, '$className')";
         }

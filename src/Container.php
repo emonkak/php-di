@@ -108,6 +108,24 @@ class Container
 
         $key = $abstractClass->getName();
         $definition = $this->getDefinitionByClass($concreteClass, $scope);
+
+        $this->definitions[$key] = $definition;
+
+        return $this;
+    }
+
+    /**
+     * @param string $target
+     * @param ScopeInterface|null $scope
+     * @return Container
+     */
+    public function register($target, ScopeInterface $scope = null)
+    {
+        $targetClass = new \ReflectionClass($target);
+
+        $key = $targetClass->getName();
+        $definition = $this->getDefinitionByClass($targetClass, $scope);
+
         $this->definitions[$key] = $definition;
 
         return $this;
@@ -208,7 +226,7 @@ class Container
      */
     private function getDefinitionByClass(\ReflectionClass $class, ScopeInterface $scope = null)
     {
-        if (!$this->injectionPolicy->isInjectable($class)) {
+        if (!$this->injectionPolicy->isInjectableClass($class)) {
             throw new \InvalidArgumentException(
                 sprintf('Class "%s" does not be injectable.', $class->getName())
             );

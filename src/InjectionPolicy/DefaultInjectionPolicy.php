@@ -4,7 +4,7 @@ namespace Emonkak\Di\InjectionPolicy;
 
 use Emonkak\Di\Scope\SingletonScope;
 
-class InjectionPolicy implements InjectionPolicyInterface
+class DefaultInjectionPolicy implements InjectionPolicyInterface
 {
     /**
      * {@inheritDoc}
@@ -50,7 +50,7 @@ class InjectionPolicy implements InjectionPolicyInterface
     /**
      * {@inheritDoc}
      */
-    public function isInjectable(\ReflectionClass $class)
+    public function isInjectableClass(\ReflectionClass $class)
     {
         return $class->isInstantiable();
     }

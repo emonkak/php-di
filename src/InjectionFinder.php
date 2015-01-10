@@ -11,18 +11,18 @@ use Emonkak\Di\ValueResolver\ValueResolverInterface;
 class InjectionFinder
 {
     private $valueResolver;
-    private $injectionPolilcy;
+    private $injectionPolicy;
 
     /**
      * @param ValueResolverInterface   $valueResolver
-     * @param InjectionPolicyInterface $injectionPolilcy
+     * @param InjectionPolicyInterface $injectionPolicy
      */
     public function __construct(
         ValueResolverInterface $valueResolver,
-        InjectionPolicyInterface $injectionPolilcy
+        InjectionPolicyInterface $injectionPolicy
     ) {
         $this->valueResolver = $valueResolver;
-        $this->injectionPolicy = $injectionPolilcy;
+        $this->injectionPolicy = $injectionPolicy;
     }
 
     /**

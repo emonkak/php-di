@@ -40,5 +40,5 @@ interface InjectionPolicyInterface
      * @param \ReflectionClass $class
      * @return boolean
      */
-    public function isInjectable(\ReflectionClass $class);
+    public function isInjectableClass(\ReflectionClass $class);
 }
