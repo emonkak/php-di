@@ -54,12 +54,4 @@ class SingletonScope implements ScopeInterface, InjectableValueVisitorInterface
         }
         return $value;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function visitUndefinedValue(UndefinedValue $value)
-    {
-        return $value;
-    }
 }

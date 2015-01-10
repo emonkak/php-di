@@ -9,7 +9,6 @@ use Emonkak\Di\Value\InjectableValueInterface;
 use Emonkak\Di\Value\InjectableValueVisitorInterface;
 use Emonkak\Di\Value\ObjectValueInterface;
 use Emonkak\Di\Value\SingletonValue;
-use Emonkak\Di\Value\UndefinedValue;
 
 class ServiceProviderGenerator implements InjectableValueVisitorInterface
 {
@@ -30,15 +29,7 @@ class ServiceProviderGenerator implements InjectableValueVisitorInterface
      */
     public function visitValue(InjectableValueInterface $value)
     {
-        $concrete = $value->materialize();
-        $serialized = addslashes(serialize($concrete));
-
-        $key = $this->container->getKey($value);
-        $this->definitions[$key] = <<<EOL
-        \$c['$key'] = unserialize('$serialized');
-EOL;
-
-        return $key;
+        return $this->container->getKey($value);
     }
 
     /**
@@ -85,14 +76,6 @@ EOL;
 EOL;
 
         return $key;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function visitUndefinedValue(UndefinedValue $value)
-    {
-        return $value->getTag();
     }
 
     /**

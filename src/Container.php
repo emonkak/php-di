@@ -167,12 +167,11 @@ class Container
 
     /**
      * @param string $key
-     * @param string $tag
      * @return Container
      */
-    public function undefined($key, $tag)
+    public function undefined($key)
     {
-        $this->setValue($key, new UndefinedValue($tag));
+        $this->setValue($key, new UndefinedValue());
         return $this;
     }
 
