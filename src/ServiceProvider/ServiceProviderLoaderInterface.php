@@ -29,9 +29,4 @@ interface ServiceProviderLoaderInterface
      * @param string $source The source of the service provider.
      */
     public function write($className, $source);
-
-    /**
-     * Clears the all sources of the service provider.
-     */
-    public function clear();
 }
