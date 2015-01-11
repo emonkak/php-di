@@ -62,11 +62,6 @@ $procedures
         }
 EOL;
 
-        if (count($propertySetters) > 0) {
-            $className = $value->getClass()->getName();
-            $factory = 'Closure::bind(' . $factory . ", \$this, '$className')";
-        }
-
         if (!($value instanceof SingletonValue)) {
             $factory = '$c->factory(' . $factory . ')';
         }
