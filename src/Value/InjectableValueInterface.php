@@ -15,5 +15,5 @@ interface InjectableValueInterface
     /**
      * @return mixed
      */
-    public function materialize();
+    public function inject();
 }

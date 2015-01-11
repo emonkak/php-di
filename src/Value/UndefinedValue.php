@@ -15,8 +15,8 @@ class UndefinedValue implements InjectableValueInterface
     /**
      * @return mixed
      */
-    public function materialize()
+    public function inject()
     {
-        return new \RuntimeException('This value can not be materialized.');
+        return new \RuntimeException('This value can not be injected.');
     }
 }

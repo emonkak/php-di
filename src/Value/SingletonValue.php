@@ -27,10 +27,10 @@ class SingletonValue implements ObjectValueInterface
     /**
      * {@inheritDoc}
      */
-    public function materialize()
+    public function inject()
     {
         if ($this->instance === null) {
-            $this->instance = $this->value->materialize();
+            $this->instance = $this->value->inject();
         }
         return $this->instance;
     }

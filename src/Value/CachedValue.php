@@ -29,11 +29,11 @@ class CachedValue implements InjectableValueInterface
     /**
      * {@inheritDoc}
      */
-    public function materialize()
+    public function inject()
     {
         if (!$this->isCached) {
             $this->isCached = true;
-            $this->cache = $this->value->materialize();
+            $this->cache = $this->value->inject();
         }
         return $this->cache;
     }

@@ -29,11 +29,11 @@ class LazyValue implements InjectableValueInterface
     /**
      * {@inheritDoc}
      */
-    public function materialize()
+    public function inject()
     {
         $params = [];
         foreach ($this->parameterInjections as $param) {
-            $params[] = $param->getValue()->materialize();
+            $params[] = $param->getValue()->inject();
         }
         return call_user_func_array($this->factory, $params);
     }

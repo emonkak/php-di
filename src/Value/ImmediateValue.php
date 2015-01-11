@@ -24,7 +24,7 @@ class ImmediateValue implements InjectableValueInterface
     /**
      * {@inheritDoc}
      */
-    public function materialize()
+    public function inject()
     {
         return $this->value;
     }

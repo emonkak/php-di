@@ -45,7 +45,7 @@ class ObjectValue implements ObjectValueInterface
     /**
      * {@inheritDoc}
      */
-    public function materialize()
+    public function inject()
     {
         $instance = $this->class->newInstanceWithoutConstructor();
 
@@ -104,7 +104,7 @@ class ObjectValue implements ObjectValueInterface
     {
         $params = [];
         foreach ($methodInjection->getParameters() as $param) {
-            $params[] = $param->getValue()->materialize();
+            $params[] = $param->getValue()->inject();
         }
 
         $method = $methodInjection->getMethod();
@@ -118,7 +118,7 @@ class ObjectValue implements ObjectValueInterface
      */
     private function injectForProperty($instance, PropertyInjection $propertyInjection)
     {
-        $value = $propertyInjection->getValue()->materialize();
+        $value = $propertyInjection->getValue()->inject();
         $propery = $propertyInjection->getProperty();
         $propery->setAccessible(true);
         $propery->setvalue($instance, $value);
