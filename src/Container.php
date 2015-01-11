@@ -109,6 +109,16 @@ class Container
     }
 
     /**
+     * @param string   $key
+     * @param callable $target
+     * @return BindingDefinition
+     */
+    public function factory($key, callable $target)
+    {
+        return $this->definitions[$key] = new FactoryDefinition($target);
+    }
+
+    /**
      * @param string $key
      * @param mixed  $value
      * @return Container

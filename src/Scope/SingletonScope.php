@@ -2,6 +2,7 @@
 
 namespace Emonkak\Di\Scope;
 
+use Emonkak\Di\Value\CachedValue;
 use Emonkak\Di\Value\InjectableValueInterface;
 use Emonkak\Di\Value\InjectableValueVisitorInterface;
 use Emonkak\Di\Value\ObjectValueInterface;
@@ -40,6 +41,9 @@ class SingletonScope implements ScopeInterface, InjectableValueVisitorInterface
      */
     public function visitValue(InjectableValueInterface $value)
     {
+        if (!($value instanceof CachedValue)) {
+            return new CachedValue($value);
+        }
         return $value;
     }
 
