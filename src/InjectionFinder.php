@@ -69,9 +69,9 @@ class InjectionFinder
 
     /**
      * @param \ReflectionFunctionAbstract $function
-     * @return ParameterInjection[]
+     * @return InjectableValueInterface
      */
-    public function getParameterInjections(\ReflectionFunctionAbstract $function)
+    public function getParameters(\ReflectionFunctionAbstract $function)
     {
         $params = [];
         foreach ($function->getParameters() as $param) {
@@ -84,7 +84,7 @@ class InjectionFinder
                     $method->getName()
                 ));
             }
-            $params[] = new ParameterInjection($param, $value);
+            $params[] = $value;
         }
         return $params;
     }
@@ -95,8 +95,8 @@ class InjectionFinder
      */
     private function createMethodInjection(\ReflectionMethod $method)
     {
-        $params = $this->getParameterInjections($method);
-        return new MethodInjection($method, $params);
+        $params = $this->getParameters($method);
+        return new MethodInjection($method->getName(), $params);
     }
 
     /**
@@ -113,6 +113,6 @@ class InjectionFinder
                 $property->getName()
             ));
         }
-        return new PropertyInjection($property, $value);
+        return new PropertyInjection($property->getName(), $value);
     }
 }

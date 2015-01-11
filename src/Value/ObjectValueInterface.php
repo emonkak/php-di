@@ -5,9 +5,9 @@ namespace Emonkak\Di\Value;
 interface ObjectValueInterface extends InjectableValueInterface
 {
     /**
-     * @return \ReflectionClass
+     * @return string
      */
-    public function getClass();
+    public function getClassName();
 
     /**
      * @return MethodInjection|null

@@ -38,9 +38,9 @@ class SingletonValue implements ObjectValueInterface
     /**
      * {@inheritDoc}
      */
-    public function getClass()
+    public function getClassName()
     {
-        return $this->value->getClass();
+        return $this->value->getClassName();
     }
 
     /**

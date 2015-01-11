@@ -2,34 +2,36 @@
 
 namespace Emonkak\Di\Injection;
 
+use Emonkak\Di\Value\InjectableValueInterface;
+
 class MethodInjection
 {
-    private $method;
-    private $params;
+    private $methodName;
+    private $parameters;
 
     /**
-     * @param \ReflectionMethod    $method
-     * @param ParameterInjection[] $params
+     * @param string                     $methodName
+     * @param InjectableValueInterface[] $parameters
      */
-    public function __construct(\ReflectionMethod $method, array $params)
+    public function __construct($methodName, array $parameters)
     {
-        $this->method = $method;
-        $this->params = $params;
+        $this->methodName = $methodName;
+        $this->parameters = $parameters;
     }
 
     /**
-     * @return \ReflectionMethod
+     * @return string
      */
-    public function getMethod()
+    public function getMethodName()
     {
-        return $this->method;
+        return $this->methodName;
     }
 
     /**
-     * @return ParameterInjection[]
+     * @return InjectableValueInterface[]
      */
     public function getParameters()
     {
-        return $this->params;
+        return $this->parameters;
     }
 }

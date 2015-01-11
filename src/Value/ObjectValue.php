@@ -8,7 +8,7 @@ use Emonkak\Di\Injector;
 
 class ObjectValue implements ObjectValueInterface
 {
-    private $class;
+    private $className;
 
     private $constructorInjection;
 
@@ -17,18 +17,18 @@ class ObjectValue implements ObjectValueInterface
     private $propertyInjections;
 
     /**
-     * @param \ReflectionClass     $class
+     * @param string               $className
      * @param MethodInjection|null $constructorInjection
      * @param MethodInjection[]    $methodInjections
      * @param PropertyInjection[]  $propertyInjections
      */
     public function __construct(
-        \ReflectionClass $class,
+        $className,
         MethodInjection $constructorInjection = null,
         array $methodInjections = [],
         array $propertyInjections = []
     ) {
-        $this->class = $class;
+        $this->className = $className;
         $this->constructorInjection = $constructorInjection;
         $this->methodInjections = $methodInjections;
         $this->propertyInjections = $propertyInjections;
@@ -47,18 +47,19 @@ class ObjectValue implements ObjectValueInterface
      */
     public function inject()
     {
-        $instance = $this->class->newInstanceWithoutConstructor();
+        $class = new \ReflectionClass($this->className);
+        $instance = $class->newInstanceWithoutConstructor();
 
         if ($this->constructorInjection) {
-            $this->injectForMethod($instance, $this->constructorInjection);
+            $this->injectForMethod($class, $instance, $this->constructorInjection);
         }
 
         foreach ($this->methodInjections as $methodInjection) {
-            $this->injectForMethod($instance, $methodInjection);
+            $this->injectForMethod($class, $instance, $methodInjection);
         }
 
         foreach ($this->propertyInjections as $propertyInjection) {
-            $this->injectForProperty($instance, $propertyInjection);
+            $this->injectForProperty($class, $instance, $propertyInjection);
         }
 
         return $instance;
@@ -67,9 +68,9 @@ class ObjectValue implements ObjectValueInterface
     /**
      * {@inheritDoc}
      */
-    public function getClass()
+    public function getClassName()
     {
-        return $this->class;
+        return $this->className;
     }
 
     /**
@@ -97,29 +98,31 @@ class ObjectValue implements ObjectValueInterface
     }
 
     /**
-     * @param mixed           $instance
-     * @param MethodInjection $methodInjection
+     * @param \ReflectionClass $class
+     * @param mixed            $instance
+     * @param MethodInjection  $methodInjection
      */
-    private function injectForMethod($instance, MethodInjection $methodInjection)
+    private function injectForMethod(\ReflectionClass $class, $instance, MethodInjection $methodInjection)
     {
-        $params = [];
-        foreach ($methodInjection->getParameters() as $param) {
-            $params[] = $param->getValue()->inject();
+        $args = [];
+        foreach ($methodInjection->getParameters() as $parameter) {
+            $args[] = $parameter->inject();
         }
 
-        $method = $methodInjection->getMethod();
+        $method = $class->getMethod($methodInjection->getMethodName());
         $method->setAccessible(true);
-        $method->invokeArgs($instance, $params);
+        $method->invokeArgs($instance, $args);
     }
 
     /**
+     * @param \ReflectionClass  $class
      * @param mixed             $instance
      * @param PropertyInjection $propertyInjection
      */
-    private function injectForProperty($instance, PropertyInjection $propertyInjection)
+    private function injectForProperty(\ReflectionClass $class, $instance, PropertyInjection $propertyInjection)
     {
         $value = $propertyInjection->getValue()->inject();
-        $propery = $propertyInjection->getProperty();
+        $propery = $class->getProperty($propertyInjection->getPropertyName());
         $propery->setAccessible(true);
         $propery->setvalue($instance, $value);
     }

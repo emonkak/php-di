@@ -6,29 +6,30 @@ use Emonkak\Di\Value\InjectableValueInterface;
 
 class PropertyInjection
 {
-    private $property;
+    private $propertyName;
+
     private $value;
 
     /**
-     * @param \ReflectionProperty      $property
+     * @param string                   $propertyName
      * @param InjectableValueInterface $value
      */
-    public function __construct(\ReflectionProperty $property, InjectableValueInterface $value)
+    public function __construct($propertyName, InjectableValueInterface $value)
     {
-        $this->property = $property;
+        $this->propertyName = $propertyName;
         $this->value = $value;
     }
 
     /**
-     * @return \ReflectionProperty
+     * @return string
      */
-    public function getProperty()
+    public function getPropertyName()
     {
-        return $this->property;
+        return $this->propertyName;
     }
 
     /**
-     * @return InjectableValueInterface[]
+     * @return InjectableValueInterface
      */
     public function getValue()
     {

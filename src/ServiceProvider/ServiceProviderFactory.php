@@ -25,8 +25,8 @@ class ServiceProviderFactory
      */
     public function __construct(
         Container $container,
-        ServiceProviderLoaderInterface $loader)
-    {
+        ServiceProviderLoaderInterface $loader
+    ) {
         $this->container = $container;
         $this->loader = $loader;
     }

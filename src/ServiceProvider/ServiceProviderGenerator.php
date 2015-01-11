@@ -108,12 +108,12 @@ EOL;
         $constructorInjection = $value->getConstructorInjection();
         if ($constructorInjection) {
             foreach ($constructorInjection->getParameters() as $param) {
-                $paramKey = $param->getValue()->accept($this);
+                $paramKey = $param->accept($this);
                 $paramExprs[] = $this->dumpValueExpr($paramKey);
             }
         }
 
-        $className = $value->getClass()->getName();
+        $className = $value->getClassName();
         $joinedParamExprs = implode(', ', $paramExprs);
 
         return <<<EOL
@@ -130,11 +130,11 @@ EOL;
         $paramExprs = [];
 
         foreach ($methodInjection->getParameters() as $param) {
-            $paramKey = $param->getValue()->accept($this);
+            $paramKey = $param->accept($this);
             $paramExprs[] = $this->dumpValueExpr($paramKey);
         }
 
-        $methodName = $methodInjection->getMethod()->getName();
+        $methodName = $methodInjection->getMethodName();
         $joinedParamExprs = implode(', ', $paramExprs);
 
         return <<<EOL
@@ -150,7 +150,7 @@ EOL;
     {
         $properyKey = $properyInjection->getValue()->accept($this);
         $properyExpr = $this->dumpValueExpr($properyKey);
-        $properyName = $properyInjection->getProperty()->getName();
+        $properyName = $properyInjection->getPropertyName();
 
         return <<<EOL
             \$o->$properyName = $properyExpr;

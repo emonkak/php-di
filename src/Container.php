@@ -103,9 +103,7 @@ class Container
      */
     public function bind($target)
     {
-        $targetClass = new \ReflectionClass($target);
-        $key = $targetClass->getName();
-        return $this->definitions[$key] = new BindingDefinition($targetClass);
+        return $this->definitions[$target] = new BindingDefinition($target);
     }
 
     /**
@@ -169,8 +167,7 @@ class Container
                     sprintf('The key "%s" does not registered in this container.', $key)
                 );
             }
-            $class = new \ReflectionClass($key);
-            $definition = new BindingDefinition($class);
+            $definition = new BindingDefinition($key);
         }
 
         $value = $definition->get($this);

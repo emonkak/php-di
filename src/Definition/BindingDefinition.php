@@ -9,14 +9,14 @@ use Emonkak\Di\Value\ObjectValue;
 class BindingDefinition extends AbstractDefinition
 {
     /**
-     * @var \ReflectionClass
+     * @var string
      */
     private $target;
 
     /**
      * @param string $target
      */
-    public function __construct(\ReflectionClass $target)
+    public function __construct($target)
     {
         $this->target = $target;
     }
@@ -26,20 +26,6 @@ class BindingDefinition extends AbstractDefinition
      */
     public function to($target)
     {
-        return $this->toReflection(new \ReflectionClass($target));
-    }
-
-    /**
-     * @param \ReflectionClass $target
-     * @return BindingDefinition
-     */
-    public function toReflection(\ReflectionClass $target)
-    {
-        if (!$target->isSubclassOf($this->target)) {
-            throw new \InvalidArgumentException(
-                sprintf('"%s" is not sub-class of "%s".', $target->getName(), $this->target->getName())
-            );
-        }
         $this->target = $target;
         return $this;
     }
@@ -49,8 +35,10 @@ class BindingDefinition extends AbstractDefinition
      */
     protected function resolve(Container $container)
     {
+        $class = new \ReflectionClass($this->target);
         $injectionPolicy = $container->getInjectionPolicy();
-        if (!$injectionPolicy->isInjectableClass($this->target)) {
+
+        if (!$injectionPolicy->isInjectableClass($class)) {
             throw new \LogicException(
                 sprintf('The class "%s" is not injectable.', $this->target->getName())
             );
@@ -58,10 +46,10 @@ class BindingDefinition extends AbstractDefinition
 
         $injectionFinder = $container->getInjectionFinder();
         return new ObjectValue(
-            $this->target,
-            $injectionFinder->getConstructorInjection($this->target),
-            $injectionFinder->getMethodInjections($this->target),
-            $injectionFinder->getPropertyInjections($this->target)
+            $class->getName(),
+            $injectionFinder->getConstructorInjection($class),
+            $injectionFinder->getMethodInjections($class),
+            $injectionFinder->getPropertyInjections($class)
         );
     }
 
@@ -70,7 +58,8 @@ class BindingDefinition extends AbstractDefinition
      */
     protected function resolveScope(Container $container)
     {
+        $class = new \ReflectionClass($this->target);
         $injectionPolicy = $container->getInjectionPolicy();
-        return $injectionPolicy->getScope($this->target);
+        return $injectionPolicy->getScope($class);
     }
 }

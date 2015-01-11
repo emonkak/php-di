@@ -29,7 +29,7 @@ class FactoryDefinition extends AbstractDefinition
 
         return new LazyValue(
             $this->factory,
-            $finder->getParameterInjections($function)
+            $finder->getParameters($function)
         );
     }
 

@@ -6,16 +6,16 @@ class LazyValue implements InjectableValueInterface
 {
     private $factory;
 
-    private $parameterInjections;
+    private $parameters;
 
     /**
-     * @param callable             $factory
-     * @param ParameterInjection[] $parameterInjections
+     * @param callable                          $factory
+     * @param InjectableValueVisitorInterface[] $parameters
      */
-    public function __construct(callable $factory, array $parameterInjections)
+    public function __construct(callable $factory, array $parameters)
     {
         $this->factory = $factory;
-        $this->parameterInjections = $parameterInjections;
+        $this->parameters = $parameters;
     }
 
     /**
@@ -31,10 +31,10 @@ class LazyValue implements InjectableValueInterface
      */
     public function inject()
     {
-        $params = [];
-        foreach ($this->parameterInjections as $param) {
-            $params[] = $param->getValue()->inject();
+        $args = [];
+        foreach ($this->parameters as $parameter) {
+            $args[] = $parameter->inject();
         }
-        return call_user_func_array($this->factory, $params);
+        return call_user_func_array($this->factory, $args);
     }
 }
