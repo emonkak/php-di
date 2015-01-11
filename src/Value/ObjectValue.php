@@ -6,7 +6,7 @@ use Emonkak\Di\Injection\MethodInjection;
 use Emonkak\Di\Injection\PropertyInjection;
 use Emonkak\Di\Injector;
 
-class PrototypeValue implements ObjectValueInterface
+class ObjectValue implements ObjectValueInterface
 {
     private $class;
 

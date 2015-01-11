@@ -3,7 +3,6 @@
 namespace Emonkak\Di\Scope;
 
 use Emonkak\Di\Value\InjectableValueInterface;
-use Emonkak\Di\Value\PrototypeValue;
 
 class PrototypeScope implements ScopeInterface
 {

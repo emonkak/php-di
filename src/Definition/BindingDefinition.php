@@ -4,7 +4,7 @@ namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\Container;
 use Emonkak\Di\Scope\ScopeInterface;
-use Emonkak\Di\Value\PrototypeValue;
+use Emonkak\Di\Value\ObjectValue;
 
 class BindingDefinition extends AbstractDefinition
 {
@@ -57,7 +57,7 @@ class BindingDefinition extends AbstractDefinition
         }
 
         $injectionFinder = $container->getInjectionFinder();
-        return new PrototypeValue(
+        return new ObjectValue(
             $this->target,
             $injectionFinder->getConstructorInjection($this->target),
             $injectionFinder->getMethodInjections($this->target),
