@@ -2,8 +2,10 @@
 
 namespace Emonkak\Di;
 
+use Doctrine\Common\Cache\Cache;
 use Emonkak\Di\Definition\AliasDefinition;
 use Emonkak\Di\Definition\BindingDefinition;
+use Emonkak\Di\Definition\DefinitionInterface;
 use Emonkak\Di\Definition\FactoryDefinition;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\PrototypeScope;
@@ -18,22 +20,41 @@ use Emonkak\Di\Value\UndefinedValue;
 
 class Container
 {
+    /**
+     * @var ValueResolverInterface
+     */
     private $valueResolver;
 
+    /**
+     * @var InjectionFinder
+     */
     private $injectionFinder;
 
+    /**
+     * @var InjectionPolicyInterface
+     */
     private $injectionPolicy;
 
+    /**
+     * @var DefinitionInterface[]
+     */
     private $definitions = [];
 
-    private $values = [];
+    /**
+     * @var Cache
+     */
+    private $cache;
 
+    /**
+     * @var SplObjectStorage
+     */
     private $keys;
 
     /**
      * @param InjectionPolicyInterface $injectionPolicy
+     * @param Cache                    $cache
      */
-    public function __construct(InjectionPolicyInterface $injectionPolicy)
+    public function __construct(InjectionPolicyInterface $injectionPolicy, Cache $cache)
     {
         $this->valueResolver = new ChainedValueResolver(
             new ContainerValueResolver($this, $injectionPolicy),
@@ -41,6 +62,7 @@ class Container
         );
         $this->injectionFinder = new InjectionFinder($this->valueResolver, $injectionPolicy);
         $this->injectionPolicy = $injectionPolicy;
+        $this->cache = $cache;
         $this->keys = new \SplObjectStorage();
     }
 
@@ -134,7 +156,7 @@ class Container
      */
     public function setValue($key, InjectableValueInterface $value)
     {
-        $this->values[$key] = $value;
+        $this->cache->save($key, $value);
         $this->keys[$value] = $key;
         return $this;
     }
@@ -155,8 +177,8 @@ class Container
      */
     public function get($key)
     {
-        if (isset($this->values[$key])) {
-            return $this->values[$key];
+        if ($this->cache->contains($key)) {
+            return $this->cache->fetch($key);
         }
 
         if (isset($this->definitions[$key])) {
@@ -190,6 +212,6 @@ class Container
      */
     public function has($key)
     {
-        return isset($this->values[$key]) || isset($this->definitions[$key]) || class_exists($key);
+        return $this->cache->contains($key) || isset($this->definitions[$key]) || class_exists($key);
     }
 }
