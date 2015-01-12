@@ -38,6 +38,11 @@ class ServiceProviderGenerator implements InjectableValueVisitorInterface
      */
     public function visitObjectValue(ObjectValueInterface $value)
     {
+        $key = $this->container->getKey($value);
+        if (isset($this->definitions[$key])) {
+            return $key;
+        }
+
         $methodCalls = [];
         $propertySetters = [];
 
@@ -66,7 +71,6 @@ EOL;
             $factory = '$c->factory(' . $factory . ')';
         }
 
-        $key = $this->container->getKey($value);
         $this->definitions[$key] = <<<EOL
         \$c['$key'] = $factory;
 EOL;
