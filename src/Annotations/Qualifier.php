@@ -8,6 +8,9 @@ namespace Emonkak\Di\Annotations;
  */
 class Qualifier
 {
+    /**
+     * @var array
+     */
     private $values;
 
     /**
@@ -19,6 +22,7 @@ class Qualifier
     }
 
     /**
+     * @param string $name
      * @return string
      */
     public function getValue($name)

@@ -3,6 +3,7 @@
 namespace Emonkak\Di\ServiceProvider;
 
 use Emonkak\Di\Container;
+use Pimple\ServiceProviderInterface;
 
 /**
  * Provides the instantiation of the service provider.
@@ -37,7 +38,7 @@ class ServiceProviderFactory
      * @param string[] $serviceClasses
      * @param string   $serviceProviderClass
      * @param string   $serviceProviderNamespace
-     * @return mixed
+     * @return ServiceProviderInterface
      */
     public function createInstance(array $serviceClasses, $serviceProviderClass, $serviceProviderNamespace = '')
     {

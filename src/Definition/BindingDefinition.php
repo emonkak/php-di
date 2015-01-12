@@ -40,7 +40,7 @@ class BindingDefinition extends AbstractDefinition
 
         if (!$injectionPolicy->isInjectableClass($class)) {
             throw new \LogicException(
-                sprintf('The class "%s" is not injectable.', $this->target->getName())
+                sprintf('Class "%s" is not injectable.', $this->target->getName())
             );
         }
 

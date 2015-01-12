@@ -109,7 +109,7 @@ class Container
     /**
      * @param string   $key
      * @param callable $target
-     * @return BindingDefinition
+     * @return FactoryDefinition
      */
     public function factory($key, callable $target)
     {
@@ -164,7 +164,7 @@ class Container
         } else {
             if (!class_exists($key)) {
                 throw new \InvalidArgumentException(
-                    sprintf('The key "%s" does not registered in this container.', $key)
+                    sprintf('Key "%s" does not registered in this container.', $key)
                 );
             }
             $definition = new BindingDefinition($key);

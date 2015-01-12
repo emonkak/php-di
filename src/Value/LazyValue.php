@@ -9,8 +9,8 @@ class LazyValue implements InjectableValueInterface
     private $parameters;
 
     /**
-     * @param callable                          $factory
-     * @param InjectableValueVisitorInterface[] $parameters
+     * @param callable                   $factory
+     * @param InjectableValueInterface[] $parameters
      */
     public function __construct(callable $factory, array $parameters)
     {
