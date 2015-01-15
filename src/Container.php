@@ -10,7 +10,7 @@ use Emonkak\Di\Definition\FactoryDefinition;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\PrototypeScope;
 use Emonkak\Di\Scope\ScopeInterface;
-use Emonkak\Di\ValueResolver\ChainedValueResolver;
+use Emonkak\Di\ValueResolver\ChainValueResolver;
 use Emonkak\Di\ValueResolver\ContainerValueResolver;
 use Emonkak\Di\ValueResolver\DefaultValueResolver;
 use Emonkak\Di\ValueResolver\ValueResolverInterface;
@@ -21,7 +21,7 @@ use Emonkak\Di\Value\UndefinedValue;
 class Container
 {
     /**
-     * @var ValueResolverInterface
+     * @var ChainValueResolver
      */
     private $valueResolver;
 
@@ -56,10 +56,10 @@ class Container
      */
     public function __construct(InjectionPolicyInterface $injectionPolicy, Cache $cache)
     {
-        $this->valueResolver = new ChainedValueResolver(
+        $this->valueResolver = new ChainValueResolver([
             new ContainerValueResolver($this, $injectionPolicy),
             new DefaultValueResolver()
-        );
+        ]);
         $this->injectionFinder = new InjectionFinder($this->valueResolver, $injectionPolicy);
         $this->injectionPolicy = $injectionPolicy;
         $this->cache = $cache;
@@ -88,10 +88,7 @@ class Container
      */
     public function appendValueResolver(ValueResolverInterface $valueResolver)
     {
-        $this->valueResolver = new ChainedValueResolver(
-            $this->valueResolver,
-            $valueResolver
-        );
+        $this->valueResolver->append($valueResolver);
         return $this;
     }
 
@@ -101,10 +98,7 @@ class Container
      */
     public function prependValueResolver(ValueResolverInterface $valueResolver)
     {
-        $this->valueResolver = new ChainedValueResolver(
-            $valueResolver,
-            $this->valueResolver
-        );
+        $this->valueResolver->prepend($valueResolver);
         return $this;
     }
 
