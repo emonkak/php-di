@@ -2,11 +2,13 @@
 
 namespace Emonkak\Di;
 
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Emonkak\Di\Definition\AliasDefinition;
 use Emonkak\Di\Definition\BindingDefinition;
 use Emonkak\Di\Definition\DefinitionInterface;
 use Emonkak\Di\Definition\FactoryDefinition;
+use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\PrototypeScope;
 use Emonkak\Di\Scope\ScopeInterface;
@@ -49,6 +51,14 @@ class Container
      * @var SplObjectStorage
      */
     private $keys;
+
+    /**
+     * @return Container
+     */
+    public static function create()
+    {
+        return new Container(new DefaultInjectionPolicy(), new ArrayCache());
+    }
 
     /**
      * @param InjectionPolicyInterface $injectionPolicy
