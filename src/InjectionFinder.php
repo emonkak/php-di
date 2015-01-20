@@ -78,10 +78,9 @@ class InjectionFinder
             $value = $this->valueResolver->getParameterValue($param);
             if ($value === null) {
                 throw new \LogicException(sprintf(
-                    'Parameter "$%s" of "%s::%s()" can not be resolved.',
+                    'Parameter "$%s" of "%s()" can not be resolved.',
                     $param->getName(),
-                    $method->getDeclaringClass()->getName(),
-                    $method->getName()
+                    $function->getName()
                 ));
             }
             $params[] = $value;
