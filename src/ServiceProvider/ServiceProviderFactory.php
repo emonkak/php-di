@@ -42,8 +42,10 @@ class ServiceProviderFactory
      */
     public function createInstance(array $serviceClasses, $serviceProviderClass, $serviceProviderNamespace = '')
     {
-        if (!class_exists($serviceProviderClass, false)) {
-            if (!$this->loader->canLoad($serviceProviderClass)) {
+        $className = ltrim($serviceProviderNamespace . '\\' . $serviceProviderClass, '\\');
+
+        if (!class_exists($className, false)) {
+            if (!$this->loader->canLoad($className)) {
                 $generator = new ServiceProviderGenerator($this->container);
 
                 foreach ($serviceClasses as $serviceClass) {
@@ -51,13 +53,12 @@ class ServiceProviderFactory
                     $value->accept($generator);
                 }
 
-                $className = ltrim($serviceProviderNamespace . '\\' . $serviceProviderClass, '\\');
                 $source = $generator->generate($serviceProviderClass, $serviceProviderNamespace);
 
                 $this->loader->write($className, $source);
             }
 
-            $this->loader->load($serviceProviderClass);
+            $this->loader->load($className);
         }
 
         return new $serviceProviderClass();
