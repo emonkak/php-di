@@ -26,7 +26,6 @@ class ContainerValueResolver implements ValueResolverInterface
     public function getParameterValue(\ReflectionParameter $param)
     {
         $key = $this->injectionPolicy->getParameterKey($param);
-        $param = $this->container->get($key);
         return $this->container->has($key) ? $this->container->get($key) : null;
     }
 
