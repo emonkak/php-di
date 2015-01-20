@@ -93,6 +93,14 @@ class Container
     }
 
     /**
+     * @param ContainerConfiguratorInterface $configurator
+     */
+    public function configure(ContainerConfiguratorInterface $configurator)
+    {
+        $configurator->configure($this);
+    }
+
+    /**
      * @param ValueResolverInterface $valueResolver
      * @return Container
      */
