@@ -46,9 +46,9 @@ class SingletonValue implements ObjectValueInterface
     /**
      * {@inheritDoc}
      */
-    public function getConstructorInjection()
+    public function getConstructorParameters()
     {
-        return $this->value->getConstructorInjection();
+        return $this->value->getConstructorParameters();
     }
 
     /**

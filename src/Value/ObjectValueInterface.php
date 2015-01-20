@@ -10,17 +10,17 @@ interface ObjectValueInterface extends InjectableValueInterface
     public function getClassName();
 
     /**
-     * @return MethodInjection|null
+     * @return InjectableValueInterface[]
      */
-    public function getConstructorInjection();
+    public function getConstructorParameters();
 
     /**
-     * @return MethodInjection[]
+     * @return array (method => InjectableValueInterface[])
      */
     public function getMethodInjections();
 
     /**
-     * @return PropertyInjection[]
+     * @return array (property => InjectableValueInterface[])
      */
     public function getPropertyInjections();
 }

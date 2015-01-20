@@ -109,12 +109,10 @@ EOL;
     {
         $paramExprs = [];
 
-        $constructorInjection = $value->getConstructorInjection();
-        if ($constructorInjection) {
-            foreach ($constructorInjection->getParameters() as $param) {
-                $paramKey = $param->accept($this);
-                $paramExprs[] = $this->dumpValueExpr($paramKey);
-            }
+        $constructorParameters = $value->getConstructorParameters();
+        foreach ($constructorParameters as $param) {
+            $paramKey = $param->accept($this);
+            $paramExprs[] = $this->dumpValueExpr($paramKey);
         }
 
         $className = $value->getClassName();

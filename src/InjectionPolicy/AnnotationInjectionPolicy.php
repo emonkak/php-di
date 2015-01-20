@@ -79,7 +79,7 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
         if ($function instanceof \ReflectionMethod) {
             foreach ($this->reader->getMethodAnnotations($function) as $annotation) {
                 if ($annotation instanceof Qualifier) {
-                    $key = $annotation->getValue($param->getName());
+                    $key = $annotation->getValue($param->name);
 
                     if ($key !== null) {
                         return $key;

@@ -28,7 +28,7 @@ class DefaultInjectionPolicy implements InjectionPolicyInterface
     public function getParameterKey(\ReflectionParameter $param)
     {
         $class = $param->getClass();
-        return $class ? $class->getName() : '$' . $param->getName();
+        return $class ? $class->name : '$' . $param->name;
     }
 
     /**
@@ -36,7 +36,7 @@ class DefaultInjectionPolicy implements InjectionPolicyInterface
      */
     public function getPropertyKey(\ReflectionProperty $prop)
     {
-        return '$' . $prop->getName();
+        return '$' . $prop->name;
     }
 
     /**

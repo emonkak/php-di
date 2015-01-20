@@ -35,6 +35,6 @@ class LazyValue implements InjectableValueInterface
         foreach ($this->parameters as $parameter) {
             $args[] = $parameter->inject();
         }
-        return call_user_func_array($this->factory, $args);
+        return ReflectionUtils::callFunction($this->factory, $args);
     }
 }

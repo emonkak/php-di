@@ -23,7 +23,7 @@ class DefaultValueResolver implements ValueResolverInterface
      */
     public function getPropertyValue(\ReflectionProperty $property)
     {
-        $name = $property->getName();
+        $name = $property->name;
         $class = $property->getDeclaringClass();
         $values = $class->getDefaultProperties();
 

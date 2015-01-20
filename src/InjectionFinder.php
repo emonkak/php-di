@@ -29,10 +29,10 @@ class InjectionFinder
      * @param \ReflectionClass $class
      * @return MethodInjection|null
      */
-    public function getConstructorInjection(\ReflectionClass $class)
+    public function getConstructorParameters(\ReflectionClass $class)
     {
         $constructor = $class->getConstructor();
-        return $constructor ? $this->createMethodInjection($constructor) : null;
+        return $constructor ? $this->getParameterValues($constructor) : [];
     }
 
     /**
@@ -45,7 +45,7 @@ class InjectionFinder
 
         $methods = $this->injectionPolicy->getInjectableMethods($class);
         foreach ($methods as $method) {
-            $injections[] = $this->createMethodInjection($method);
+            $injections[$method->name] = $this->getParameterValues($method);
         }
 
         return $injections;
@@ -61,7 +61,7 @@ class InjectionFinder
 
         $properties = $this->injectionPolicy->getInjectableProperties($class);
         foreach ($properties as $property) {
-            $injections[] = $this->createPropertyInjection($property);
+            $injections[$property->name] = $this->getPropertyValue($property);
         }
 
         return $injections;
@@ -71,7 +71,7 @@ class InjectionFinder
      * @param \ReflectionFunctionAbstract $function
      * @return InjectableValueInterface
      */
-    public function getParameters(\ReflectionFunctionAbstract $function)
+    public function getParameterValues(\ReflectionFunctionAbstract $function)
     {
         $params = [];
         foreach ($function->getParameters() as $param) {
@@ -79,8 +79,8 @@ class InjectionFinder
             if ($value === null) {
                 throw new \LogicException(sprintf(
                     'Parameter "$%s" of "%s()" can not be resolved.',
-                    $param->getName(),
-                    $function->getName()
+                    $param->name,
+                    $function->name
                 ));
             }
             $params[] = $value;
@@ -90,28 +90,18 @@ class InjectionFinder
 
     /**
      * @param \ReflectionMethod $mehtod
-     * @return MethodInjection
-     */
-    private function createMethodInjection(\ReflectionMethod $method)
-    {
-        $params = $this->getParameters($method);
-        return new MethodInjection($method->getName(), $params);
-    }
-
-    /**
-     * @param \ReflectionMethod $mehtod
      * @return PropertyInjection
      */
-    private function createPropertyInjection(\ReflectionProperty $property)
+    private function getPropertyValue(\ReflectionProperty $property)
     {
         $value = $this->valueResolver->getPropertyValue($property);
         if ($value === null) {
             throw new \LogicException(sprintf(
                 'Property "%s::$%s" can not be resolved.',
-                $property->getDeclaringClass()->getName(),
-                $property->getName()
+                $property->getDeclaringClass()->name,
+                $property->name
             ));
         }
-        return new PropertyInjection($property->getName(), $value);
+        return $value;
     }
 }

@@ -4,32 +4,32 @@ namespace Emonkak\Di\Value;
 
 use Emonkak\Di\Injection\MethodInjection;
 use Emonkak\Di\Injection\PropertyInjection;
-use Emonkak\Di\Injector;
+use Emonkak\Di\Utils\ReflectionUtils;
 
 class ObjectValue implements ObjectValueInterface
 {
     private $className;
 
-    private $constructorInjection;
+    private $constructorParameters;
 
     private $methodInjections;
 
     private $propertyInjections;
 
     /**
-     * @param string               $className
-     * @param MethodInjection|null $constructorInjection
-     * @param MethodInjection[]    $methodInjections
-     * @param PropertyInjection[]  $propertyInjections
+     * @param string                     $className
+     * @param InjectableValueInterface[] $constructorParameters
+     * @param array                      $methodInjections (method => InjectableValueVisitorInterface[])
+     * @param array                      $propertyInjections (property => InjectableValueVisitorInterface[])
      */
     public function __construct(
         $className,
-        MethodInjection $constructorInjection = null,
-        array $methodInjections = [],
-        array $propertyInjections = []
+        array $constructorParameters,
+        array $methodInjections,
+        array $propertyInjections
     ) {
         $this->className = $className;
-        $this->constructorInjection = $constructorInjection;
+        $this->constructorParameters = $constructorParameters;
         $this->methodInjections = $methodInjections;
         $this->propertyInjections = $propertyInjections;
     }
@@ -47,19 +47,14 @@ class ObjectValue implements ObjectValueInterface
      */
     public function inject()
     {
-        $class = new \ReflectionClass($this->className);
-        $instance = $class->newInstanceWithoutConstructor();
+        $instance = $this->createInstance();
 
-        if ($this->constructorInjection) {
-            $this->injectForMethod($class, $instance, $this->constructorInjection);
+        foreach ($this->methodInjections as $method => $parameters) {
+            $this->injectForMethod($instance, $method, $parameters);
         }
 
-        foreach ($this->methodInjections as $methodInjection) {
-            $this->injectForMethod($class, $instance, $methodInjection);
-        }
-
-        foreach ($this->propertyInjections as $propertyInjection) {
-            $this->injectForProperty($class, $instance, $propertyInjection);
+        foreach ($this->propertyInjections as $propery => $value) {
+            $this->injectForProperty($instance, $propery, $value);
         }
 
         return $instance;
@@ -76,9 +71,9 @@ class ObjectValue implements ObjectValueInterface
     /**
      * {@inheritDoc}
      */
-    public function getConstructorInjection()
+    public function getConstructorParameters()
     {
-        return $this->constructorInjection;
+        return $this->constructorParameters;
     }
 
     /**
@@ -98,32 +93,38 @@ class ObjectValue implements ObjectValueInterface
     }
 
     /**
-     * @param \ReflectionClass $class
-     * @param mixed            $instance
-     * @param MethodInjection  $methodInjection
+     * @return mixed
      */
-    private function injectForMethod(\ReflectionClass $class, $instance, MethodInjection $methodInjection)
+    private function createInstance()
     {
         $args = [];
-        foreach ($methodInjection->getParameters() as $parameter) {
+        foreach ($this->constructorParameters as $parameter) {
             $args[] = $parameter->inject();
         }
-
-        $method = $class->getMethod($methodInjection->getMethodName());
-        $method->setAccessible(true);
-        $method->invokeArgs($instance, $args);
+        return ReflectionUtils::newInstance($this->className, $args);
     }
 
     /**
-     * @param \ReflectionClass  $class
-     * @param mixed             $instance
-     * @param PropertyInjection $propertyInjection
+     * @param mixed                      $instance
+     * @param string                     $method
+     * @param InjectableValueInterface[] $parameters
      */
-    private function injectForProperty(\ReflectionClass $class, $instance, PropertyInjection $propertyInjection)
+    private function injectForMethod($instance, $method, array $parameters)
     {
-        $value = $propertyInjection->getValue()->inject();
-        $propery = $class->getProperty($propertyInjection->getPropertyName());
-        $propery->setAccessible(true);
-        $propery->setvalue($instance, $value);
+        $args = [];
+        foreach ($parameters as $parameter) {
+            $args[] = $parameter->inject();
+        }
+        ReflectionUtils::callMethod($instance, $method, $args);
+    }
+
+    /**
+     * @param mixed                    $instance
+     * @param string                   $property
+     * @param InjectableValueInterface $value
+     */
+    private function injectForProperty($instance, $property, $value)
+    {
+        $instance->$property = $value->inject();
     }
 }
