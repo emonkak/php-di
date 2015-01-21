@@ -3,10 +3,10 @@
 namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\Container;
+use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Scope\ScopeInterface;
 use Emonkak\Di\Scope\SingletonScope;
 use Emonkak\Di\Utils\ReflectionUtils;
-use Emonkak\Di\Value\LazyValue;
 
 class FactoryDefinition extends AbstractDefinition
 {
@@ -28,7 +28,7 @@ class FactoryDefinition extends AbstractDefinition
         $finder = $container->getInjectionFinder();
         $function = ReflectionUtils::getFunction($this->factory);
 
-        return new LazyValue(
+        return new FactoryDependency(
             $this->factory,
             $finder->getParameterValues($function)
         );

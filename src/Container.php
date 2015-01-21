@@ -8,6 +8,8 @@ use Emonkak\Di\Definition\AliasDefinition;
 use Emonkak\Di\Definition\BindingDefinition;
 use Emonkak\Di\Definition\DefinitionInterface;
 use Emonkak\Di\Definition\FactoryDefinition;
+use Emonkak\Di\Dependency\DependencyInterface;
+use Emonkak\Di\Dependency\ReferenceDependency;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\PrototypeScope;
@@ -16,9 +18,6 @@ use Emonkak\Di\ValueResolver\ChainValueResolver;
 use Emonkak\Di\ValueResolver\ContainerValueResolver;
 use Emonkak\Di\ValueResolver\DefaultValueResolver;
 use Emonkak\Di\ValueResolver\ValueResolverInterface;
-use Emonkak\Di\Value\ImmediateValue;
-use Emonkak\Di\Value\InjectableValueInterface;
-use Emonkak\Di\Value\UndefinedValue;
 
 class Container
 {
@@ -48,32 +47,30 @@ class Container
     private $cache;
 
     /**
-     * @var SplObjectStorage
+     * @var \ArrayAccess
      */
-    private $keys;
+    private $valueBag;
 
     /**
      * @return Container
      */
     public static function create()
     {
-        return new Container(new DefaultInjectionPolicy(), new ArrayCache());
+        return new Container(new DefaultInjectionPolicy(), new ArrayCache(), new \ArrayObject());
     }
 
     /**
      * @param InjectionPolicyInterface $injectionPolicy
      * @param Cache                    $cache
+     * @param \ArrayAccess             $valueBag
      */
-    public function __construct(InjectionPolicyInterface $injectionPolicy, Cache $cache)
+    public function __construct(InjectionPolicyInterface $injectionPolicy, Cache $cache, \ArrayAccess $valueBag)
     {
-        $this->valueResolver = new ChainValueResolver([
-            new ContainerValueResolver($this, $injectionPolicy),
-            new DefaultValueResolver()
-        ]);
+        $this->valueResolver = new ContainerValueResolver($this, new DefaultValueResolver());
         $this->injectionFinder = new InjectionFinder($this->valueResolver, $injectionPolicy);
         $this->injectionPolicy = $injectionPolicy;
         $this->cache = $cache;
-        $this->keys = new \SplObjectStorage();
+        $this->valueBag = $valueBag;
     }
 
     /**
@@ -101,28 +98,8 @@ class Container
     }
 
     /**
-     * @param ValueResolverInterface $valueResolver
-     * @return Container
-     */
-    public function appendValueResolver(ValueResolverInterface $valueResolver)
-    {
-        $this->valueResolver->append($valueResolver);
-        return $this;
-    }
-
-    /**
-     * @param ValueResolverInterface $valueResolver
-     * @return Container
-     */
-    public function prependValueResolver(ValueResolverInterface $valueResolver)
-    {
-        $this->valueResolver->prepend($valueResolver);
-        return $this;
-    }
-
-    /**
-     * @param string $key
-     * @param string $target
+     * @param string         $key
+     * @param string         $target
      * @param ScopeInterface $scope
      * @return AliasDefinition
      */
@@ -157,35 +134,13 @@ class Container
      */
     public function set($key, $value)
     {
-        $this->setValue($key, new ImmediateValue($value));
-        return $this;
+        $this->valueBag[$key] = $value;
+        $this->definitions[$key] = new ReferenceDependency($key);
     }
 
     /**
      * @param string $key
-     * @param InjectableValueInterface $value
-     * @return Container
-     */
-    public function setValue($key, InjectableValueInterface $value)
-    {
-        $this->cache->save($key, $value);
-        $this->keys[$value] = $key;
-        return $this;
-    }
-
-    /**
-     * @param string $key
-     * @return Container
-     */
-    public function undefined($key)
-    {
-        $this->setValue($key, new UndefinedValue());
-        return $this;
-    }
-
-    /**
-     * @param string $key
-     * @return InjectableValueInterface
+     * @return DependencyInterface
      */
     public function get($key)
     {
@@ -204,18 +159,19 @@ class Container
             $definition = new BindingDefinition($key);
         }
 
-        $value = $definition->get($this);
-        $this->setValue($key, $value);
-        return $value;
+        $dependency = $definition->get($this);
+        $this->cache->save($key, $dependency);
+
+        return $dependency;
     }
 
     /**
-     * @param InjectableValueInterface $value
-     * @return string
+     * @param string $key
+     * @return mixed
      */
-    public function getKey(InjectableValueInterface $value)
+    public function getInstance($key)
     {
-        return isset($this->keys[$value]) ? $this->keys[$value] : null;
+        return $this->get($key)->inject($this->valueBag);
     }
 
     /**

@@ -2,13 +2,15 @@
 
 namespace Emonkak\Di\Scope;
 
-use Emonkak\Di\Value\CachedValue;
-use Emonkak\Di\Value\InjectableValueInterface;
-use Emonkak\Di\Value\InjectableValueVisitorInterface;
-use Emonkak\Di\Value\ObjectValueInterface;
-use Emonkak\Di\Value\SingletonValue;
+use Emonkak\Di\Dependency\DependencyInterface;
+use Emonkak\Di\Dependency\DependencyVistorInterface;
+use Emonkak\Di\Dependency\FactoryDependency;
+use Emonkak\Di\Dependency\ObjectDependency;
+use Emonkak\Di\Dependency\ReferenceDependency;
+use Emonkak\Di\Dependency\SharedDependency;
+use Emonkak\Di\Dependency\SingletonDependency;
 
-class SingletonScope implements ScopeInterface, InjectableValueVisitorInterface
+class SingletonScope implements ScopeInterface, DependencyVistorInterface
 {
     /**
      * Gets the singleton instance of this classs.
@@ -31,30 +33,34 @@ class SingletonScope implements ScopeInterface, InjectableValueVisitorInterface
     /**
      * {@inheritDoc}
      */
-    public function get(InjectableValueInterface $value)
+    public function get(DependencyInterface $dependency)
     {
-        return $value->accept($this);
+        return $dependency->accept($this);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function visitValue(InjectableValueInterface $value)
+    public function visitFactoryDependency(FactoryDependency $dependency)
     {
-        if (!($value instanceof CachedValue)) {
-            return new CachedValue($value);
-        }
-        return $value;
+        return SharedDependency::from($dependency);
     }
 
     /**
-     * {@inheritDoc}
+     * @param ObjectDependency $dependency
+     * @return mixed
      */
-    public function visitObjectValue(ObjectValueInterface $value)
+    public function visitObjectDependency(ObjectDependency $dependency)
     {
-        if (!($value instanceof SingletonValue)) {
-            return new SingletonValue($value);
-        }
-        return $value;
+        return SingletonDependency::from($dependency);
+    }
+
+    /**
+     * @param ReferenceDependency $dependency
+     * @return mixed
+     */
+    public function visitReferenceDependency(ReferenceDependency $dependency)
+    {
+        return $dependency;
     }
 }

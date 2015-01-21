@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Scope;
 
-use Emonkak\Di\Value\InjectableValueInterface;
+use Emonkak\Di\Dependency\DependencyInterface;
 
 class PrototypeScope implements ScopeInterface
 {
@@ -27,8 +27,8 @@ class PrototypeScope implements ScopeInterface
     /**
      * {@inheritDoc}
      */
-    public function get(InjectableValueInterface $value)
+    public function get(DependencyInterface $dependency)
     {
-        return $value;
+        return $dependency;
     }
 }

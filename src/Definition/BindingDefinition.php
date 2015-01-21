@@ -3,8 +3,8 @@
 namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\Container;
+use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Scope\ScopeInterface;
-use Emonkak\Di\Value\ObjectValue;
 
 class BindingDefinition extends AbstractDefinition
 {
@@ -45,7 +45,7 @@ class BindingDefinition extends AbstractDefinition
         }
 
         $injectionFinder = $container->getInjectionFinder();
-        return new ObjectValue(
+        return new ObjectDependency(
             $class->name,
             $injectionFinder->getConstructorParameters($class),
             $injectionFinder->getMethodInjections($class),
@@ -60,6 +60,7 @@ class BindingDefinition extends AbstractDefinition
     {
         $class = new \ReflectionClass($this->target);
         $injectionPolicy = $container->getInjectionPolicy();
+
         return $injectionPolicy->getScope($class);
     }
 }

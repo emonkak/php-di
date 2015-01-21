@@ -22,6 +22,18 @@ class ReflectionUtils
         return new \ReflectionFunction($function);
     }
 
+    /**
+     * @return \Closure
+     */
+    public static function getClosure(callable $function)
+    {
+        if ($function instanceof \Closure) {
+            return $function;
+        }
+
+        return self::getFunction($function)->getClosure();
+    }
+
     public static function newInstance($className, array $args)
     {
         switch (count($args)) {
@@ -48,11 +60,11 @@ class ReflectionUtils
         case 10:
             return new $className($args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8], $args[9]);
         default:
-            return self::newInstanceWithReflection($className, $args);
+            return self::newInstanceByReflection($className, $args);
         }
     }
 
-    public static function newInstanceWithReflection($className, array $args)
+    public static function newInstanceByReflection($className, array $args)
     {
         $class = new \ReflectionClass($className);
         return $class->newInstanceArgs($args);
@@ -84,11 +96,11 @@ class ReflectionUtils
         case 10:
             return $className->$method($args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8], $args[9]);
         default:
-            return self::callMethodWithReflection($className, $args);
+            return self::callMethodByReflection($className, $args);
         }
     }
 
-    public static function callMethodWithReflection($instance, $method, array $args)
+    public static function callMethodByReflection($instance, $method, array $args)
     {
         $method = new \ReflectionMethod('Emonkak\Collection\Benchmarks\Functions', $method);
         return $method->invokeArgs($instance, $args);

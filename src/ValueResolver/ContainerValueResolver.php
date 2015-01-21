@@ -7,26 +7,44 @@ use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 
 class ContainerValueResolver implements ValueResolverInterface
 {
+    /**
+     * @var Container
+     */
     private $container;
+
+    /**
+     * @var InjectionPolicy
+     */
     private $injectionPolicy;
 
     /**
-     * @param Container                $container
-     * @param InjectionPolicyInterface $injectionPolicy
+     * @var ValueResolverInterface
      */
-    public function __construct(Container $container, InjectionPolicyInterface $injectionPolicy)
+    private $fallback;
+
+    /**
+     * @param Container              $container
+     * @param ValueResolverInterface $fallback
+     */
+    public function __construct(Container $container, ValueResolverInterface $fallback)
     {
         $this->container = $container;
-        $this->injectionPolicy = $injectionPolicy;
+        $this->fallback = $fallback;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getParameterValue(\ReflectionParameter $param)
+    public function getParameterValue(\ReflectionParameter $parameter)
     {
-        $key = $this->injectionPolicy->getParameterKey($param);
-        return $this->container->has($key) ? $this->container->get($key) : null;
+        $injectionPolicy = $this->container->getInjectionPolicy();
+        $key = $injectionPolicy->getParameterKey($parameter);
+
+        if ($this->container->has($key)) {
+            return $this->container->get($key);
+        }
+
+        return $this->fallback->getParameterValue($parameter);
     }
 
     /**
@@ -34,7 +52,13 @@ class ContainerValueResolver implements ValueResolverInterface
      */
     public function getPropertyValue(\ReflectionProperty $property)
     {
-        $key = $this->injectionPolicy->getPropertyKey($property);
-        return $this->container->has($key) ? $this->container->get($key) : null;
+        $injectionPolicy = $this->container->getInjectionPolicy();
+        $key = $injectionPolicy->getPropertyKey($property);
+
+        if ($this->container->has($key)) {
+            return $this->container->get($key);
+        }
+
+        return $this->fallback->getPropertyKey($property);
     }
 }

@@ -2,13 +2,13 @@
 
 namespace Emonkak\Di\Scope;
 
-use Emonkak\Di\Value\InjectableValueInterface;
+use Emonkak\Di\Dependency\DependencyInterface;
 
 interface ScopeInterface
 {
     /**
-     * @param InjectableValueInterface $value
-     * @return InjectableValueInterface
+     * @param DependencyInterface $dependency
+     * @return DependencyInterface
      */
-    public function get(InjectableValueInterface $value);
+    public function get(DependencyInterface $dependency);
 }
