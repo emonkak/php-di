@@ -7,17 +7,41 @@
             "email": "emonkak@gmail.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/emonkak/athletic"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/brick/di"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/brick/reflection"
+        }
+    ],
     "require": {
         "php": ">=5.4",
         "doctrine/cache": "~1.3"
     },
     "require-dev": {
+        "athletic/athletic": "dev-master",
+        "aura/di": "~1.0",
+        "brick/di": "dev-master",
+        "brick/reflection": "dev-master",
         "doctrine/annotations": "~1.2",
         "doctrine/cache": "~1.4@dev",
+        "mnapoli/php-di": "~4.4",
+        "orno/cache": "~1.0",
+        "orno/di": "~2.3",
         "phpunit/phpunit": "~4.4",
         "pimple/pimple": "~3.0",
+        "ray/di": "~1.4",
         "satooshi/php-coveralls": "dev-master",
-        "symfony/filesystem": "~2.6"
+        "symfony/dependency-injection": "~2.6",
+        "symfony/filesystem": "~2.6",
+        "tombzombie/dice": "dev-PHP5.4---PHP5.5"
     },
     "suggest": {
         "doctrine/annotations": "",
@@ -31,6 +55,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Emonkak\\Di\\Benchmarks\\": "benchmarks/",
             "Emonkak\\Di\\Tests\\": "tests/"
         }
     }
