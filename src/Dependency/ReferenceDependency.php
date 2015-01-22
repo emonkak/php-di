@@ -45,7 +45,7 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getKey()
     {

@@ -12,7 +12,7 @@ use Emonkak\Di\Scope\SingletonScope;
 
 class AnnotationInjectionPolicy implements InjectionPolicyInterface
 {
-    private static $loader;
+    private static $isRegistered = false;
 
     private $fallback;
 
@@ -20,9 +20,8 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
 
     private static function registerLoader()
     {
-        static $loader;
-
-        if (!isset($loader)) {
+        if (!self::$isRegistered) {
+            self::$isRegistered = true;
             $loader = new ClassLoader();
             $loader->addPsr4('Emonkak\\Di\\Annotations\\', realpath(__DIR__ . '/../Annotations'));
             AnnotationRegistry::registerLoader([$loader, 'loadClass']);

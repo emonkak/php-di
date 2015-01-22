@@ -7,6 +7,11 @@ use Emonkak\Di\Utils\ReflectionUtils;
 class FactoryDependency implements DependencyInterface
 {
     /**
+     * @var string
+     */
+    protected $key;
+
+    /**
      * @var callbale
      */
     protected $factory;
@@ -17,11 +22,13 @@ class FactoryDependency implements DependencyInterface
     protected $parameters;
 
     /**
+     * @param string                $key
      * @param callable              $factory
      * @param DependencyInterface[] $parameters
      */
-    public function __construct(callable $factory, array $parameters)
+    public function __construct($key, callable $factory, array $parameters)
     {
+        $this->key = $key;
         $this->factory = $factory;
         $this->parameters = $parameters;
     }
@@ -41,9 +48,17 @@ class FactoryDependency implements DependencyInterface
     {
         $args = [];
         foreach ($this->parameters as $parameter) {
-            $args[] = $parameter->accept($this);
+            $args[] = $parameter->inject($valueBag);
         }
         return ReflectionUtils::callFunction($this->factory, $args);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getKey()
+    {
+        return $this->key;
     }
 
     /**

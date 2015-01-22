@@ -5,33 +5,16 @@ namespace Emonkak\Di\Dependency;
 class SharedDependency extends FactoryDependency
 {
     /**
-     * @var boolean
-     */
-    private $isCached;
-
-    /**
-     * @var mixed
-     */
-    private $cache;
-
-    /**
      * @param FactoryDependency $dependency
      * @return SharedDependency
      */
     public static function from(FactoryDependency $dependency)
     {
         return new self(
+            $dependency->key,
             $dependency->factory,
             $dependency->parameters
         );
-    }
-
-    /**
-     * @return string[]
-     */
-    public function __sleep()
-    {
-        return ['factory', 'parameters'];
     }
 
     /**
@@ -39,10 +22,13 @@ class SharedDependency extends FactoryDependency
      */
     public function inject(\ArrayAccess $valueBag)
     {
-        if (!$this->isCached) {
-            $this->isCached = true;
-            $this->cache = parent::inject($valueBag);
+        if (isset($valueBag[$this->key])) {
+            return $valueBag[$this->key];
         }
-        return $this->cache;
+
+        $value = parent::inject($valueBag);
+        $valueBag[$this->key] = $value;
+
+        return $value;
     }
 }

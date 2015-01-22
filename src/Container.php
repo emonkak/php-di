@@ -124,7 +124,7 @@ class Container
      */
     public function factory($key, callable $target)
     {
-        return $this->definitions[$key] = new FactoryDefinition($target);
+        return $this->definitions[$key] = new FactoryDefinition($key, $target);
     }
 
     /**
@@ -134,8 +134,8 @@ class Container
      */
     public function set($key, $value)
     {
-        $this->valueBag[$key] = $value;
         $this->definitions[$key] = new ReferenceDependency($key);
+        $this->valueBag[$key] = $value;
     }
 
     /**

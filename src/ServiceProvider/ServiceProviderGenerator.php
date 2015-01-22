@@ -3,42 +3,36 @@
 namespace Emonkak\Di\ServiceProvider;
 
 use Emonkak\Di\Container;
+use Emonkak\Di\Dependency\DependencyInterface;
+use Emonkak\Di\Dependency\DependencyVistorInterface;
+use Emonkak\Di\Dependency\FactoryDependency;
+use Emonkak\Di\Dependency\ObjectDependency;
+use Emonkak\Di\Dependency\ReferenceDependency;
+use Emonkak\Di\Dependency\SingletonDependency;
 use Emonkak\Di\Injection\MethodInjection;
 use Emonkak\Di\Injection\PropertyInjection;
-use Emonkak\Di\Value\InjectableValueInterface;
-use Emonkak\Di\Value\InjectableValueVisitorInterface;
-use Emonkak\Di\Value\ObjectValueInterface;
-use Emonkak\Di\Value\ProviderValue;
-use Emonkak\Di\Value\SingletonValue;
 
-class ServiceProviderGenerator implements InjectableValueVisitorInterface
+class ServiceProviderGenerator implements DependencyVistorInterface
 {
-    private $container;
-
+    /**
+     * @var string[]
+     */
     private $definitions = [];
 
     /**
-     * @param Container $container
+     * {@inheritDoc}
      */
-    public function __construct(Container $container)
+    public function visitFactoryDependency(FactoryDependency $dependency)
     {
-        $this->container = $container;
+        return $dependency->getKey();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function visitValue(InjectableValueInterface $value)
+    public function visitObjectDependency(ObjectDependency $dependency)
     {
-        return $this->container->getKey($value);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function visitObjectValue(ObjectValueInterface $value)
-    {
-        $key = $this->container->getKey($value);
+        $key = $dependency->getKey();
         if (isset($this->definitions[$key])) {
             return $key;
         }
@@ -46,16 +40,16 @@ class ServiceProviderGenerator implements InjectableValueVisitorInterface
         $methodCalls = [];
         $propertySetters = [];
 
-        foreach ($value->getMethodInjections() as $methodInjection) {
-            $methodCalls[] = $this->dumpMethodCall($methodInjection);
+        foreach ($dependency->getMethodInjections() as $method => $parameters) {
+            $methodCalls[] = $this->dumpMethodCall($method, $parameters);
         }
 
-        foreach ($value->getPropertyInjections() as $properyInjection) {
-            $propertySetters[] = $this->dumpPropertySet($properyInjection);
+        foreach ($dependency->getPropertyInjections() as $propery => $value) {
+            $propertySetters[] = $this->dumpPropertySetter($propery, $value);
         }
 
         $procedures = implode("\n", array_merge(
-            [$this->dumpNewInstance($value)],
+            [$this->dumpNewInstance($dependency)],
             $methodCalls,
             $propertySetters,
             [$this->dumpReturn()]
@@ -67,7 +61,7 @@ $procedures
         }
 EOL;
 
-        if (!($value instanceof SingletonValue)) {
+        if (!($dependency instanceof SingletonDependency)) {
             $factory = '$c->factory(' . $factory . ')';
         }
 
@@ -76,6 +70,14 @@ EOL;
 EOL;
 
         return $key;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function visitReferenceDependency(ReferenceDependency $dependency)
+    {
+        return $dependency->getKey();
     }
 
     /**
@@ -102,20 +104,20 @@ EOL;
     }
 
     /**
-     * @param ObjectValueInterface $value
+     * @param ObjectDependency $dependency
      * @return string
      */
-    private function dumpNewInstance(ObjectValueInterface $value)
+    private function dumpNewInstance(ObjectDependency $dependency)
     {
         $paramExprs = [];
 
-        $constructorParameters = $value->getConstructorParameters();
-        foreach ($constructorParameters as $param) {
-            $paramKey = $param->accept($this);
+        $constructorParameters = $dependency->getConstructorParameters();
+        foreach ($constructorParameters as $parameter) {
+            $paramKey = $parameter->accept($this);
             $paramExprs[] = $this->dumpValueExpr($paramKey);
         }
 
-        $className = $value->getClassName();
+        $className = $dependency->getClassName();
         $joinedParamExprs = implode(', ', $paramExprs);
 
         return <<<EOL
@@ -124,38 +126,38 @@ EOL;
     }
 
     /**
-     * @param MethodInjection $methodInjection
+     * @param string                $method
+     * @param DependencyInterface[] $parameters
      * @return string
      */
-    private function dumpMethodCall(MethodInjection $methodInjection)
+    private function dumpMethodCall($method, array $parameters)
     {
         $paramExprs = [];
 
-        foreach ($methodInjection->getParameters() as $param) {
-            $paramKey = $param->accept($this);
+        foreach ($parameters as $parameter) {
+            $paramKey = $parameter->accept($this);
             $paramExprs[] = $this->dumpValueExpr($paramKey);
         }
 
-        $methodName = $methodInjection->getMethodName();
         $joinedParamExprs = implode(', ', $paramExprs);
 
         return <<<EOL
-            \$o->$methodName($joinedParamExprs);
+            \$o->$method($joinedParamExprs);
 EOL;
     }
 
     /**
-     * @param PropertyInjection $properyInjection
+     * @param string              $propery
+     * @param DependencyInterface $dependency
      * @return string
      */
-    private function dumpPropertySet(PropertyInjection $properyInjection)
+    private function dumpPropertySetter($propery, DependencyInterface $dependency)
     {
-        $properyKey = $properyInjection->getValue()->accept($this);
-        $properyExpr = $this->dumpValueExpr($properyKey);
-        $properyName = $properyInjection->getPropertyName();
+        $key = $dependency->accept($this);
+        $properyExpr = $this->dumpValueExpr($key);
 
         return <<<EOL
-            \$o->$properyName = $properyExpr;
+            \$o->$propery = $properyExpr;
 EOL;
     }
 

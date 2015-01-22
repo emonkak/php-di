@@ -3,6 +3,7 @@
 namespace Emonkak\Di\Benchmarks;
 
 use Pimple\Container;
+use Pimple\ServiceProviderInterface;
 use Athletic\AthleticEvent;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Emonkak\Di\Benchmarks\Fixtures\Bar;

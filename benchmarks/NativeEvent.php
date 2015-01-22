@@ -23,30 +23,6 @@ use Emonkak\Di\Injector;
 
 class NativeEvent extends AthleticEvent
 {
-    public function setUp()
-    {
-        $this->serialized = serialize(
-            new Foo(
-                new Bar(
-                    new Qux(
-                        new Garply()
-                    ),
-                    new Quux(
-                        new Waldo()
-                    )
-                ),
-                new Baz(
-                    new Corge(
-                        new Fred()
-                    ),
-                    new Grault(
-                        new Plugh()
-                    )
-                )
-            )
-        );
-    }
-
     /**
      * @iterations 1000
      */
@@ -70,15 +46,6 @@ class NativeEvent extends AthleticEvent
                 )
             )
         );
-        assert($foo instanceof Foo);
-    }
-
-    /**
-     * @iterations 1000
-     */
-    public function getWithSerialization()
-    {
-        $foo = unserialize($this->serialized);
         assert($foo instanceof Foo);
     }
 }

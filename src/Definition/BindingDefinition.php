@@ -11,6 +11,11 @@ class BindingDefinition extends AbstractDefinition
     /**
      * @var string
      */
+    private $key;
+
+    /**
+     * @var string
+     */
     private $target;
 
     /**
@@ -18,6 +23,7 @@ class BindingDefinition extends AbstractDefinition
      */
     public function __construct($target)
     {
+        $this->key = $target;
         $this->target = $target;
     }
 
@@ -46,6 +52,7 @@ class BindingDefinition extends AbstractDefinition
 
         $injectionFinder = $container->getInjectionFinder();
         return new ObjectDependency(
+            $this->key,
             $class->name,
             $injectionFinder->getConstructorParameters($class),
             $injectionFinder->getMethodInjections($class),

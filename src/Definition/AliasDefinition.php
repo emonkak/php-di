@@ -7,6 +7,9 @@ use Emonkak\Di\Scope\PrototypeScope;
 
 class AliasDefinition extends AbstractDefinition
 {
+    /**
+     * @var string
+     */
     private $target;
 
     /**

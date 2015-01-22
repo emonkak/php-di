@@ -10,13 +10,23 @@ use Emonkak\Di\Utils\ReflectionUtils;
 
 class FactoryDefinition extends AbstractDefinition
 {
+    /**
+     * @var string
+     */
+    private $key;
+
+    /**
+     * @var callable
+     */
     private $factory;
 
     /**
+     * @param stirng $key
      * @param callable $factory
      */
-    public function __construct(callable $factory)
+    public function __construct($key, callable $factory)
     {
+        $this->key = $key;
         $this->factory = $factory;
     }
 
@@ -29,6 +39,7 @@ class FactoryDefinition extends AbstractDefinition
         $function = ReflectionUtils::getFunction($this->factory);
 
         return new FactoryDependency(
+            $this->key,
             $this->factory,
             $finder->getParameterValues($function)
         );

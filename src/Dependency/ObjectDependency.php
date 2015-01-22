@@ -10,6 +10,11 @@ class ObjectDependency implements DependencyInterface
     /**
      * @var string
      */
+    protected $key;
+
+    /**
+     * @var string
+     */
     protected $className;
 
     /**
@@ -28,13 +33,15 @@ class ObjectDependency implements DependencyInterface
     protected $propertyInjections;
 
     /**
+     * @param string                $key
      * @param string                $className
      * @param DependencyInterface[] $constructorParameters
      * @param array                 $methodInjections      (string => DependencyInterface[])
      * @param array                 $propertyInjections    (string => DependencyInterface)
      */
-    public function __construct($className, array $constructorParameters, array $methodInjections, array $propertyInjections)
+    public function __construct($key, $className, array $constructorParameters, array $methodInjections, array $propertyInjections)
     {
+        $this->key = $key;
         $this->className = $className;
         $this->constructorParameters = $constructorParameters;
         $this->methodInjections = $methodInjections;
@@ -65,6 +72,14 @@ class ObjectDependency implements DependencyInterface
         }
 
         return $instance;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getKey()
+    {
+        return $this->key;
     }
 
     /**

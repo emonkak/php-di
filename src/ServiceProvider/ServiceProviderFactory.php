@@ -24,10 +24,8 @@ class ServiceProviderFactory
      * @param Container                      $container
      * @param ServiceProviderLoaderInterface $loader
      */
-    public function __construct(
-        Container $container,
-        ServiceProviderLoaderInterface $loader
-    ) {
+    public function __construct(Container $container, ServiceProviderLoaderInterface $loader)
+    {
         $this->container = $container;
         $this->loader = $loader;
     }
@@ -46,7 +44,7 @@ class ServiceProviderFactory
 
         if (!class_exists($className, false)) {
             if (!$this->loader->canLoad($className)) {
-                $generator = new ServiceProviderGenerator($this->container);
+                $generator = new ServiceProviderGenerator();
 
                 foreach ($serviceClasses as $serviceClass) {
                     $value = $this->container->get($serviceClass);

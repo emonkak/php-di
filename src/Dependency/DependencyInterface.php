@@ -11,8 +11,13 @@ interface DependencyInterface
     public function accept(DependencyVistorInterface $visitor);
 
     /**
-     * @param \ArrayAccess
+     * @param \ArrayAccess $valueBag
      * @return mixed
      */
     public function inject(\ArrayAccess $valueBag);
+
+    /**
+     * @return string
+     */
+    public function getKey();
 }
