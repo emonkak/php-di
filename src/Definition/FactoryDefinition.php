@@ -7,6 +7,7 @@ use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Scope\ScopeInterface;
 use Emonkak\Di\Scope\SingletonScope;
 use Emonkak\Di\Utils\ReflectionUtils;
+use SuperClosure\SerializableClosure;
 
 class FactoryDefinition extends AbstractDefinition
 {
@@ -38,9 +39,15 @@ class FactoryDefinition extends AbstractDefinition
         $finder = $container->getInjectionFinder();
         $function = ReflectionUtils::getFunction($this->factory);
 
+        if ($this->factory instanceof \Closure) {
+            $factory = new SerializableClosure($this->factory);
+        } else {
+            $factory = $this->factory;
+        }
+
         return new FactoryDependency(
             $this->key,
-            $this->factory,
+            $factory,
             $finder->getParameterValues($function)
         );
     }
