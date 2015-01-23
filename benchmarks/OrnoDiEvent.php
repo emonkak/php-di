@@ -10,11 +10,6 @@ use Orno\Di\Container;
 
 class OrnoDiEvent extends AthleticEvent
 {
-    public function setUp()
-    {
-        $this->cache = new Cache(new ApcAdapter());
-    }
-
     /**
      * @iterations 1000
      */
@@ -30,7 +25,7 @@ class OrnoDiEvent extends AthleticEvent
      */
     public function getWithCache()
     {
-        $container = new Container($this->cache);
+        $container = new Container(new Cache(new ApcAdapter()));
         $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);
     }

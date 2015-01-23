@@ -35,7 +35,7 @@ class SingletonScope implements ScopeInterface, DependencyVistorInterface
      */
     public function get(DependencyInterface $dependency)
     {
-        return $dependency->accept($this);
+        return $dependency->acceptVisitor($this);
     }
 
     /**

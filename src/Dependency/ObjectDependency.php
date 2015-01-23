@@ -2,6 +2,7 @@
 
 namespace Emonkak\Di\Dependency;
 
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Scope\ScopeInterface;
 use Emonkak\Di\Utils\ReflectionUtils;
 
@@ -51,7 +52,7 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function accept(DependencyVistorInterface $visitor)
+    public function acceptVisitor(DependencyVistorInterface $visitor)
     {
         return $visitor->visitObjectDependency($this);
     }
@@ -59,16 +60,44 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function inject(\ArrayAccess $valueBag)
+    public function acceptTraverser(DependencyTraverserInterface $traverser)
     {
-        $instance = $this->instantiate($valueBag);
+        yield $this->getKey() => $traverser->map($this);
+
+        foreach ($this->constructorParameters as $parameter) {
+            foreach ($parameter->acceptTraverser($traverser) as $key => $result) {
+                yield $key => $result;
+            }
+        }
 
         foreach ($this->methodInjections as $method => $parameters) {
-            $this->injectForMethod($instance, $method, $parameters, $valueBag);
+            foreach ($parameters as $parameter) {
+                foreach ($parameter->acceptTraverser($traverser) as $key => $result) {
+                    yield $key => $result;
+                }
+            }
         }
 
         foreach ($this->propertyInjections as $propery => $value) {
-            $this->injectForProperty($instance, $propery, $value, $valueBag);
+            foreach ($value->acceptTraverser($traverser) as $key => $result) {
+                yield $key => $result;
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function inject(ContainerInterface $container)
+    {
+        $instance = $this->instantiate($container);
+
+        foreach ($this->methodInjections as $method => $parameters) {
+            $this->injectForMethod($instance, $method, $parameters, $container);
+        }
+
+        foreach ($this->propertyInjections as $propery => $value) {
+            $this->injectForProperty($instance, $propery, $value, $container);
         }
 
         return $instance;
@@ -80,6 +109,14 @@ class ObjectDependency implements DependencyInterface
     public function getKey()
     {
         return $this->key;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isSingleton()
+    {
+        return false;
     }
 
     /**
@@ -115,13 +152,14 @@ class ObjectDependency implements DependencyInterface
     }
 
     /**
+     * @param ContainerInterface $container
      * @return mixed
      */
-    private function instantiate(\ArrayAccess $valueBag)
+    private function instantiate(ContainerInterface $container)
     {
         $args = [];
         foreach ($this->constructorParameters as $parameter) {
-            $args[] = $parameter->inject($valueBag);
+            $args[] = $parameter->inject($container);
         }
         return ReflectionUtils::newInstance($this->className, $args);
     }
@@ -130,13 +168,13 @@ class ObjectDependency implements DependencyInterface
      * @param mixed                 $instance
      * @param string                $method
      * @param DependencyInterface[] $parameters
-     * @param \ArrayAccess          $valueBag
+     * @param ContainerInterface    $container
      */
-    private function injectForMethod($instance, $method, array $parameters, \ArrayAccess $valueBag)
+    private function injectForMethod($instance, $method, array $parameters, ContainerInterface $container)
     {
         $args = [];
         foreach ($parameters as $parameter) {
-            $args[] = $parameter->inject($valueBag);
+            $args[] = $parameter->inject($container);
         }
         ReflectionUtils::callMethod($instance, $method, $args);
     }
@@ -145,10 +183,10 @@ class ObjectDependency implements DependencyInterface
      * @param mixed               $instance
      * @param string              $property
      * @param DependencyInterface $value
-     * @param \ArrayAccess        $valueBag
+     * @param ContainerInterface  $container
      */
-    private function injectForProperty($instance, $property, DependencyInterface $value, \ArrayAccess $valueBag)
+    private function injectForProperty($instance, $property, DependencyInterface $value, ContainerInterface $container)
     {
-        $instance->$property = $value->inject($valueBag);
+        $instance->$property = $value->inject($container);
     }
 }

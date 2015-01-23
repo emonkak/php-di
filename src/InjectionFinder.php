@@ -3,9 +3,6 @@
 namespace Emonkak\Di;
 
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
-use Emonkak\Di\Injection\MethodInjection;
-use Emonkak\Di\Injection\ParameterInjection;
-use Emonkak\Di\Injection\PropertyInjection;
 use Emonkak\Di\ValueResolver\ValueResolverInterface;
 
 class InjectionFinder
@@ -69,7 +66,7 @@ class InjectionFinder
 
     /**
      * @param \ReflectionFunctionAbstract $function
-     * @return InjectableValueInterface
+     * @return DependencyInterface[]
      */
     public function getParameterValues(\ReflectionFunctionAbstract $function)
     {

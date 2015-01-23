@@ -2,14 +2,14 @@
 
 namespace Emonkak\Di\Definition;
 
-use Emonkak\Di\Container;
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Value\InjectableValueInterface;
 
 interface DefinitionInterface
 {
     /**
-     * @param Container $container
+     * @param ContainerInterface $container
      * @return InjectableValueInterface
      */
-    public function get(Container $container);
+    public function get(ContainerInterface $container);
 }

@@ -2,13 +2,13 @@
 
 namespace Emonkak\Di\ValueResolver;
 
-use Emonkak\Di\Container;
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 
 class ContainerValueResolver implements ValueResolverInterface
 {
     /**
-     * @var Container
+     * @var ContainerInterface
      */
     private $container;
 
@@ -23,10 +23,10 @@ class ContainerValueResolver implements ValueResolverInterface
     private $fallback;
 
     /**
-     * @param Container              $container
+     * @param ContainerInterface     $container
      * @param ValueResolverInterface $fallback
      */
-    public function __construct(Container $container, ValueResolverInterface $fallback)
+    public function __construct(ContainerInterface $container, ValueResolverInterface $fallback)
     {
         $this->container = $container;
         $this->fallback = $fallback;

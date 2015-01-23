@@ -2,7 +2,8 @@
 
 namespace Emonkak\Di\ServiceProvider;
 
-use Emonkak\Di\Container;
+use Emonkak\Di\ContainerInterface;
+use Emonkak\Di\Dependency\DependencyInterface;
 use Pimple\ServiceProviderInterface;
 
 /**
@@ -11,9 +12,9 @@ use Pimple\ServiceProviderInterface;
 class ServiceProviderFactory
 {
     /**
-     * @var Container
+     * @var ServiceProviderGenerator
      */
-    private $container;
+    private $generator;
 
     /**
      * @var ServiceProviderLoaderInterface
@@ -21,42 +22,35 @@ class ServiceProviderFactory
     private $loader;
 
     /**
-     * @param Container                      $container
+     * @param ServiceProviderGenerator       $generator
      * @param ServiceProviderLoaderInterface $loader
+     * @param ContainerInterface             $container
      */
-    public function __construct(Container $container, ServiceProviderLoaderInterface $loader)
+    public function __construct(ServiceProviderGenerator $generator, ServiceProviderLoaderInterface $loader, ContainerInterface $container)
     {
-        $this->container = $container;
+        $this->generator = $generator;
         $this->loader = $loader;
+        $this->container = $container;
     }
 
     /**
      * Creates the instance of the service provider.
      *
-     * @param string[] $serviceClasses
-     * @param string   $serviceProviderClass
-     * @param string   $serviceProviderNamespace
+     * @param string $target
+     * @param string $serviceProviderClass
      * @return ServiceProviderInterface
      */
-    public function createInstance(array $serviceClasses, $serviceProviderClass, $serviceProviderNamespace = '')
+    public function create($target, $serviceProviderClass)
     {
-        $className = ltrim($serviceProviderNamespace . '\\' . $serviceProviderClass, '\\');
+        if (!class_exists($serviceProviderClass, false)) {
+            if (!$this->loader->canLoad($serviceProviderClass)) {
+                $dependency = $this->container->get($target);
+                $source = $this->generator->generate($serviceProviderClass, $dependency);
 
-        if (!class_exists($className, false)) {
-            if (!$this->loader->canLoad($className)) {
-                $generator = new ServiceProviderGenerator();
-
-                foreach ($serviceClasses as $serviceClass) {
-                    $value = $this->container->get($serviceClass);
-                    $value->accept($generator);
-                }
-
-                $source = $generator->generate($serviceProviderClass, $serviceProviderNamespace);
-
-                $this->loader->write($className, $source);
+                $this->loader->write($serviceProviderClass, $source);
             }
 
-            $this->loader->load($className);
+            $this->loader->load($serviceProviderClass);
         }
 
         return new $serviceProviderClass();

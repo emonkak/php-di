@@ -20,7 +20,6 @@ class BrickDiEvent extends AthleticEvent
     }
 }
 
-
 class MyPolicy implements InjectionPolicy
 {
     /**

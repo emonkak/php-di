@@ -10,15 +10,6 @@ use Ray\Di\CacheInjector;
 
 class RayDiEvent extends AthleticEvent
 {
-    public function setUp()
-    {
-        $this->cache = new ApcCache();
-        $this->initialization = function() {};
-        $this->injectorProvider = function() {
-            return Injector::create();
-        };
-    }
-
     /**
      * @iterations 1000
      */
@@ -34,7 +25,14 @@ class RayDiEvent extends AthleticEvent
      */
     public function getWithCache()
     {
-        $injector = new CacheInjector($this->injectorProvider, $this->initialization, 'cache-namespace', $this->cache);
+        $injector = new CacheInjector(
+            function() {
+                return Injector::create();
+            },
+            function() {},
+            'ray-di',
+            new ApcCache()
+        );
         $foo = $injector->getInstance('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);
     }

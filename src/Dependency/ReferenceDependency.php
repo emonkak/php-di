@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Dependency;
 
-use Emonkak\Di\Container;
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Definition\DefinitionInterface;
 
 class ReferenceDependency implements DefinitionInterface, DependencyInterface
@@ -23,7 +23,7 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function accept(DependencyVistorInterface $visitor)
+    public function acceptVisitor(DependencyVistorInterface $visitor)
     {
         return $visitor->visitReferenceDependency($this);
     }
@@ -31,15 +31,23 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function inject(\ArrayAccess $valueBag)
+    public function acceptTraverser(DependencyTraverserInterface $traverser)
     {
-        return $valueBag[$this->key];
+        yield $this->getKey() => $traverser->map($this);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function get(Container $container)
+    public function inject(ContainerInterface $container)
+    {
+        return $container->getInstance($this->key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function get(ContainerInterface $container)
     {
         return $this;
     }
@@ -50,5 +58,13 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     public function getKey()
     {
         return $this->key;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isSingleton()
+    {
+        return true;
     }
 }

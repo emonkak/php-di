@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Definition;
 
-use Emonkak\Di\Container;
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Scope\ScopeInterface;
 
@@ -39,7 +39,7 @@ class BindingDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolve(Container $container)
+    protected function resolve(ContainerInterface $container)
     {
         $class = new \ReflectionClass($this->target);
         $injectionPolicy = $container->getInjectionPolicy();
@@ -63,7 +63,7 @@ class BindingDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolveScope(Container $container)
+    protected function resolveScope(ContainerInterface $container)
     {
         $class = new \ReflectionClass($this->target);
         $injectionPolicy = $container->getInjectionPolicy();

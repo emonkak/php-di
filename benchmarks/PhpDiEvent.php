@@ -9,11 +9,6 @@ use DI\ContainerBuilder;
 
 class PhpDiEvent extends AthleticEvent
 {
-    public function setUp()
-    {
-        $this->cache = new ApcCache();
-    }
-
     /**
      * @iterations 1000
      */
@@ -31,7 +26,7 @@ class PhpDiEvent extends AthleticEvent
     public function getWithCache()
     {
         $builder = new ContainerBuilder();
-        $builder->setDefinitionCache($this->cache);
+        $builder->setDefinitionCache(new ApcCache());
         $container = $builder->build();
         $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);

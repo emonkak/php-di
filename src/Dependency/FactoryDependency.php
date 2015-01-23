@@ -2,6 +2,7 @@
 
 namespace Emonkak\Di\Dependency;
 
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Utils\ReflectionUtils;
 
 class FactoryDependency implements DependencyInterface
@@ -36,7 +37,7 @@ class FactoryDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function accept(DependencyVistorInterface $visitor)
+    public function acceptVisitor(DependencyVistorInterface $visitor)
     {
         return $visitor->visitFactoryDependency($this);
     }
@@ -44,11 +45,25 @@ class FactoryDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function inject(\ArrayAccess $valueBag)
+    public function acceptTraverser(DependencyTraverserInterface $traverser)
+    {
+        yield $this->getKey() => $traverser->map($this);
+
+        foreach ($this->parameters as $parameter) {
+            foreach ($parameter->acceptTraverser($traverser) as $result) {
+                yield $result;
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function inject(ContainerInterface $container)
     {
         $args = [];
         foreach ($this->parameters as $parameter) {
-            $args[] = $parameter->inject($valueBag);
+            $args[] = $parameter->inject($container);
         }
         return ReflectionUtils::callFunction($this->factory, $args);
     }
@@ -59,6 +74,14 @@ class FactoryDependency implements DependencyInterface
     public function getKey()
     {
         return $this->key;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isSingleton()
+    {
+        return false;
     }
 
     /**

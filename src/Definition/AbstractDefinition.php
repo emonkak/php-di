@@ -2,7 +2,8 @@
 
 namespace Emonkak\Di\Definition;
 
-use Emonkak\Di\Container;
+use Emonkak\Di\ContainerInterface;
+use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Scope\ScopeInterface;
 
 abstract class AbstractDefinition implements DefinitionInterface
@@ -23,10 +24,10 @@ abstract class AbstractDefinition implements DefinitionInterface
     }
 
     /**
-     * @param Container $container
-     * @return InjectableValueInterface
+     * @param ContainerInterface $container
+     * @return DependencyInterface
      */
-    public function get(Container $container)
+    public function get(ContainerInterface $container)
     {
         $scope = $this->scope ?: $this->resolveScope($container);
 
@@ -37,11 +38,11 @@ abstract class AbstractDefinition implements DefinitionInterface
      * @param Container $container
      * @return InjectableValueInterface
      */
-    abstract protected function resolve(Container $container);
+    abstract protected function resolve(ContainerInterface $container);
 
     /**
-     * @param Container $container
+     * @param ContainerInterface $container
      * @return ScopeInterface
      */
-    abstract protected function resolveScope(Container $container);
+    abstract protected function resolveScope(ContainerInterface $container);
 }

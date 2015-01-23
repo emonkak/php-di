@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Definition;
 
-use Emonkak\Di\Container;
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Scope\ScopeInterface;
 use Emonkak\Di\Scope\SingletonScope;
@@ -34,7 +34,7 @@ class FactoryDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    public function resolve(Container $container)
+    public function resolve(ContainerInterface $container)
     {
         $finder = $container->getInjectionFinder();
         $function = ReflectionUtils::getFunction($this->factory);
@@ -55,7 +55,7 @@ class FactoryDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolveScope(Container $container)
+    protected function resolveScope(ContainerInterface $container)
     {
         return SingletonScope::getInstance();
     }

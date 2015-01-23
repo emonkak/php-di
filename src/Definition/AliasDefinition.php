@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Definition;
 
-use Emonkak\Di\Container;
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Scope\PrototypeScope;
 
 class AliasDefinition extends AbstractDefinition
@@ -23,7 +23,7 @@ class AliasDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolve(Container $container)
+    protected function resolve(ContainerInterface $container)
     {
         return $container->get($this->target);
     }
@@ -31,7 +31,7 @@ class AliasDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolveScope(Container $container)
+    protected function resolveScope(ContainerInterface $container)
     {
         return PrototypeScope::getInstance();
     }

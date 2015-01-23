@@ -2,6 +2,8 @@
 
 namespace Emonkak\Di\Dependency;
 
+use Emonkak\Di\ContainerInterface;
+
 class SharedDependency extends FactoryDependency
 {
     /**
@@ -20,15 +22,23 @@ class SharedDependency extends FactoryDependency
     /**
      * {@inheritDoc}
      */
-    public function inject(\ArrayAccess $valueBag)
+    public function inject(ContainerInterface $container)
     {
-        if (isset($valueBag[$this->key])) {
-            return $valueBag[$this->key];
+        if ($container->hasInstance($this->key)) {
+            return $container->getInstance($this->key);
         }
 
-        $value = parent::inject($valueBag);
-        $valueBag[$this->key] = $value;
+        $instance = parent::inject($container);
+        $container->setInstance($this->key, $instance);
 
-        return $value;
+        return $instance;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isSingleton()
+    {
+        return true;
     }
 }
