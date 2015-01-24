@@ -36,7 +36,7 @@ abstract class AbstractDefinition implements DefinitionInterface
 
     /**
      * @param Container $container
-     * @return InjectableValueInterface
+     * @return DependencyInterface
      */
     abstract protected function resolve(ContainerInterface $container);
 

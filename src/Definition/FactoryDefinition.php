@@ -48,7 +48,7 @@ class FactoryDefinition extends AbstractDefinition
         return new FactoryDependency(
             $this->key,
             $factory,
-            $finder->getParameterValues($function)
+            $finder->getParameterDependencies($function)
         );
     }
 

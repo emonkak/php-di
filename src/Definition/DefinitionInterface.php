@@ -3,13 +3,13 @@
 namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\ContainerInterface;
-use Emonkak\Di\Value\InjectableValueInterface;
+use Emonkak\Di\Dependency\DependencyInterface;
 
 interface DefinitionInterface
 {
     /**
      * @param ContainerInterface $container
-     * @return InjectableValueInterface
+     * @return DependencyInterface
      */
     public function get(ContainerInterface $container);
 }

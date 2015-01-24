@@ -3,38 +3,43 @@
 namespace Emonkak\Di;
 
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
-use Emonkak\Di\ValueResolver\ValueResolverInterface;
+use Emonkak\Di\DependencyResolver\DependencyResolverInterface;
 
 class InjectionFinder
 {
-    private $valueResolver;
+    /**
+     * @var DependencyResolverInterface
+     */
+    private $dependencyResolver;
+
+    /**
+     * @var InjectionPolicyInterface
+     */
     private $injectionPolicy;
 
     /**
-     * @param ValueResolverInterface   $valueResolver
-     * @param InjectionPolicyInterface $injectionPolicy
+     * @param DependencyResolverInterface $dependencyResolver
+     * @param InjectionPolicyInterface    $injectionPolicy
      */
-    public function __construct(
-        ValueResolverInterface $valueResolver,
-        InjectionPolicyInterface $injectionPolicy
-    ) {
-        $this->valueResolver = $valueResolver;
+    public function __construct(DependencyResolverInterface $dependencyResolver, InjectionPolicyInterface $injectionPolicy)
+    {
+        $this->dependencyResolver = $dependencyResolver;
         $this->injectionPolicy = $injectionPolicy;
     }
 
     /**
      * @param \ReflectionClass $class
-     * @return MethodInjection|null
+     * @return DependencyInterface[]
      */
     public function getConstructorParameters(\ReflectionClass $class)
     {
         $constructor = $class->getConstructor();
-        return $constructor ? $this->getParameterValues($constructor) : [];
+        return $constructor ? $this->getParameterDependencies($constructor) : [];
     }
 
     /**
      * @param \ReflectionClass $class
-     * @return MethodInjection[]
+     * @return DependencyInterface[]
      */
     public function getMethodInjections(\ReflectionClass $class)
     {
@@ -42,7 +47,7 @@ class InjectionFinder
 
         $methods = $this->injectionPolicy->getInjectableMethods($class);
         foreach ($methods as $method) {
-            $injections[$method->name] = $this->getParameterValues($method);
+            $injections[$method->name] = $this->getParameterDependencies($method);
         }
 
         return $injections;
@@ -50,7 +55,7 @@ class InjectionFinder
 
     /**
      * @param \ReflectionClass $class
-     * @return PropertyInjection[]
+     * @return DependencyInterface[]
      */
     public function getPropertyInjections(\ReflectionClass $class)
     {
@@ -58,7 +63,10 @@ class InjectionFinder
 
         $properties = $this->injectionPolicy->getInjectableProperties($class);
         foreach ($properties as $property) {
-            $injections[$property->name] = $this->getPropertyValue($property);
+            $dependency = $this->dependencyResolver->getPropertyDependency($property);
+            if ($dependency) {
+                $injections[$property->name] = $dependency;
+            }
         }
 
         return $injections;
@@ -68,37 +76,15 @@ class InjectionFinder
      * @param \ReflectionFunctionAbstract $function
      * @return DependencyInterface[]
      */
-    public function getParameterValues(\ReflectionFunctionAbstract $function)
+    public function getParameterDependencies(\ReflectionFunctionAbstract $function)
     {
-        $params = [];
+        $dependencies = [];
         foreach ($function->getParameters() as $param) {
-            $value = $this->valueResolver->getParameterValue($param);
-            if ($value === null) {
-                throw new \LogicException(sprintf(
-                    'Parameter "$%s" of "%s()" can not be resolved.',
-                    $param->name,
-                    $function->name
-                ));
+            $dependency = $this->dependencyResolver->getParameterDependency($param);
+            if ($dependency) {
+                $dependencies[] = $dependency;
             }
-            $params[] = $value;
         }
-        return $params;
-    }
-
-    /**
-     * @param \ReflectionMethod $mehtod
-     * @return PropertyInjection
-     */
-    private function getPropertyValue(\ReflectionProperty $property)
-    {
-        $value = $this->valueResolver->getPropertyValue($property);
-        if ($value === null) {
-            throw new \LogicException(sprintf(
-                'Property "%s::$%s" can not be resolved.',
-                $property->getDeclaringClass()->name,
-                $property->name
-            ));
-        }
-        return $value;
+        return $dependencies;
     }
 }

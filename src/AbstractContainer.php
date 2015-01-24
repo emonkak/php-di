@@ -7,19 +7,18 @@ use Emonkak\Di\Definition\AliasDefinition;
 use Emonkak\Di\Definition\BindingDefinition;
 use Emonkak\Di\Definition\DefinitionInterface;
 use Emonkak\Di\Definition\FactoryDefinition;
+use Emonkak\Di\DependencyResolver\ContainerDependencyResolver;
+use Emonkak\Di\DependencyResolver\DependencyResolverInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\ReferenceDependency;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
-use Emonkak\Di\ValueResolver\ContainerValueResolver;
-use Emonkak\Di\ValueResolver\DefaultValueResolver;
-use Emonkak\Di\ValueResolver\ValueResolverInterface;
 
 abstract class AbstractContainer implements ContainerInterface
 {
     /**
-     * @var ValueResolverInterface
+     * @var DependencyResolverInterface
      */
-    private $valueResolver;
+    private $dependencyResolver;
 
     /**
      * @var InjectionFinder
@@ -47,8 +46,8 @@ abstract class AbstractContainer implements ContainerInterface
      */
     public function __construct(InjectionPolicyInterface $injectionPolicy, Cache $cache)
     {
-        $this->valueResolver = new ContainerValueResolver($this, new DefaultValueResolver());
-        $this->injectionFinder = new InjectionFinder($this->valueResolver, $injectionPolicy);
+        $this->dependencyResolver = new ContainerDependencyResolver($this);
+        $this->injectionFinder = new InjectionFinder($this->dependencyResolver, $injectionPolicy);
         $this->injectionPolicy = $injectionPolicy;
         $this->cache = $cache;
     }
