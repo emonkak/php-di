@@ -3,6 +3,7 @@
 namespace Emonkak\Di\InjectionPolicy;
 
 use Composer\Autoload\ClassLoader;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 use Emonkak\Di\Annotations\Inject;
@@ -18,6 +19,14 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
 
     private $reader;
 
+    /**
+     * @return AnnotationInjectionPolicy
+     */
+    public static function create()
+    {
+        return new self(new DefaultInjectionPolicy(), new AnnotationReader());
+    }
+
     private static function registerLoader()
     {
         if (!self::$isRegistered) {
@@ -28,6 +37,10 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
         }
     }
 
+    /**
+     * @param InjectionPolicyInterface $fallback
+     * @param Reader                   $reader
+     */
     public function __construct(InjectionPolicyInterface $fallback, Reader $reader)
     {
         self::registerLoader();
