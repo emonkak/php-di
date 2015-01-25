@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Dependency;
 
-interface DependencyVistorInterface
+interface DependencyVisitorInterface
 {
     /**
      * @param FactoryDependency $dependency

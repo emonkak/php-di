@@ -7,16 +7,10 @@ use Emonkak\Di\ContainerInterface;
 interface DependencyInterface
 {
     /**
-     * @param DependencyVistorInterface $visitor
+     * @param DependencyVisitorInterface $visitor
      * @return mixed
      */
-    public function acceptVisitor(DependencyVistorInterface $visitor);
-
-    /**
-     * @param DependencyTraverserInterface $traverser
-     * @return mixed
-     */
-    public function acceptTraverser(DependencyTraverserInterface $traverser);
+    public function accept(DependencyVisitorInterface $visitor);
 
     /**
      * @param ContainerInterface $container
@@ -28,6 +22,16 @@ interface DependencyInterface
      * @return string
      */
     public function getKey();
+
+    /**
+     * @return \Iterator
+     */
+    public function getDependencies();
+
+    /**
+     * @return \Iterator
+     */
+     public function enumerate();
 
     /**
      * @return boolean

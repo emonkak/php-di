@@ -3,14 +3,14 @@
 namespace Emonkak\Di\Scope;
 
 use Emonkak\Di\Dependency\DependencyInterface;
-use Emonkak\Di\Dependency\DependencyVistorInterface;
+use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Dependency\ReferenceDependency;
 use Emonkak\Di\Dependency\SharedDependency;
 use Emonkak\Di\Dependency\SingletonDependency;
 
-class SingletonScope implements ScopeInterface, DependencyVistorInterface
+class SingletonScope implements ScopeInterface, DependencyVisitorInterface
 {
     /**
      * Gets the singleton instance of this classs.
@@ -35,7 +35,7 @@ class SingletonScope implements ScopeInterface, DependencyVistorInterface
      */
     public function get(DependencyInterface $dependency)
     {
-        return $dependency->acceptVisitor($this);
+        return $dependency->accept($this);
     }
 
     /**

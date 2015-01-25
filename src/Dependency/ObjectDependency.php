@@ -52,37 +52,9 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function acceptVisitor(DependencyVistorInterface $visitor)
+    public function accept(DependencyVisitorInterface $visitor)
     {
         return $visitor->visitObjectDependency($this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function acceptTraverser(DependencyTraverserInterface $traverser)
-    {
-        yield $this->getKey() => $traverser->map($this);
-
-        foreach ($this->constructorParameters as $parameter) {
-            foreach ($parameter->acceptTraverser($traverser) as $key => $result) {
-                yield $key => $result;
-            }
-        }
-
-        foreach ($this->methodInjections as $method => $parameters) {
-            foreach ($parameters as $parameter) {
-                foreach ($parameter->acceptTraverser($traverser) as $key => $result) {
-                    yield $key => $result;
-                }
-            }
-        }
-
-        foreach ($this->propertyInjections as $propery => $value) {
-            foreach ($value->acceptTraverser($traverser) as $key => $result) {
-                yield $key => $result;
-            }
-        }
     }
 
     /**
@@ -109,6 +81,54 @@ class ObjectDependency implements DependencyInterface
     public function getKey()
     {
         return $this->key;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDependencies()
+    {
+        foreach ($this->constructorParameters as $parameter) {
+            yield $parameter;
+        }
+
+        foreach ($this->methodInjections as $method => $parameters) {
+            foreach ($parameters as $parameter) {
+                yield $parameter;
+            }
+        }
+
+        foreach ($this->propertyInjections as $propery => $value) {
+            yield $value;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function enumerate()
+    {
+        yield $this->key => $this;
+
+        foreach ($this->constructorParameters as $parameter) {
+            foreach ($parameter->enumerate() as $key => $dependency) {
+                yield $key => $dependency;
+            }
+        }
+
+        foreach ($this->methodInjections as $method => $parameters) {
+            foreach ($parameters as $parameter) {
+                foreach ($parameter->enumerate() as $key => $dependency) {
+                    yield $key => $dependency;
+                }
+            }
+        }
+
+        foreach ($this->propertyInjections as $propery => $value) {
+            foreach ($value->enumerate() as $key => $dependency) {
+                yield $key => $dependency;
+            }
+        }
     }
 
     /**

@@ -23,7 +23,7 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function acceptVisitor(DependencyVistorInterface $visitor)
+    public function accept(DependencyVisitorInterface $visitor)
     {
         return $visitor->visitReferenceDependency($this);
     }
@@ -31,9 +31,9 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function acceptTraverser(DependencyTraverserInterface $traverser)
+    public function enumerate()
     {
-        yield $this->getKey() => $traverser->map($this);
+        yield $this->key => $this;
     }
 
     /**
@@ -58,6 +58,14 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     public function getKey()
     {
         return $this->key;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDependencies()
+    {
+        return new \EmptyIterator();
     }
 
     /**

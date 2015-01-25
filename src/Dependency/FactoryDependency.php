@@ -37,23 +37,9 @@ class FactoryDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function acceptVisitor(DependencyVistorInterface $visitor)
+    public function accept(DependencyVisitorInterface $visitor)
     {
         return $visitor->visitFactoryDependency($this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function acceptTraverser(DependencyTraverserInterface $traverser)
-    {
-        yield $this->getKey() => $traverser->map($this);
-
-        foreach ($this->parameters as $parameter) {
-            foreach ($parameter->acceptTraverser($traverser) as $result) {
-                yield $result;
-            }
-        }
     }
 
     /**
@@ -74,6 +60,30 @@ class FactoryDependency implements DependencyInterface
     public function getKey()
     {
         return $this->key;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDependencies()
+    {
+        foreach ($this->parameters as $parameter) {
+            yield $parameter;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function enumerate()
+    {
+        yield $this->key => $this;
+
+        foreach ($this->parameters as $parameter) {
+            foreach ($parameter->enumerate() as $key => $dependency) {
+                yield $key => $dependency;
+            }
+        }
     }
 
     /**

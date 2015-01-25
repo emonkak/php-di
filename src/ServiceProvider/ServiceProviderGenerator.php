@@ -3,13 +3,12 @@
 namespace Emonkak\Di\ServiceProvider;
 
 use Emonkak\Di\Dependency\DependencyInterface;
-use Emonkak\Di\Dependency\DependencyVistorInterface;
-use Emonkak\Di\Dependency\DependencyTraverserInterface;
+use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Dependency\ReferenceDependency;
 
-class ServiceProviderGenerator implements DependencyVistorInterface, DependencyTraverserInterface, ServiceProviderGeneratorInterface
+class ServiceProviderGenerator implements DependencyVisitorInterface, ServiceProviderGeneratorInterface
 {
     /**
      * {@inheritDoc}
@@ -18,9 +17,12 @@ class ServiceProviderGenerator implements DependencyVistorInterface, DependencyT
     {
         $definitions = [];
 
-        foreach ($dependency->acceptTraverser($this) as $key => $expr) {
-            if (!empty($expr)) {
-                $definitions[$key] = $expr;
+        foreach ($dependency->enumerate() as $key => $dep) {
+            if (!isset($definitions[$key])) {
+                $expr = $dep->accept($this);
+                if (!empty($expr)) {
+                    $definitions[$key] = $expr;
+                }
             }
         }
 
@@ -45,14 +47,6 @@ $joinedServiceDefinitions
 EOL;
 
         return $namespacePart . $classPart;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function map(DependencyInterface $dependency)
-    {
-        return $dependency->acceptVisitor($this);
     }
 
     /**
