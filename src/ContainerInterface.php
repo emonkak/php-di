@@ -2,7 +2,6 @@
 
 namespace Emonkak\Di;
 
-use Doctrine\Common\Cache\Cache;
 use Emonkak\Di\Definition\AliasDefinition;
 use Emonkak\Di\Definition\BindingDefinition;
 use Emonkak\Di\Definition\FactoryDefinition;

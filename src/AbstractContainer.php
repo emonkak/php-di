@@ -2,7 +2,6 @@
 
 namespace Emonkak\Di;
 
-use Doctrine\Common\Cache\Cache;
 use Emonkak\Di\Definition\AliasDefinition;
 use Emonkak\Di\Definition\BindingDefinition;
 use Emonkak\Di\Definition\DefinitionInterface;
@@ -36,15 +35,15 @@ abstract class AbstractContainer implements ContainerInterface
     private $definitions = [];
 
     /**
-     * @var Cache
+     * @var \ArrayAccess
      */
     private $cache;
 
     /**
      * @param InjectionPolicyInterface $injectionPolicy
-     * @param Cache                    $cache
+     * @param \ArrayAccess             $cache
      */
-    public function __construct(InjectionPolicyInterface $injectionPolicy, Cache $cache)
+    public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache)
     {
         $this->dependencyResolver = new ContainerDependencyResolver($this);
         $this->injectionFinder = new InjectionFinder($this->dependencyResolver, $injectionPolicy);
@@ -105,8 +104,8 @@ abstract class AbstractContainer implements ContainerInterface
      */
     public function get($key)
     {
-        if ($this->cache->contains($key)) {
-            return $this->cache->fetch($key);
+        if (isset($this->cache[$key])) {
+            return $this->cache[$key];
         }
 
         if (isset($this->definitions[$key])) {
@@ -121,7 +120,7 @@ abstract class AbstractContainer implements ContainerInterface
         }
 
         $dependency = $definition->get($this);
-        $this->cache->save($key, $dependency);
+        $this->cache[$key] = $dependency;
 
         return $dependency;
     }
@@ -140,6 +139,6 @@ abstract class AbstractContainer implements ContainerInterface
      */
     public function has($key)
     {
-        return $this->cache->contains($key) || isset($this->definitions[$key]) || class_exists($key);
+        return isset($this->cache[$key]) || isset($this->definitions[$key]) || class_exists($key);
     }
 }

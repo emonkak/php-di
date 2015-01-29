@@ -2,15 +2,13 @@
 
 namespace Emonkak\Di;
 
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\Cache;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\ServiceProvider\ServiceProviderFactory;
 use Emonkak\Di\ServiceProvider\ServiceProviderGenerator;
 use Emonkak\Di\ServiceProvider\ServiceProviderGeneratorInterface;
 use Emonkak\Di\ServiceProvider\ServiceProviderLoaderInterface;
-use Emonkak\Di\ServiceProvider\ServiceProviderLoaderOnMemory;
+use Emonkak\Di\ServiceProvider\ServiceProviderLoader;
 use Pimple\Container as Pimple;
 
 class PimpleContainer extends AbstractContainer
@@ -32,21 +30,21 @@ class PimpleContainer extends AbstractContainer
     {
         return new self(
             new DefaultInjectionPolicy(),
-            new ArrayCache(),
+            new \ArrayObject(),
             new Pimple(),
             new ServiceProviderGenerator(),
-            new ServiceProviderLoaderOnMemory()
+            ServiceProviderLoader::create()
         );
     }
 
     /**
      * @param InjectionPolicyInterface          $injectionPolicy
-     * @param Cache                             $cache
+     * @param \ArrayAccess                      $cache
      * @param Pimple                            $container
      * @param ServiceProviderGeneratorInterface $serviceProviderGenerator
      * @param ServiceProviderLoaderInterface    $serviceProviderLoader
      */
-    public function __construct(InjectionPolicyInterface $injectionPolicy, Cache $cache, Pimple $container, ServiceProviderGeneratorInterface $serviceProviderGenerator, ServiceProviderLoaderInterface $serviceProviderLoader)
+    public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache, Pimple $container, ServiceProviderGeneratorInterface $serviceProviderGenerator, ServiceProviderLoaderInterface $serviceProviderLoader)
     {
         parent::__construct($injectionPolicy, $cache);
 

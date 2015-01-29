@@ -29,7 +29,7 @@ class ServiceProviderLoaderOnFilesystem implements ServiceProviderLoaderInterfac
     }
 
     /**
-     * @param string      $dir The directory where to put the service provider
+     * @param string      $dir        The directory where to put the service provider
      * @param Filesystem  $filesystem
      */
     public function __construct($dir, Filesystem $filesystem = null)

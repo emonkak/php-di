@@ -2,8 +2,6 @@
 
 namespace Emonkak\Di;
 
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\Cache;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 
@@ -12,26 +10,26 @@ class Container extends AbstractContainer
     /**
      * @var \ArrayAcccess
      */
-    private $instancePool;
+    private $pool;
 
     /**
      * @return Container
      */
     public static function create()
     {
-        return new self(new DefaultInjectionPolicy(), new ArrayCache(), new \ArrayObject());
+        return new self(new DefaultInjectionPolicy(), new \ArrayObject(), new \ArrayObject());
     }
 
     /**
      * @param InjectionPolicyInterface $injectionPolicy
-     * @param Cache                    $cache
-     * @param \ArrayAccess             $instancePool
+     * @param \ArrayAccess             $cache
+     * @param \ArrayAccess             $pool
      */
-    public function __construct(InjectionPolicyInterface $injectionPolicy, Cache $cache, \ArrayAccess $instancePool)
+    public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache, \ArrayAccess $pool)
     {
         parent::__construct($injectionPolicy, $cache);
 
-        $this->instancePool = $instancePool;
+        $this->pool = $pool;
     }
 
     /**
@@ -40,7 +38,7 @@ class Container extends AbstractContainer
      */
     public function setInstance($key, $value)
     {
-        $this->instancePool[$key] = $value;
+        $this->pool[$key] = $value;
     }
 
     /**
@@ -49,8 +47,8 @@ class Container extends AbstractContainer
      */
     public function getInstance($key)
     {
-        if (isset($this->instancePool[$key])) {
-            return $this->instancePool[$key];
+        if (isset($this->pool[$key])) {
+            return $this->pool[$key];
         }
 
         return $this->get($key)->inject($this);
@@ -62,6 +60,6 @@ class Container extends AbstractContainer
      */
     public function hasInstance($key)
     {
-        return isset($this->instancePool[$key]);
+        return isset($this->pool[$key]);
     }
 }

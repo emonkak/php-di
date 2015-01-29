@@ -23,7 +23,6 @@
     ],
     "require": {
         "php": ">=5.4",
-        "doctrine/cache": "~1.3",
         "jeremeamia/SuperClosure": ">=1.0"
     },
     "require-dev": {

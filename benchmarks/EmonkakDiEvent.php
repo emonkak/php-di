@@ -3,13 +3,15 @@
 namespace Emonkak\Di\Benchmarks;
 
 use Athletic\AthleticEvent;
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\ChainCache;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
+use Emonkak\Di\Cache\ApcCache;
+use Emonkak\Di\Cache\FilesystemCache;
 use Emonkak\Di\Container;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\PimpleContainer;
+use Emonkak\Di\ServiceProvider\ServiceProviderGenerator;
+use Emonkak\Di\ServiceProvider\ServiceProviderLoader;
+use Pimple\Container as Pimple;
 
 class EmonkakDiEvent extends AthleticEvent
 {
@@ -30,7 +32,7 @@ class EmonkakDiEvent extends AthleticEvent
     {
         $container = new Container(
             new DefaultInjectionPolicy(),
-            new ChainCache([new ArrayCache(), new ApcCache()]),
+            new ApcCache('container'),
             new \ArrayObject()
         );
         $foo = $container->getInstance('Emonkak\Di\Benchmarks\Fixtures\Foo');

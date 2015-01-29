@@ -2,22 +2,28 @@
 
 namespace Emonkak\Di\ServiceProvider;
 
-use Doctrine\Common\Cache\Cache;
-
 /**
  * The service provider loader on a cache.
  */
-class ServiceProviderLoaderOnCache implements ServiceProviderLoaderInterface
+class ServiceProviderLoader implements ServiceProviderLoaderInterface
 {
     /**
-     * @var Cache $cahce
+     * @var \ArrayAccess
      */
     private $cache;
 
     /**
-     * @param Cache $cache
+     * @return ServiceProviderLoader
      */
-    public function __construct(Cache $cache)
+    public static function create()
+    {
+        return new self(new \ArrayObject());
+    }
+
+    /**
+     * @param \ArrayAccess $cache
+     */
+    public function __construct(\ArrayAccess $cache)
     {
         $this->cache = $cache;
     }
@@ -27,9 +33,9 @@ class ServiceProviderLoaderOnCache implements ServiceProviderLoaderInterface
      */
     public function load($className)
     {
-        $source = $this->cache->fetch($className);
+        $source = $this->cache[$className];
 
-        if ($source === false) {
+        if (!is_string($source)) {
             throw new \RuntimeException(
                 sprintf('Failed to load "%s" because the cache does not exist.', $className)
             );
@@ -43,7 +49,7 @@ class ServiceProviderLoaderOnCache implements ServiceProviderLoaderInterface
      */
     public function canLoad($className)
     {
-        return $this->cache->contains($className);
+        return isset($this->cache[$className]);
     }
 
     /**
@@ -51,10 +57,6 @@ class ServiceProviderLoaderOnCache implements ServiceProviderLoaderInterface
      */
     public function write($className, $source)
     {
-        $result = $this->cache->save($className, $source);
-
-        if (!$result) {
-            throw new \RuntimeException('Failed to store the source to the cache.');
-        }
+        $this->cache[$className] = $source;
     }
 }
