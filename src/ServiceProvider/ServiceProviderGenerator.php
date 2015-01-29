@@ -67,7 +67,7 @@ EOL;
 
         $arguments = $this->dumpArguments($dependency->getParameters());
         $joinedStatements = <<<EOL
-            return \$c['$factoryKey']($arguments);
+                return \$c['$factoryKey']($arguments);
 EOL;
 
         return $factoryDefinition . "\n" . $this->dumpServiceDefinition($dependency, $joinedStatements);
