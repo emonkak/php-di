@@ -21,9 +21,14 @@ class UmlGenerator implements DependencyVisitorInterface
         $edges = [];
         $traversed = [];
 
-        foreach ($dependency->enumerate() as $key => $dep) {
+        $dependency->traverse(function($dependency, $key) use (
+            &$clusters,
+            &$nodes,
+            &$edges,
+            &$traversed
+        ) {
             if (!isset($traversed[$key])) {
-                $item = $dep->accept($this);
+                $item = $dependency->accept($this);
 
                 if ($item['namespace'] !== '') {
                     $fragments = [];
@@ -50,7 +55,7 @@ class UmlGenerator implements DependencyVisitorInterface
                 $edges = array_merge($edges, $item['edges']);
                 $traversed[$key] = true;
             }
-        }
+        });
 
         foreach ($clusters['children'] as $cluster) {
             $nodes[] = $this->showSubgraph($cluster);

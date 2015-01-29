@@ -24,14 +24,14 @@ interface DependencyInterface
     public function getKey();
 
     /**
-     * @return \Iterator
+     * @return DependencyInterface[]
      */
     public function getDependencies();
 
     /**
-     * @return \Iterator
+     * @param callable $callback (dependency, key) => ()
      */
-     public function enumerate();
+     public function traverse(callable $callback);
 
     /**
      * @return boolean

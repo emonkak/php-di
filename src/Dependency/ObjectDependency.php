@@ -88,46 +88,34 @@ class ObjectDependency implements DependencyInterface
      */
     public function getDependencies()
     {
-        foreach ($this->constructorParameters as $parameter) {
-            yield $parameter;
-        }
+        $dependencies = $this->constructorParameters;
 
         foreach ($this->methodInjections as $method => $parameters) {
-            foreach ($parameters as $parameter) {
-                yield $parameter;
-            }
+            $dependencies = array_merge($dependencies, array_values($parameters));
         }
 
-        foreach ($this->propertyInjections as $propery => $value) {
-            yield $value;
-        }
+        return array_merge($dependencies, array_values($this->propertyInjections));
     }
 
     /**
      * {@inheritDoc}
      */
-    public function enumerate()
+    public function traverse(callable $callback)
     {
-        yield $this->key => $this;
+        $callback($this, $this->key);
 
         foreach ($this->constructorParameters as $parameter) {
-            foreach ($parameter->enumerate() as $key => $dependency) {
-                yield $key => $dependency;
-            }
+            $parameter->traverse($callback);
         }
 
         foreach ($this->methodInjections as $method => $parameters) {
             foreach ($parameters as $parameter) {
-                foreach ($parameter->enumerate() as $key => $dependency) {
-                    yield $key => $dependency;
-                }
+                $parameter->traverse($callback);
             }
         }
 
         foreach ($this->propertyInjections as $propery => $value) {
-            foreach ($value->enumerate() as $key => $dependency) {
-                yield $key => $dependency;
-            }
+            $value->traverse($callback);
         }
     }
 

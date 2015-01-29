@@ -31,9 +31,9 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function enumerate()
+    public function traverse(callable $callback)
     {
-        yield $this->key => $this;
+        $callback($this, $this->key);
     }
 
     /**
@@ -65,7 +65,7 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
      */
     public function getDependencies()
     {
-        return new \EmptyIterator();
+        return [];
     }
 
     /**

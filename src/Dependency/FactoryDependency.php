@@ -67,22 +67,18 @@ class FactoryDependency implements DependencyInterface
      */
     public function getDependencies()
     {
-        foreach ($this->parameters as $parameter) {
-            yield $parameter;
-        }
+        return array_values($this->parameters);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function enumerate()
+    public function traverse(callable $callback)
     {
-        yield $this->key => $this;
+        $callback($this, $this->key);
 
         foreach ($this->parameters as $parameter) {
-            foreach ($parameter->enumerate() as $key => $dependency) {
-                yield $key => $dependency;
-            }
+             $parameter->traverse($callback);
         }
     }
 

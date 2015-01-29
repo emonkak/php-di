@@ -17,14 +17,14 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
     {
         $definitions = [];
 
-        foreach ($dependency->enumerate() as $key => $dep) {
+        $dependency->traverse(function($dependency, $key) use (&$definitions) {
             if (!isset($definitions[$key])) {
-                $expr = $dep->accept($this);
+                $expr = $dependency->accept($this);
                 if (!empty($expr)) {
                     $definitions[$key] = $expr;
                 }
             }
-        }
+        });
 
         $joinedServiceDefinitions = implode("\n", $definitions);
 
