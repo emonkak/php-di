@@ -64,9 +64,9 @@ class PimpleContainer extends AbstractContainer
     public function setInstance($key, $value)
     {
         if (method_exists($value, '__invoke')) {
-            $this->container = $this->container->protect($value);
+            $this->container[$key] = $this->container->protect($value);
         } else {
-            $this->container = $value;
+            $this->container[$key] = $value;
         }
     }
 
