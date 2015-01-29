@@ -1,6 +1,6 @@
 <?php
 
-namespace Emonkak\Di\ServiceProvider;
+namespace Emonkak\Di\Extras;
 
 /**
  * The service provider loader on a cache.

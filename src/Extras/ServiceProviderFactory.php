@@ -1,6 +1,6 @@
 <?php
 
-namespace Emonkak\Di\ServiceProvider;
+namespace Emonkak\Di\Extras;
 
 use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyInterface;

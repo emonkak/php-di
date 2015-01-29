@@ -1,6 +1,6 @@
 <?php
 
-namespace Emonkak\Di\Uml;
+namespace Emonkak\Di\Extras;
 
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\DependencyVisitorInterface;

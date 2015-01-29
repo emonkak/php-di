@@ -1,6 +1,6 @@
 <?php
 
-namespace Emonkak\Di\ServiceProvider;
+namespace Emonkak\Di\Extras;
 
 /**
  * Provides a loading of the service provider that is automatically generated.

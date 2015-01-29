@@ -2,13 +2,13 @@
 
 namespace Emonkak\Di;
 
+use Emonkak\Di\Extras\ServiceProviderFactory;
+use Emonkak\Di\Extras\ServiceProviderGenerator;
+use Emonkak\Di\Extras\ServiceProviderGeneratorInterface;
+use Emonkak\Di\Extras\ServiceProviderLoader;
+use Emonkak\Di\Extras\ServiceProviderLoaderInterface;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
-use Emonkak\Di\ServiceProvider\ServiceProviderFactory;
-use Emonkak\Di\ServiceProvider\ServiceProviderGenerator;
-use Emonkak\Di\ServiceProvider\ServiceProviderGeneratorInterface;
-use Emonkak\Di\ServiceProvider\ServiceProviderLoaderInterface;
-use Emonkak\Di\ServiceProvider\ServiceProviderLoader;
 use Pimple\Container as Pimple;
 
 class PimpleContainer extends AbstractContainer

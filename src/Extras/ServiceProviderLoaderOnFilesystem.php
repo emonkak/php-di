@@ -1,6 +1,6 @@
 <?php
 
-namespace Emonkak\Di\ServiceProvider;
+namespace Emonkak\Di\Extras;
 
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
