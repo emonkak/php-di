@@ -62,4 +62,48 @@ class PimpleEvent extends AthleticEvent
         $foo = $container['Emonkak\Di\Benchmarks\Fixtures\Foo'];
         assert($foo instanceof Foo);
     }
+
+    /**
+     * @iterations 1000
+     */
+    public function getFactory()
+    {
+        $container = new Container();
+        $container['Emonkak\Di\Benchmarks\Fixtures\Foo'] = $container->factory(function($c) {
+            return new Foo($c['Emonkak\Di\Benchmarks\Fixtures\Bar'], $c['Emonkak\Di\Benchmarks\Fixtures\Baz']);
+        });
+        $container['Emonkak\Di\Benchmarks\Fixtures\Bar'] = $container->factory(function($c) {
+            return new Bar($c['Emonkak\Di\Benchmarks\Fixtures\Qux'], $c['Emonkak\Di\Benchmarks\Fixtures\Quux']);
+        });
+        $container['Emonkak\Di\Benchmarks\Fixtures\Baz'] = $container->factory(function($c) {
+            return new Baz($c['Emonkak\Di\Benchmarks\Fixtures\Corge'], $c['Emonkak\Di\Benchmarks\Fixtures\Grault']);
+        });
+        $container['Emonkak\Di\Benchmarks\Fixtures\Qux'] = $container->factory(function($c) {
+            return new Qux($c['Emonkak\Di\Benchmarks\Fixtures\Garply']);
+        });
+        $container['Emonkak\Di\Benchmarks\Fixtures\Quux'] = $container->factory(function($c) {
+            return new Quux($c['Emonkak\Di\Benchmarks\Fixtures\Waldo']);
+        });
+        $container['Emonkak\Di\Benchmarks\Fixtures\Corge'] = $container->factory(function($c) {
+            return new Corge($c['Emonkak\Di\Benchmarks\Fixtures\Fred']);
+        });
+        $container['Emonkak\Di\Benchmarks\Fixtures\Grault'] = $container->factory(function($c) {
+            return new Grault($c['Emonkak\Di\Benchmarks\Fixtures\Plugh']);
+        });
+        $container['Emonkak\Di\Benchmarks\Fixtures\Garply'] = $container->factory(function() {
+            return new Garply();
+        });
+        $container['Emonkak\Di\Benchmarks\Fixtures\Waldo'] = $container->factory(function() {
+            return new Waldo();
+        });
+        $container['Emonkak\Di\Benchmarks\Fixtures\Fred'] = $container->factory(function() {
+            return new Fred();
+        });
+        $container['Emonkak\Di\Benchmarks\Fixtures\Plugh'] = $container->factory(function() {
+            return new Plugh();
+        });
+
+        $foo = $container['Emonkak\Di\Benchmarks\Fixtures\Foo'];
+        assert($foo instanceof Foo);
+    }
 }

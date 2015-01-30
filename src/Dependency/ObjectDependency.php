@@ -62,14 +62,22 @@ class ObjectDependency implements DependencyInterface
      */
     public function inject(ContainerInterface $container)
     {
-        $instance = $this->instantiate($container);
+        $args = [];
+        foreach ($this->constructorParameters as $parameter) {
+            $args[] = $parameter->inject($container);
+        }
+        $instance = ReflectionUtils::newInstance($this->className, $args);
 
         foreach ($this->methodInjections as $method => $parameters) {
-            $this->injectForMethod($instance, $method, $parameters, $container);
+            $args = [];
+            foreach ($parameters as $parameter) {
+                $args[] = $parameter->inject($container);
+            }
+            ReflectionUtils::callMethod($instance, $method, $args);
         }
 
         foreach ($this->propertyInjections as $propery => $value) {
-            $this->injectForProperty($instance, $propery, $value, $container);
+            $instance->$property = $value->inject($container);
         }
 
         return $instance;
@@ -157,44 +165,5 @@ class ObjectDependency implements DependencyInterface
     public function getPropertyInjections()
     {
         return $this->propertyInjections;
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @return mixed
-     */
-    private function instantiate(ContainerInterface $container)
-    {
-        $args = [];
-        foreach ($this->constructorParameters as $parameter) {
-            $args[] = $parameter->inject($container);
-        }
-        return ReflectionUtils::newInstance($this->className, $args);
-    }
-
-    /**
-     * @param mixed                 $instance
-     * @param string                $method
-     * @param DependencyInterface[] $parameters
-     * @param ContainerInterface    $container
-     */
-    private function injectForMethod($instance, $method, array $parameters, ContainerInterface $container)
-    {
-        $args = [];
-        foreach ($parameters as $parameter) {
-            $args[] = $parameter->inject($container);
-        }
-        ReflectionUtils::callMethod($instance, $method, $args);
-    }
-
-    /**
-     * @param mixed               $instance
-     * @param string              $property
-     * @param DependencyInterface $value
-     * @param ContainerInterface  $container
-     */
-    private function injectForProperty($instance, $property, DependencyInterface $value, ContainerInterface $container)
-    {
-        $instance->$property = $value->inject($container);
     }
 }
