@@ -4,8 +4,8 @@ namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
+use Emonkak\Di\Scope\PrototypeScope;
 use Emonkak\Di\Scope\ScopeInterface;
-use Emonkak\Di\Scope\SingletonScope;
 use Emonkak\Di\Utils\ReflectionUtils;
 use SuperClosure\SerializableClosure;
 
@@ -57,6 +57,6 @@ class FactoryDefinition extends AbstractDefinition
      */
     protected function resolveScope(ContainerInterface $container)
     {
-        return SingletonScope::getInstance();
+        return PrototypeScope::getInstance();
     }
 }

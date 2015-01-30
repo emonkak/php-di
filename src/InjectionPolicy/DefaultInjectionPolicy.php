@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\InjectionPolicy;
 
-use Emonkak\Di\Scope\SingletonScope;
+use Emonkak\Di\Scope\PrototypeScope;
 
 class DefaultInjectionPolicy implements InjectionPolicyInterface
 {
@@ -44,7 +44,7 @@ class DefaultInjectionPolicy implements InjectionPolicyInterface
      */
     public function getScope(\ReflectionClass $class)
     {
-        return SingletonScope::getInstance();
+        return PrototypeScope::getInstance();
     }
 
     /**
