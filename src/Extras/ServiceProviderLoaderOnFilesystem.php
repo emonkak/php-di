@@ -81,7 +81,6 @@ class ServiceProviderLoaderOnFilesystem implements ServiceProviderLoaderInterfac
     private function toFilePath($className)
     {
         return $this->dir
-              . DIRECTORY_SEPARATOR
               . str_replace('\\', DIRECTORY_SEPARATOR, $className)
               . '.php';
     }
