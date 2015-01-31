@@ -34,6 +34,7 @@
         "doctrine/cache": "~1.4@dev",
         "facebook/xhprof": "dev-master",
         "mnapoli/php-di": "~4.4",
+        "nikic/php-parser": "~1.0",
         "orno/cache": "~1.0",
         "orno/di": "~2.3",
         "phpunit/phpunit": "~4.4",
@@ -45,9 +46,10 @@
         "tombzombie/dice": "dev-PHP5.4---PHP5.5"
     },
     "suggest": {
-        "doctrine/annotations": "",
-        "pimple/pimple": "",
-        "symfony/filesystem": ""
+        "doctrine/annotations": "Used for AnnotationInjectionPolicy",
+        "pimple/pimple": "Used for PimpleContainer",
+        "nikic/php-parser": "Used for ServiceProviderGenerator",
+        "symfony/filesystem": "Used for ServiceProviderLoaderOnFilesystem"
     },
     "autoload": {
         "psr-4": {

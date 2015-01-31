@@ -7,46 +7,85 @@ use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Dependency\ReferenceDependency;
+use PhpParser\BuilderFactory;
+use PhpParser\Node;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Name;
+use PhpParser\Node\Param;
+use PhpParser\Node\Scalar;
+use PhpParser\Node\Stmt;
+use PhpParser\PrettyPrinterAbstract;
+use PhpParser\PrettyPrinter\Standard as PrettyPrinterStandard;
 
 class ServiceProviderGenerator implements DependencyVisitorInterface, ServiceProviderGeneratorInterface
 {
+    /**
+     * @var PrettyPrinterAbstract
+     */
+    private $prettyPrinter;
+
+    /**
+     * @return ServiceProviderGenerator
+     */
+    public static function create()
+    {
+        return new self(new PrettyPrinterStandard());
+    }
+
+    /**
+     * @param PrettyPrinterAbstract $prettyPrinter
+     */
+    public function __construct(PrettyPrinterAbstract $prettyPrinter)
+    {
+        $this->prettyPrinter = $prettyPrinter;
+    }
+
     /**
      * {@inheritDoc}
      */
     public function generate($className, DependencyInterface $dependency)
     {
-        $definitions = [];
+        $ast = $this->generateAst($className, $dependency);
+        return $this->prettyPrinter->prettyPrint([$ast]);
+    }
 
-        $dependency->traverse(function($dependency, $key) use (&$definitions) {
-            if (!isset($definitions[$key])) {
-                $expr = $dependency->accept($this);
-                if (!empty($expr)) {
-                    $definitions[$key] = $expr;
+    /**
+     * @param string              $className
+     * @param DependencyInterface $dependency
+     * @return Node
+     */
+    public function generateAst($className, DependencyInterface $dependency)
+    {
+        $factory = new BuilderFactory();
+
+        $registerBuilder = $factory
+            ->method('register')
+            ->addParam($factory->param('c')
+            ->setTypeHint(new Name\FullyQualified('Pimple\Container')));
+        $traversed = [];
+
+        $dependency->traverse(function($dependency, $key) use (&$traversed, $registerBuilder) {
+            if (!isset($traversed[$key])) {
+                $stmts = $dependency->accept($this);
+                foreach ($stmts as $stmt) {
+                    $registerBuilder->addStmt($stmt);
                 }
+                $traversed[$key] = true;
             }
         });
 
-        $joinedServiceDefinitions = implode("\n", $definitions);
+        list ($namespace, $className) = $this->splitToNamesapceAndClass($className);
 
-        if ($lastNsPos = strrpos($className, '\\')) {
-            $namespace = substr($className, 0, $lastNsPos);
-            $namespacePart = "namespace $namespace;\n\n";
-            $className = substr($className, $lastNsPos + 1);
-        } else {
-            $namespacePart = '';
+        $classBuilder = $factory
+            ->class($className)
+            ->implement(new Name\FullyQualified('Pimple\ServiceProviderInterface'))
+            ->addStmt($registerBuilder);
+
+        if ($namespace !== '') {
+            $classBuilder = $factory->namespace($namespace)->addStmt($classBuilder);
         }
 
-        $classPart = <<<EOL
-class $className implements \Pimple\ServiceProviderInterface
-{
-    public function register(\Pimple\Container \$c)
-    {
-$joinedServiceDefinitions
-    }
-}
-EOL;
-
-        return $namespacePart . $classPart;
+        return $classBuilder->getNode();
     }
 
     /**
@@ -54,23 +93,21 @@ EOL;
      */
     public function visitFactoryDependency(FactoryDependency $dependency)
     {
-        $serialized = serialize($dependency->getFactory());
-        $factoryKey = $dependency->getKey() . '@factory';
+        $variable = new Expr\Variable('f');
 
-        $factoryDefinition = <<<EOL
-        if (!isset(\$c['$factoryKey'])) {
-            \$c['$factoryKey'] = function(\$c) {
-                return unserialize('$serialized');
-            };
-        }
-EOL;
+        $factoryStmts = [
+            new Expr\Assign(
+                $variable,
+                new Expr\FuncCall(new Name('unserialize'), [
+                    new Scalar\String(serialize($dependency->getFactory()))
+                ])
+            ),
+            new Stmt\Return_(
+                new Expr\FuncCall($variable, array_map([$this, 'createContainerAccessor'], $dependency->getParameters()))
+            )
+        ];
 
-        $arguments = $this->dumpArguments($dependency->getParameters());
-        $joinedStatements = <<<EOL
-                return \$c['$factoryKey']($arguments);
-EOL;
-
-        return $factoryDefinition . "\n" . $this->dumpServiceDefinition($dependency, $joinedStatements);
+        return [$this->createServiceFactoryDefinition($dependency, $factoryStmts)];
     }
 
     /**
@@ -78,25 +115,34 @@ EOL;
      */
     public function visitObjectDependency(ObjectDependency $dependency)
     {
-        $methodCalls = [];
-        $propertySetters = [];
+        $variable = new Expr\Variable('o');
+
+        $factoryStmts = [new Expr\Assign(
+            $variable,
+            new Expr\New_(
+                new Name\FullyQualified($dependency->getClassName()),
+                array_map([$this, 'createContainerAccessor'], $dependency->getConstructorParameters())
+            )
+        )];
 
         foreach ($dependency->getMethodInjections() as $method => $parameters) {
-            $methodCalls[] = $this->dumpMethodCall($method, $parameters);
+            $factoryStmts[] = new Expr\MethodCall(
+                $variable,
+                $method,
+                array_map([$this, 'createContainerAccessor'], $parameters)
+            );
         }
 
         foreach ($dependency->getPropertyInjections() as $propery => $value) {
-            $propertySetters[] = $this->dumpPropertySetter($propery, $value);
+            $factoryStmts[] = new Expr\Assign(
+                new Expr\PropertyFetch($variable, $propery),
+                $this->createContainerAccessor($value)
+            );
         }
 
-        $joinedStatements = implode("\n", array_merge(
-            [$this->dumpConstructor($dependency)],
-            $methodCalls,
-            $propertySetters,
-            [$this->dumpReturn()]
-        ));
+        $factoryStmts[] = new Stmt\Return_($variable);
 
-        return $this->dumpServiceDefinition($dependency, $joinedStatements);
+        return [$this->createServiceFactoryDefinition($dependency, $factoryStmts)];
     }
 
     /**
@@ -104,104 +150,80 @@ EOL;
      */
     public function visitReferenceDependency(ReferenceDependency $dependency)
     {
-        return null;
-    }
-
-    /**
-     * @param ObjectDependency $dependency
-     * @return string
-     */
-    private function dumpConstructor(ObjectDependency $dependency)
-    {
-        $className = $dependency->getClassName();
-        $arguments = $this->dumpArguments($dependency->getConstructorParameters());
-
-        return <<<EOL
-                \$o = new \\$className($arguments);
-EOL;
-    }
-
-    /**
-     * @param string                $method
-     * @param DependencyInterface[] $parameters
-     * @return string
-     */
-    private function dumpMethodCall($method, array $parameters)
-    {
-        $arguments = $this->dumpArguments($parameters);
-
-        return <<<EOL
-                \$o->$method($arguments);
-EOL;
-    }
-
-    /**
-     * @param string              $propery
-     * @param DependencyInterface $dependency
-     * @return string
-     */
-    private function dumpPropertySetter($propery, DependencyInterface $dependency)
-    {
-        $expr = $this->dumpValueReference($dependency);
-
-        return <<<EOL
-                \$o->$propery = $expr;
-EOL;
-    }
-
-    /**
-     * @return string
-     */
-    private function dumpReturn()
-    {
-        return <<<EOL
-                return \$o;
-EOL;
+        return [];
     }
 
     /**
      * @param DependencyInterface $dependency
-     * @return string
+     * @return Expr
      */
-    private function dumpArguments(array $dependencies)
+    private function createContainerAccessor(DependencyInterface $dependency)
     {
-        $arguments = [];
-        foreach ($dependencies as $dependency) {
-            $arguments[] = $this->dumpValueReference($dependency);
-        }
-        return implode(', ', $arguments);
+        return new Expr\ArrayDimFetch(
+            new Expr\Variable('c'),
+            new Scalar\String($dependency->getKey())
+        );
     }
 
     /**
      * @param DependencyInterface $dependency
-     * @param string              $joinedStatements
-     * @return string
+     * @param Node[]              $stmts
+     * @return Expr
      */
-    private function dumpServiceDefinition(DependencyInterface $dependency, $joinedStatements)
+    private function createServiceFactory(DependencyInterface $dependency, array $stmts)
     {
-        $factory = <<<EOL
-function(\$c) {
-$joinedStatements
-            }
-EOL;
+        $factory = new Expr\Closure([
+            'params' => [new Param('c')],
+            'stmts' => $stmts,
+        ]);
 
         if (!$dependency->isSingleton()) {
-            $factory = '$c->factory(' . $factory . ')';
+            $factory = new Expr\MethodCall(
+                new Expr\Variable('c'),
+                'factory',
+                [$factory]
+            );
         }
 
-        return <<<EOL
-        if (!isset(\$c['{$dependency->getKey()}'])) {
-            \$c['{$dependency->getKey()}'] = $factory;
-        }
-EOL;
+        return $factory;
     }
 
     /**
      * @param DependencyInterface $dependency
-     * @return string
+     * @param Node[]              $stmts
+     * @return Node
      */
-    private function dumpValueReference(DependencyInterface $dependency)
+    private function createServiceFactoryDefinition(DependencyInterface $dependency, array $stmts)
     {
-        return "\$c['{$dependency->getKey()}']";
+        $definition = new Expr\Assign(
+            $this->createContainerAccessor($dependency),
+            $this->createServiceFactory($dependency, $stmts)
+        );
+
+        if ($dependency->isSingleton()) {
+            $definition = new Stmt\If_(
+                new Expr\BooleanNot(
+                    new Expr\Isset_([$this->createContainerAccessor($dependency)])
+                ),
+                ['stmts' => [$definition]]
+            );
+        }
+
+        return $definition;
+    }
+
+    /**
+     * @param string $className
+     * @return array (namespace, className)
+     */
+    private function splitToNamesapceAndClass($className)
+    {
+        if ($lastNsPos = strrpos($className, '\\')) {
+            $namespace = substr($className, 0, $lastNsPos);
+            $className = substr($className, $lastNsPos + 1);
+            return [$namespace, $className];
+        } else {
+            return ['', $className];
+        }
     }
 }

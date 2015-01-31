@@ -32,7 +32,7 @@ class PimpleContainer extends AbstractContainer
             new DefaultInjectionPolicy(),
             new \ArrayObject(),
             new Pimple(),
-            new ServiceProviderGenerator(),
+            ServiceProviderGenerator::create(),
             ServiceProviderLoader::create()
         );
     }
