@@ -19,6 +19,21 @@ class BindingDefinition extends AbstractDefinition
     private $target;
 
     /**
+     * @var DefinitionInterface[]
+     */
+    private $constructorParamerters;
+
+    /**
+     * @var DefinitionInterface[] array(methodName => paramerters)
+     */
+    private $methodInjections = [];
+
+    /**
+     * @var DefinitionInterface[] array(propertyName => value)
+     */
+    private $propertyInjections = [];
+
+    /**
      * @param string $target
      */
     public function __construct($target)
@@ -37,6 +52,38 @@ class BindingDefinition extends AbstractDefinition
     }
 
     /**
+     * @param DefinitionInterface[] $parameters
+     * @return BindingDefinition
+     */
+    public function with(array $parameters)
+    {
+        $this->constructorParamerters = $parameters;
+        return $this;
+    }
+
+    /**
+     * @param string                $method
+     * @param DefinitionInterface[] $parameters
+     * @return BindingDefinition
+     */
+    public function withMethod($method, array $parameters)
+    {
+        $this->methodInjections[$method] = $parameters;
+        return $this;
+    }
+
+    /**
+     * @param string                $method
+     * @param DefinitionInterface[] $parameters
+     * @return BindingDefinition
+     */
+    public function withProperty($property, DefinitionInterface $value)
+    {
+        $this->propertyInjections[$property] = $value;
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     protected function resolve(ContainerInterface $container)
@@ -51,12 +98,16 @@ class BindingDefinition extends AbstractDefinition
         }
 
         $injectionFinder = $container->getInjectionFinder();
+        $constructorParamerters = $this->constructorParamerters ?: $injectionFinder->getConstructorParameters($class);
+        $methodInjections = array_merge($injectionFinder->getMethodInjections($class), $this->methodInjections);
+        $propertyInjections = array_merge($injectionFinder->getPropertyInjections($class), $this->propertyInjections);
+
         return new ObjectDependency(
             $this->key,
             $class->name,
-            $injectionFinder->getConstructorParameters($class),
-            $injectionFinder->getMethodInjections($class),
-            $injectionFinder->getPropertyInjections($class)
+            $constructorParamerters,
+            $methodInjections,
+            $propertyInjections
         );
     }
 

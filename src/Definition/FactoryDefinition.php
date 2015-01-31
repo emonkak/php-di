@@ -22,6 +22,11 @@ class FactoryDefinition extends AbstractDefinition
     private $factory;
 
     /**
+     * @var DependencyInterface[]
+     */
+    private $parameters;
+
+    /**
      * @param stirng $key
      * @param callable $factory
      */
@@ -29,6 +34,16 @@ class FactoryDefinition extends AbstractDefinition
     {
         $this->key = $key;
         $this->factory = $factory;
+    }
+
+    /**
+     * @param DefinitionInterface[] $parameters
+     * @return BindingDefinition
+     */
+    public function with(array $parameters)
+    {
+        $this->parameters = $parameters;
+        return $this;
     }
 
     /**
@@ -48,7 +63,7 @@ class FactoryDefinition extends AbstractDefinition
         return new FactoryDependency(
             $this->key,
             $factory,
-            $finder->getParameterDependencies($function)
+            $this->parameters ?: $finder->getParameterDependencies($function)
         );
     }
 
