@@ -14,13 +14,15 @@ class BrickDiEvent extends AthleticEvent
      */
     public function get()
     {
-        $container = new Container(new MyPolicy());
+        $container = new Container(new MyInjectionPolicy());
+        $container->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Bar');
+        $container->bind('Emonkak\Di\Benchmarks\Fixtures\BazInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Baz');
         $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);
     }
 }
 
-class MyPolicy implements InjectionPolicy
+class MyInjectionPolicy implements InjectionPolicy
 {
     /**
      * {@inheritdoc}

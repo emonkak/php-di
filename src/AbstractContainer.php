@@ -139,6 +139,6 @@ abstract class AbstractContainer implements ContainerInterface
      */
     public function has($key)
     {
-        return isset($this->cache) || isset($this->definitions[$key]) || class_exists($key);
+        return isset($this->cache[$key]) || isset($this->definitions[$key]) || class_exists($key);
     }
 }

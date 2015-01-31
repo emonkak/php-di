@@ -13,12 +13,21 @@ class ServiceProviderLoaderOnFilesystem implements ServiceProviderLoaderInterfac
     /**
      * @var string
      */
-    private $dir;
+    private $directory;
 
     /**
      * @var Filesystem
      */
     private $filesystem;
+
+    /**
+     * @param string $directory  The directory where to put the service provider
+     * @return ServiceProviderLoaderOnFilesystem
+     */
+    public static function create($directory)
+    {
+        return new self($directory, new Filesystem());
+    }
 
     /**
      * @param string $path
@@ -29,13 +38,13 @@ class ServiceProviderLoaderOnFilesystem implements ServiceProviderLoaderInterfac
     }
 
     /**
-     * @param string      $dir        The directory where to put the service provider
-     * @param Filesystem  $filesystem
+     * @param string     $directory  The directory where to put the service provider
+     * @param Filesystem $filesystem
      */
-    public function __construct($dir, Filesystem $filesystem = null)
+    public function __construct($directory, Filesystem $filesystem)
     {
-        $this->dir = $dir;
-        $this->filesystem = $filesystem ?: new Filesystem();
+        $this->directory = $directory;
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -80,7 +89,7 @@ class ServiceProviderLoaderOnFilesystem implements ServiceProviderLoaderInterfac
      */
     private function toFilePath($className)
     {
-        return $this->dir
+        return $this->directory
               . str_replace('\\', DIRECTORY_SEPARATOR, $className)
               . '.php';
     }

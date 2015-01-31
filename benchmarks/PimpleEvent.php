@@ -70,12 +70,12 @@ class PimpleEvent extends AthleticEvent
     {
         $container = new Container();
         $container['Emonkak\Di\Benchmarks\Fixtures\Foo'] = $container->factory(function($c) {
-            return new Foo($c['Emonkak\Di\Benchmarks\Fixtures\Bar'], $c['Emonkak\Di\Benchmarks\Fixtures\Baz']);
+            return new Foo($c['Emonkak\Di\Benchmarks\Fixtures\BarInterface'], $c['Emonkak\Di\Benchmarks\Fixtures\BazInterface']);
         });
-        $container['Emonkak\Di\Benchmarks\Fixtures\Bar'] = $container->factory(function($c) {
+        $container['Emonkak\Di\Benchmarks\Fixtures\BarInterface'] = $container->factory(function($c) {
             return new Bar($c['Emonkak\Di\Benchmarks\Fixtures\Qux'], $c['Emonkak\Di\Benchmarks\Fixtures\Quux']);
         });
-        $container['Emonkak\Di\Benchmarks\Fixtures\Baz'] = $container->factory(function($c) {
+        $container['Emonkak\Di\Benchmarks\Fixtures\BazInterface'] = $container->factory(function($c) {
             return new Baz($c['Emonkak\Di\Benchmarks\Fixtures\Corge'], $c['Emonkak\Di\Benchmarks\Fixtures\Grault']);
         });
         $container['Emonkak\Di\Benchmarks\Fixtures\Qux'] = $container->factory(function($c) {

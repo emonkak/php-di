@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Benchmarks\Fixtures;
 
-class Bar
+class Bar implements BarInterface
 {
     private $qux;
     private $quux;

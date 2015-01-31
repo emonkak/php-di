@@ -6,6 +6,9 @@ use Athletic\AthleticEvent;
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\ChainCache;
+use Emonkak\Di\Container;
+use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
+use Emonkak\Di\Injector;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Emonkak\Di\Benchmarks\Fixtures\Bar;
 use Emonkak\Di\Benchmarks\Fixtures\Baz;
@@ -17,9 +20,6 @@ use Emonkak\Di\Benchmarks\Fixtures\Garply;
 use Emonkak\Di\Benchmarks\Fixtures\Waldo;
 use Emonkak\Di\Benchmarks\Fixtures\Fred;
 use Emonkak\Di\Benchmarks\Fixtures\Plugh;
-use Emonkak\Di\Container;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
-use Emonkak\Di\Injector;
 
 class NativeEvent extends AthleticEvent
 {

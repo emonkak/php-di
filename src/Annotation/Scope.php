@@ -1,6 +1,6 @@
 <?php
 
-namespace Emonkak\Di\Annotations;
+namespace Emonkak\Di\Annotation;
 
 use Emonkak\Di\Scope\PrototypeScope;
 use Emonkak\Di\Scope\ScopeInterface;
@@ -10,7 +10,7 @@ use Emonkak\Di\Scope\SingletonScope;
  * @Annotation
  * @Target("CLASS")
  */
-class Scope
+final class Scope
 {
     const PROTOTYPE = 'PROTOTYPE';
     const SINGLETON = 'SINGLETON';

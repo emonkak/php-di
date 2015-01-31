@@ -3,9 +3,10 @@
 namespace Emonkak\Di\Benchmarks;
 
 use Athletic\AthleticEvent;
+use DI;
+use DI\ContainerBuilder;
 use Doctrine\Common\Cache\ApcCache;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
-use DI\ContainerBuilder;
 
 class PhpDiEvent extends AthleticEvent
 {
@@ -16,6 +17,13 @@ class PhpDiEvent extends AthleticEvent
     {
         $builder = new ContainerBuilder();
         $container = $builder->build();
+        $container->set(
+            'Emonkak\Di\Benchmarks\Fixtures\Foo',
+            DI\object()->constructor(
+                DI\link('Emonkak\Di\Benchmarks\Fixtures\Bar'),
+                DI\link('Emonkak\Di\Benchmarks\Fixtures\Baz')
+            )
+        );
         $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);
     }
@@ -28,6 +36,13 @@ class PhpDiEvent extends AthleticEvent
         $builder = new ContainerBuilder();
         $builder->setDefinitionCache(new ApcCache());
         $container = $builder->build();
+        $container->set(
+            'Emonkak\Di\Benchmarks\Fixtures\Foo',
+            DI\object()->constructor(
+                DI\link('Emonkak\Di\Benchmarks\Fixtures\Bar'),
+                DI\link('Emonkak\Di\Benchmarks\Fixtures\Baz')
+            )
+        );
         $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);
     }

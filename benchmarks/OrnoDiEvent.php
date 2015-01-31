@@ -16,6 +16,9 @@ class OrnoDiEvent extends AthleticEvent
     public function get()
     {
         $container = new Container();
+        $container->add('Emonkak\Di\Benchmarks\Fixtures\Foo')
+            ->withArgument('Emonkak\Di\Benchmarks\Fixtures\Bar')
+            ->withArgument('Emonkak\Di\Benchmarks\Fixtures\Baz');
         $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);
     }
@@ -26,6 +29,9 @@ class OrnoDiEvent extends AthleticEvent
     public function getWithCache()
     {
         $container = new Container(new Cache(new ApcAdapter()));
+        $container->add('Emonkak\Di\Benchmarks\Fixtures\Foo')
+            ->withArgument('Emonkak\Di\Benchmarks\Fixtures\Bar')
+            ->withArgument('Emonkak\Di\Benchmarks\Fixtures\Baz');
         $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);
     }

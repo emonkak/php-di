@@ -51,7 +51,7 @@ class FactoryDefinition extends AbstractDefinition
      */
     public function resolve(ContainerInterface $container)
     {
-        $finder = $container->getInjectionFinder();
+        $injectionFinder = $container->getInjectionFinder();
         $function = ReflectionUtils::getFunction($this->factory);
 
         if ($this->factory instanceof \Closure) {
@@ -60,11 +60,16 @@ class FactoryDefinition extends AbstractDefinition
             $factory = $this->factory;
         }
 
-        return new FactoryDependency(
-            $this->key,
-            $factory,
-            $this->parameters ?: $finder->getParameterDependencies($function)
-        );
+        if ($this->parameters !== null) {
+            $parameters = [];
+            foreach ($this->parameters as $definition) {
+                $parameters[] = $definition->get($container);
+            }
+        } else {
+            $parameters = $injectionFinder->getParameterDependencies($function);
+        }
+
+        return new FactoryDependency($this->key, $factory, $parameters);
     }
 
     /**

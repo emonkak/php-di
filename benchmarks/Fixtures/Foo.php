@@ -7,7 +7,10 @@ class Foo
     private $bar;
     private $baz;
 
-    public function __construct(Bar $bar, Baz $baz)
+    /**
+     * @Ray\Di\Di\Inject
+     */
+    public function __construct(BarInterface $bar, BazInterface $baz)
     {
         $this->bar = $bar;
         $this->baz = $baz;

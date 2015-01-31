@@ -1,12 +1,12 @@
 <?php
 
-namespace Emonkak\Di\Annotations;
+namespace Emonkak\Di\Annotation;
 
 /**
  * @Annotation
  * @Target({"METHOD","PROPERTY"})
  */
-class Qualifier
+final class Qualifier
 {
     /**
      * @var array

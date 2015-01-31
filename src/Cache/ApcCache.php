@@ -48,7 +48,7 @@ class ApcCache implements \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        apc_store($this->prefix . $offset, $value);
+        apc_store($this->prefix . $offset, $value, $this->lifetime);
     }
 
     /**

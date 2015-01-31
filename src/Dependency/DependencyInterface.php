@@ -13,10 +13,9 @@ interface DependencyInterface
     public function accept(DependencyVisitorInterface $visitor);
 
     /**
-     * @param ContainerInterface $container
-     * @return mixed
+     * @return DependencyInterface[]
      */
-    public function inject(ContainerInterface $container);
+    public function getDependencies();
 
     /**
      * @return string
@@ -24,17 +23,18 @@ interface DependencyInterface
     public function getKey();
 
     /**
-     * @return DependencyInterface[]
+     * @param ContainerInterface $container
+     * @return mixed
      */
-    public function getDependencies();
-
-    /**
-     * @param callable $callback (dependency, key) => ()
-     */
-     public function traverse(callable $callback);
+    public function inject(ContainerInterface $container);
 
     /**
      * @return boolean
      */
     public function isSingleton();
+
+    /**
+     * @param callable $callback (dependency, key) => ()
+     */
+    public function traverse(callable $callback);
 }

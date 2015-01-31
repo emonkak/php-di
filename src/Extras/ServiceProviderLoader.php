@@ -33,15 +33,13 @@ class ServiceProviderLoader implements ServiceProviderLoaderInterface
      */
     public function load($className)
     {
-        $source = $this->cache[$className];
-
-        if (!is_string($source)) {
+        if (!isset($this->cache[$className])) {
             throw new \RuntimeException(
                 sprintf('Failed to load "%s" because the cache does not exist.', $className)
             );
         }
 
-        eval($source);
+        eval($this->cache[$className]);
     }
 
     /**

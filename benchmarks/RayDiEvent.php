@@ -5,8 +5,9 @@ namespace Emonkak\Di\Benchmarks;
 use Athletic\AthleticEvent;
 use Doctrine\Common\Cache\ApcCache;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
-use Ray\Di\Injector;
+use Ray\Di\AbstractModule;
 use Ray\Di\CacheInjector;
+use Ray\Di\Injector;
 
 class RayDiEvent extends AthleticEvent
 {
@@ -15,7 +16,7 @@ class RayDiEvent extends AthleticEvent
      */
     public function get()
     {
-        $injector = Injector::create();
+        $injector = Injector::create([new MyModule()]);
         $foo = $injector->getInstance('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);
     }
@@ -27,7 +28,7 @@ class RayDiEvent extends AthleticEvent
     {
         $injector = new CacheInjector(
             function() {
-                return Injector::create();
+                return Injector::create([new MyModule()]);
             },
             function() {},
             'ray-di',
@@ -35,5 +36,14 @@ class RayDiEvent extends AthleticEvent
         );
         $foo = $injector->getInstance('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);
+    }
+}
+
+class MyModule extends AbstractModule
+{
+    public function configure()
+    {
+        $this->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Bar');
+        $this->bind('Emonkak\Di\Benchmarks\Fixtures\BazInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Baz');
     }
 }

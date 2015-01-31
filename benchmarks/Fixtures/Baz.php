@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Benchmarks\Fixtures;
 
-class Baz
+class Baz implements BazInterface
 {
     private $corge;
     private $grault;

@@ -8,7 +8,7 @@ use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Dependency\ReferenceDependency;
 
-class UmlGenerator implements DependencyVisitorInterface
+class ClassDiagramGenerator implements DependencyVisitorInterface
 {
     /**
      * @param DependencyInterface $dependency

@@ -6,9 +6,9 @@ use Composer\Autoload\ClassLoader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
-use Emonkak\Di\Annotations\Inject;
-use Emonkak\Di\Annotations\Qualifier;
-use Emonkak\Di\Annotations\Scope;
+use Emonkak\Di\Annotation\Inject;
+use Emonkak\Di\Annotation\Qualifier;
+use Emonkak\Di\Annotation\Scope;
 use Emonkak\Di\Scope\SingletonScope;
 
 class AnnotationInjectionPolicy implements InjectionPolicyInterface
@@ -32,7 +32,7 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
         if (!self::$isRegistered) {
             self::$isRegistered = true;
             $loader = new ClassLoader();
-            $loader->addPsr4('Emonkak\\Di\\Annotations\\', realpath(__DIR__ . '/../Annotations'));
+            $loader->addPsr4('Emonkak\\Di\\Annotation\\', realpath(__DIR__ . '/../Annotation'));
             AnnotationRegistry::registerLoader([$loader, 'loadClass']);
         }
     }
@@ -54,7 +54,7 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
      */
     public function getInjectableMethods(\ReflectionClass $class)
     {
-        $methods = [];
+        $methods = $this->fallback->getInjectableMethods($class);
 
         foreach ($class->getMethods() as $method) {
             if ($this->isInjectableMethod($method)) {
@@ -62,7 +62,7 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
             }
         }
 
-        return $methods;
+        return array_unique($methods);
     }
 
     /**
@@ -70,15 +70,15 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
      */
     public function getInjectableProperties(\ReflectionClass $class)
     {
-        $props = [];
+        $properties = $this->fallback->getInjectableProperties($class);
 
-        foreach ($class->getProperties() as $prop) {
-            if ($this->isInjectableProperty($prop)) {
-                $props[] = $prop;
+        foreach ($class->getProperties() as $propery) {
+            if ($this->isInjectableProperty($propery)) {
+                $properties[] = $propery;
             }
         }
 
-        return $props;
+        return array_unique($properties);
     }
 
     /**
@@ -117,6 +117,7 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
                 }
             }
         }
+
         return $this->fallback->getPropertyKey($prop);
     }
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace Emonkak\Di\Annotations;
+namespace Emonkak\Di\Annotation;
 
 /**
  * @Annotation
  * @Target("ALL")
  */
-class Inject
+final class Inject
 {
 }

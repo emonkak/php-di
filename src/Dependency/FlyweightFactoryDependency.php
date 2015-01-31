@@ -4,7 +4,7 @@ namespace Emonkak\Di\Dependency;
 
 use Emonkak\Di\ContainerInterface;
 
-class SharedDependency extends FactoryDependency
+class FlyweightFactoryDependency extends FactoryDependency
 {
     /**
      * @param FactoryDependency $dependency

@@ -43,7 +43,10 @@ class ContainerDependencyResolver implements DependencyResolverInterface
         $injectionPolicy = $this->container->getInjectionPolicy();
         $key = $injectionPolicy->getPropertyKey($property);
 
-        if ($property->isDefault()) {
+        $class = $property->getDeclaringClass();
+        $values = $class->getDefaultProperties();
+
+        if (isset($values[$property->name])) {
             return $this->container->has($key) ? $this->container->get($key) : null;
         } else {
             return $this->container->get($key);

@@ -45,13 +45,9 @@ class FactoryDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function inject(ContainerInterface $container)
+    public function getDependencies()
     {
-        $args = [];
-        foreach ($this->parameters as $parameter) {
-            $args[] = $parameter->inject($container);
-        }
-        return ReflectionUtils::callFunction($this->factory, $args);
+        return array_values($this->parameters);
     }
 
     /**
@@ -65,9 +61,21 @@ class FactoryDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function getDependencies()
+    public function inject(ContainerInterface $container)
     {
-        return array_values($this->parameters);
+        $args = [];
+        foreach ($this->parameters as $parameter) {
+            $args[] = $parameter->inject($container);
+        }
+        return ReflectionUtils::callFunction($this->factory, $args);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isSingleton()
+    {
+        return false;
     }
 
     /**
@@ -80,14 +88,6 @@ class FactoryDependency implements DependencyInterface
         foreach ($this->parameters as $parameter) {
              $parameter->traverse($callback);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isSingleton()
-    {
-        return false;
     }
 
     /**

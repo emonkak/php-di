@@ -54,7 +54,7 @@ class ReflectionUtils
         case 10:
             return new $className($args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8], $args[9]);
         default:
-            return self::newInstanceByReflection($className, $args);
+            return self::newInstanceWithReflection($className, $args);
         }
     }
 
@@ -63,7 +63,7 @@ class ReflectionUtils
      * @param array  $args
      * @return mixed
      */
-    public static function newInstanceByReflection($className, array $args)
+    public static function newInstanceWithReflection($className, array $args)
     {
         $class = new \ReflectionClass($className);
         return $class->newInstanceArgs($args);
@@ -101,7 +101,7 @@ class ReflectionUtils
         case 10:
             return $instance->$method($args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8], $args[9]);
         default:
-            return self::callMethodByReflection($instance, $args);
+            return self::callMethodWithReflection($instance, $method, $args);
         }
     }
 
@@ -111,9 +111,9 @@ class ReflectionUtils
      * @param mixed[] $args
      * @return mixed
      */
-    public static function callMethodByReflection($instance, $method, array $args)
+    public static function callMethodWithReflection($instance, $method, array $args)
     {
-        $method = new \ReflectionMethod('Emonkak\Collection\Benchmarks\Functions', $method);
+        $method = new \ReflectionMethod($instance, $method);
         return $method->invokeArgs($instance, $args);
     }
 

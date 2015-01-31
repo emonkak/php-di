@@ -98,9 +98,29 @@ class BindingDefinition extends AbstractDefinition
         }
 
         $injectionFinder = $container->getInjectionFinder();
-        $constructorParamerters = $this->constructorParamerters ?: $injectionFinder->getConstructorParameters($class);
-        $methodInjections = array_merge($injectionFinder->getMethodInjections($class), $this->methodInjections);
-        $propertyInjections = array_merge($injectionFinder->getPropertyInjections($class), $this->propertyInjections);
+
+        if ($this->constructorParamerters !== null) {
+            $constructorParamerters = [];
+            foreach ($this->constructorParamerters as $definition) {
+                $constructorParamerters[] = $definition->get($container);
+            }
+        } else {
+            $constructorParamerters = $injectionFinder->getConstructorParameters($class);
+        }
+
+        $methodInjections = $injectionFinder->getMethodInjections($class);
+        foreach ($this->methodInjections as $method => $definitions) {
+            $parameters = [];
+            foreach ($definitions as $definition) {
+                $parameters[] = $definition->get($container);
+            }
+            $methodInjections[$method] = $parameters;
+        }
+
+        $propertyInjections = $injectionFinder->getPropertyInjections($class);
+        foreach ($this->propertyInjections as $property => $definition) {
+            $propertyInjections[$property] = $definition->get($container);
+        }
 
         return new ObjectDependency(
             $this->key,

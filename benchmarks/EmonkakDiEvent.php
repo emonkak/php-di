@@ -21,6 +21,8 @@ class EmonkakDiEvent extends AthleticEvent
     public function get()
     {
         $container = Container::create();
+        $container->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Bar');
+        $container->bind('Emonkak\Di\Benchmarks\Fixtures\BazInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Baz');
         $foo = $container->getInstance('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);
     }
@@ -35,6 +37,8 @@ class EmonkakDiEvent extends AthleticEvent
             new ApcCache('container'),
             new \ArrayObject()
         );
+        $container->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Bar');
+        $container->bind('Emonkak\Di\Benchmarks\Fixtures\BazInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Baz');
         $foo = $container->getInstance('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);
     }
@@ -45,6 +49,8 @@ class EmonkakDiEvent extends AthleticEvent
     public function getWithPimple()
     {
         $container = PimpleContainer::create();
+        $container->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Bar');
+        $container->bind('Emonkak\Di\Benchmarks\Fixtures\BazInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Baz');
         $foo = $container->getInstance('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);
     }

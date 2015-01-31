@@ -23,13 +23,13 @@ class AuraDiEvent extends AthleticEvent
             'baz' => $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Baz'),
         ];
 
-        $container->set('Emonkak\Di\Benchmarks\Fixtures\Bar', $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Bar'));
+        $container->set('Emonkak\Di\Benchmarks\Fixtures\BarInterface', $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Bar'));
         $container->params['Emonkak\Di\Benchmarks\Fixtures\Bar'] = [
             'qux' => $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Qux'),
             'quux' => $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Quux'),
         ];
 
-        $container->set('Emonkak\Di\Benchmarks\Fixtures\Baz', $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Baz'));
+        $container->set('Emonkak\Di\Benchmarks\Fixtures\BazInterface', $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Baz'));
         $container->params['Emonkak\Di\Benchmarks\Fixtures\Baz'] = [
             'corge' => $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Corge'),
             'grault' => $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Grault'),

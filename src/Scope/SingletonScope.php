@@ -5,9 +5,9 @@ namespace Emonkak\Di\Scope;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
+use Emonkak\Di\Dependency\FlyweightFactoryDependency;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Dependency\ReferenceDependency;
-use Emonkak\Di\Dependency\SharedDependency;
 use Emonkak\Di\Dependency\SingletonDependency;
 
 class SingletonScope implements ScopeInterface, DependencyVisitorInterface
@@ -43,7 +43,7 @@ class SingletonScope implements ScopeInterface, DependencyVisitorInterface
      */
     public function visitFactoryDependency(FactoryDependency $dependency)
     {
-        return SharedDependency::from($dependency);
+        return FlyweightFactoryDependency::from($dependency);
     }
 
     /**

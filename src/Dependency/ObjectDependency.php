@@ -60,6 +60,28 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
+    public function getDependencies()
+    {
+        $dependencies = $this->constructorParameters;
+
+        foreach ($this->methodInjections as $method => $parameters) {
+            $dependencies = array_merge($dependencies, array_values($parameters));
+        }
+
+        return array_merge($dependencies, array_values($this->propertyInjections));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getKey()
+    {
+        return $this->key;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function inject(ContainerInterface $container)
     {
         $args = [];
@@ -76,7 +98,7 @@ class ObjectDependency implements DependencyInterface
             ReflectionUtils::callMethod($instance, $method, $args);
         }
 
-        foreach ($this->propertyInjections as $propery => $value) {
+        foreach ($this->propertyInjections as $property => $value) {
             $instance->$property = $value->inject($container);
         }
 
@@ -86,23 +108,9 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function getKey()
+    public function isSingleton()
     {
-        return $this->key;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getDependencies()
-    {
-        $dependencies = $this->constructorParameters;
-
-        foreach ($this->methodInjections as $method => $parameters) {
-            $dependencies = array_merge($dependencies, array_values($parameters));
-        }
-
-        return array_merge($dependencies, array_values($this->propertyInjections));
+        return false;
     }
 
     /**
@@ -125,14 +133,6 @@ class ObjectDependency implements DependencyInterface
         foreach ($this->propertyInjections as $propery => $value) {
             $value->traverse($callback);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isSingleton()
-    {
-        return false;
     }
 
     /**
