@@ -4,7 +4,8 @@ namespace Emonkak\Di\Tests\Utils
 {
     use Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Functions;
     use Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Lambda;
-    use Emonkak\Di\Utils\ReflectionUtils;
+    use Emonkak\Di\Utils\ReflectionUtils50;
+    use Emonkak\Di\Utils\ReflectionUtils56;
 
     class ReflectionUtilsTest extends \PHPUnit_Framework_TestCase
     {
@@ -13,7 +14,7 @@ namespace Emonkak\Di\Tests\Utils
          */
         public function testGetFunction(callable $f)
         {
-            $this->assertInstanceof('ReflectionFunctionAbstract', ReflectionUtils::getFunction($f));
+            $this->assertInstanceof('ReflectionFunctionAbstract', ReflectionUtils50::getFunction($f));
         }
 
         public function provideGetFunction()
@@ -31,7 +32,16 @@ namespace Emonkak\Di\Tests\Utils
          */
         public function testNewInstance($class, $args)
         {
-            $this->assertInstanceof($class, ReflectionUtils::newInstance($class, $args));
+            $this->assertInstanceof($class, ReflectionUtils50::newInstance($class, $args));
+        }
+
+        /**
+         * @requires PHP 5.6
+         * @dataProvider provideNewInstance
+         */
+        public function testNewInstance56($class, $args)
+        {
+            $this->assertInstanceof($class, ReflectionUtils56::newInstance($class, $args));
         }
 
         /**
@@ -39,7 +49,7 @@ namespace Emonkak\Di\Tests\Utils
          */
         public function testnewInstanceWithReflection($class, $args)
         {
-            $this->assertInstanceof($class, ReflectionUtils::newInstanceWithReflection($class, $args));
+            $this->assertInstanceof($class, ReflectionUtils50::newInstanceWithReflection($class, $args));
         }
 
         public function provideNewInstance()
@@ -65,7 +75,16 @@ namespace Emonkak\Di\Tests\Utils
          */
         public function testCallMethod($instance, $method, $args)
         {
-            ReflectionUtils::callMethod($instance, $method, $args);
+            ReflectionUtils50::callMethod($instance, $method, $args);
+        }
+
+        /**
+         * @requires PHP 5.6
+         * @dataProvider provideCallMethod
+         */
+        public function testCallMethod56($instance, $method, $args)
+        {
+            ReflectionUtils56::callMethod($instance, $method, $args);
         }
 
         /**
@@ -73,7 +92,7 @@ namespace Emonkak\Di\Tests\Utils
          */
         public function testCallMethodWithReflection($instance, $method, $args)
         {
-            ReflectionUtils::callMethodWithReflection($instance, $method, $args);
+            ReflectionUtils50::callMethodWithReflection($instance, $method, $args);
         }
 
         /**
@@ -81,7 +100,16 @@ namespace Emonkak\Di\Tests\Utils
          */
         public function testCallFunction($instance, $method, $args)
         {
-            ReflectionUtils::callFunction([$instance, $method], $args);
+            ReflectionUtils50::callFunction([$instance, $method], $args);
+        }
+
+        /**
+         * @requires PHP 5.6
+         * @dataProvider provideCallMethod
+         */
+        public function testCallFunction56($instance, $method, $args)
+        {
+            ReflectionUtils56::callFunction([$instance, $method], $args);
         }
 
         public function provideCallMethod()
