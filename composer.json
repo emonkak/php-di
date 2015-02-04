@@ -1,5 +1,6 @@
 {
     "name": "emonkak/di",
+    "description": "A fast dependency injection framework for PHP",
     "license": "MIT",
     "authors": [
         {
@@ -11,14 +12,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/emonkak/athletic"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/brick/di"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/brick/reflection"
         }
     ],
     "require": {
@@ -28,8 +21,6 @@
     "require-dev": {
         "athletic/athletic": "dev-master",
         "aura/di": "~1.0",
-        "brick/di": "dev-master",
-        "brick/reflection": "dev-master",
         "doctrine/annotations": "~1.2",
         "doctrine/cache": "~1.4@dev",
         "facebook/xhprof": "dev-master",
