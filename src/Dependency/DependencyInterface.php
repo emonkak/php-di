@@ -26,7 +26,7 @@ interface DependencyInterface
      * @param ContainerInterface $container
      * @return mixed
      */
-    public function inject(ContainerInterface $container);
+    public function materialize(ContainerInterface $container);
 
     /**
      * @return boolean

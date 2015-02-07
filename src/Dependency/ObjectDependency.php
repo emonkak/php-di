@@ -82,24 +82,24 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function inject(ContainerInterface $container)
+    public function materialize(ContainerInterface $container)
     {
         $args = [];
         foreach ($this->constructorParameters as $parameter) {
-            $args[] = $parameter->inject($container);
+            $args[] = $parameter->materialize($container);
         }
         $instance = ReflectionUtils::newInstance($this->className, $args);
 
         foreach ($this->methodInjections as $method => $parameters) {
             $args = [];
             foreach ($parameters as $parameter) {
-                $args[] = $parameter->inject($container);
+                $args[] = $parameter->materialize($container);
             }
             ReflectionUtils::callMethod($instance, $method, $args);
         }
 
         foreach ($this->propertyInjections as $property => $value) {
-            $instance->$property = $value->inject($container);
+            $instance->$property = $value->materialize($container);
         }
 
         return $instance;

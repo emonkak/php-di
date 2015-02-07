@@ -58,7 +58,7 @@ namespace Emonkak\Di\Tests\Dependency
             $this->assertSame('foo', $dependency->getKey());
         }
 
-        public function testInject()
+        public function testMaterialize()
         {
             $container = Container::create();
 
@@ -82,7 +82,7 @@ namespace Emonkak\Di\Tests\Dependency
                 [$barDependency], ['setBaz' => [$bazDependency]], ['qux' => $quxDependency]
             );
 
-            $foo = $fooDependency->inject($container);
+            $foo = $fooDependency->materialize($container);
 
             $this->assertInstanceOf('Emonkak\Di\Tests\Dependency\ObjectDependencyTest\Foo', $foo);
             $this->assertInstanceOf('Emonkak\Di\Tests\Dependency\ObjectDependencyTest\Bar', $foo->bar);
