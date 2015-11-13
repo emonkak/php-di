@@ -31,7 +31,7 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function get(ContainerInterface $container)
+    public function resolveBy(ContainerInterface $container)
     {
         return $this;
     }

@@ -49,7 +49,7 @@ class FactoryDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    public function resolve(ContainerInterface $container)
+    protected function resolveDependency(ContainerInterface $container)
     {
         $injectionFinder = $container->getInjectionFinder();
         $function = ReflectionUtils::getFunction($this->factory);
@@ -63,7 +63,7 @@ class FactoryDefinition extends AbstractDefinition
         if ($this->parameters !== null) {
             $parameters = [];
             foreach ($this->parameters as $definition) {
-                $parameters[] = $definition->get($container);
+                $parameters[] = $definition->resolveBy($container);
             }
         } else {
             $parameters = $injectionFinder->getParameterDependencies($function);

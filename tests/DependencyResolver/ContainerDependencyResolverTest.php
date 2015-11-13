@@ -16,7 +16,7 @@ namespace Emonkak\Di\Tests\DependencyResolver
             $foo = new \ReflectionClass('Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Foo');
             $parameters = $foo->getConstructor()->getParameters();
 
-            $barDependency = $container->bind('Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Bar')->get($container);
+            $barDependency = $container->bind('Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Bar')->resolveBy($container);
 
             $this->assertEquals($barDependency, $dependencyResolver->getParameterDependency($parameters[0]));
             $this->assertEquals($barDependency, $dependencyResolver->getParameterDependency($parameters[1]));

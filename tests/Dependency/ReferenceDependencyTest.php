@@ -20,12 +20,12 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expectedValue, $dependency->accept($visitor));
     }
 
-    public function testGet()
+    public function testResolveBy()
     {
         $container = Container::create();
         $dependency = new ReferenceDependency('foo');
 
-        $this->assertSame($dependency, $dependency->get($container));
+        $this->assertSame($dependency, $dependency->resolveBy($container));
     }
 
     public function testGetDependencies()

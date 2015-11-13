@@ -119,7 +119,7 @@ abstract class AbstractContainer implements ContainerInterface
             $definition = new BindingDefinition($key);
         }
 
-        $dependency = $definition->get($this);
+        $dependency = $definition->resolveBy($this);
         $this->cache[$key] = $dependency;
 
         return $dependency;

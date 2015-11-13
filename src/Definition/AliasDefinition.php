@@ -23,7 +23,7 @@ class AliasDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolve(ContainerInterface $container)
+    protected function resolveDependency(ContainerInterface $container)
     {
         return $container->resolve($this->target);
     }

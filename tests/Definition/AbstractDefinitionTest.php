@@ -20,7 +20,7 @@ class AbstractDefinitionTest extends \PHPUnit_Framework_TestCase
         $definition = $this->getMockForAbstractClass('Emonkak\Di\Definition\AbstractDefinition');
         $definition
             ->expects($this->once())
-            ->method('resolve')
+            ->method('resolveDependency')
             ->with($this->identicalTo($container))
             ->willReturn($dependency);
         $definition
@@ -29,7 +29,7 @@ class AbstractDefinitionTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($container))
             ->willReturn($scope);
 
-        $this->assertSame($dependency, $definition->get($container));
+        $this->assertSame($dependency, $definition->resolveBy($container));
     }
 
     public function testGetAndIn()
@@ -48,13 +48,13 @@ class AbstractDefinitionTest extends \PHPUnit_Framework_TestCase
         $definition = $this->getMockForAbstractClass('Emonkak\Di\Definition\AbstractDefinition');
         $definition
             ->expects($this->once())
-            ->method('resolve')
+            ->method('resolveDependency')
             ->with($this->identicalTo($container))
             ->willReturn($dependency);
         $definition
             ->expects($this->never())
             ->method('resolveScope');
 
-        $this->assertSame($dependency, $definition->in($scope)->get($container));
+        $this->assertSame($dependency, $definition->in($scope)->resolveBy($container));
     }
 }

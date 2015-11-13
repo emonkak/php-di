@@ -11,5 +11,5 @@ interface DefinitionInterface
      * @param ContainerInterface $container
      * @return DependencyInterface
      */
-    public function get(ContainerInterface $container);
+    public function resolveBy(ContainerInterface $container);
 }

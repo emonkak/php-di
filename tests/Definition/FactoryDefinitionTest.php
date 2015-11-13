@@ -12,7 +12,7 @@ namespace Emonkak\Di\Tests\Definition
 
     class FactoryDefinitionTest extends \PHPUnit_Framework_TestCase
     {
-        public function testResolve()
+        public function testResolveDependency()
         {
             \Closure::bind(function() {
                 $factory = new FooFactory();
@@ -25,16 +25,16 @@ namespace Emonkak\Di\Tests\Definition
                 });
                 $fooDependency = $definition
                     ->with([$barDefinition, $bazDefinition])
-                    ->resolve($container);
+                    ->resolveDependency($container);
 
                 $this->assertSame('Emonkak\Di\Dependency\FactoryDependency', get_class($fooDependency));
                 $this->assertSame('Emonkak\Di\Tests\Definition\FactoryDefinitionTest\Foo', $fooDependency->getKey());
                 $this->assertEquals($factory, $fooDependency->getFactory());
-                $this->assertEquals([$barDefinition->get($container), $bazDefinition->get($container)], $fooDependency->getParameters());
+                $this->assertEquals([$barDefinition->resolveBy($container), $bazDefinition->resolveBy($container)], $fooDependency->getParameters());
             }, $this, 'Emonkak\Di\Definition\FactoryDefinition')->__invoke();
         }
 
-        public function testResolveWithClosure()
+        public function testResolveDependencyWithClosure()
         {
             \Closure::bind(function() {
                 $factory = function() {
@@ -43,7 +43,7 @@ namespace Emonkak\Di\Tests\Definition
                 $definition = new FactoryDefinition('Emonkak\Di\Tests\Definition\FactoryDefinitionTest\Foo', $factory);
 
                 $container = Container::create();
-                $fooDependency = $definition->get($container);
+                $fooDependency = $definition->resolveBy($container);
 
                 $this->assertSame('Emonkak\Di\Dependency\FactoryDependency', get_class($fooDependency));
                 $this->assertSame('Emonkak\Di\Tests\Definition\FactoryDefinitionTest\Foo', $fooDependency->getKey());

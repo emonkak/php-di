@@ -86,7 +86,7 @@ class BindingDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolve(ContainerInterface $container)
+    protected function resolveDependency(ContainerInterface $container)
     {
         $class = new \ReflectionClass($this->target);
         $injectionPolicy = $container->getInjectionPolicy();
@@ -102,7 +102,7 @@ class BindingDefinition extends AbstractDefinition
         if ($this->constructorParamerters !== null) {
             $constructorParamerters = [];
             foreach ($this->constructorParamerters as $definition) {
-                $constructorParamerters[] = $definition->get($container);
+                $constructorParamerters[] = $definition->resolveBy($container);
             }
         } else {
             $constructorParamerters = $injectionFinder->getConstructorParameters($class);
@@ -112,14 +112,14 @@ class BindingDefinition extends AbstractDefinition
         foreach ($this->methodInjections as $method => $definitions) {
             $parameters = [];
             foreach ($definitions as $definition) {
-                $parameters[] = $definition->get($container);
+                $parameters[] = $definition->resolveBy($container);
             }
             $methodInjections[$method] = $parameters;
         }
 
         $propertyInjections = $injectionFinder->getPropertyInjections($class);
         foreach ($this->propertyInjections as $property => $definition) {
-            $propertyInjections[$property] = $definition->get($container);
+            $propertyInjections[$property] = $definition->resolveBy($container);
         }
 
         return new ObjectDependency(

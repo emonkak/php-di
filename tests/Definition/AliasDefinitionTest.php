@@ -6,7 +6,7 @@ use Emonkak\Di\Definition\AliasDefinition;
 
 class AliasDefinitionTest extends \PHPUnit_Framework_TestCase
 {
-    public function testResolve()
+    public function testResolveDependency()
     {
         \Closure::bind(function() {
             $definition = new AliasDefinition('stdClass');
@@ -19,7 +19,7 @@ class AliasDefinitionTest extends \PHPUnit_Framework_TestCase
                 ->with($this->identicalTo('stdClass'))
                 ->willReturn($dependency);
 
-            $this->assertSame($dependency, $definition->resolve($container));
+            $this->assertSame($dependency, $definition->resolveDependency($container));
         }, $this, 'Emonkak\Di\Definition\AliasDefinition')->__invoke();
     }
 

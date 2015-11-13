@@ -11,7 +11,7 @@ namespace Emonkak\Di\Tests\Definition
 
     class BindingDefinitionTest extends \PHPUnit_Framework_TestCase
     {
-        public function testResolve()
+        public function testResolveDependency()
         {
             \Closure::bind(function() {
                 $definition = new BindingDefinition('Emonkak\Di\Tests\Definition\BindingDefinitionTest\FooInterface');
@@ -28,24 +28,24 @@ namespace Emonkak\Di\Tests\Definition
                     ->with([$barDefinition])
                     ->withMethod('setBaz', [$bazDefinition])
                     ->withProperty('qux', $quxDefinition)
-                    ->resolve($container);
+                    ->resolveDependency($container);
 
                 $this->assertSame('Emonkak\Di\Dependency\ObjectDependency', get_class($fooDependency));
                 $this->assertSame('Emonkak\Di\Tests\Definition\BindingDefinitionTest\FooInterface', $fooDependency->getKey());
-                $this->assertEquals([$barDefinition->get($container)], $fooDependency->getConstructorParameters());
-                $this->assertEquals(['setBaz' => [$bazDefinition->get($container)]], $fooDependency->getMethodInjections());
-                $this->assertEquals(['qux' => $quxDefinition->get($container)], $fooDependency->getPropertyInjections());
+                $this->assertEquals([$barDefinition->resolveBy($container)], $fooDependency->getConstructorParameters());
+                $this->assertEquals(['setBaz' => [$bazDefinition->resolveBy($container)]], $fooDependency->getMethodInjections());
+                $this->assertEquals(['qux' => $quxDefinition->resolveBy($container)], $fooDependency->getPropertyInjections());
             }, $this, 'Emonkak\Di\Definition\BindingDefinition')->__invoke();
         }
 
         /**
          * @expectedException LogicException
          */
-        public function testResolveThrowsLogicException()
+        public function testResolveDependencyThrowsLogicException()
         {
             \Closure::bind(function() {
                 $definition = new BindingDefinition('Emonkak\Di\Tests\Definition\BindingDefinitionTest\FooInterface');
-                $definition->resolve(Container::create());
+                $definition->resolveDependency(Container::create());
             }, $this, 'Emonkak\Di\Definition\BindingDefinition')->__invoke();
         }
     }
