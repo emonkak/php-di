@@ -73,9 +73,9 @@ namespace Emonkak\Di\Tests
             $this->container->resolve('Emonkak\Di\Tests\AbstractContrainerTest\FooInterface');
         }
 
-        public function testGetInstance()
+        public function testGet()
         {
-            $foo = $this->container->getInstance('Emonkak\Di\Tests\AbstractContrainerTest\Foo');
+            $foo = $this->container->get('Emonkak\Di\Tests\AbstractContrainerTest\Foo');
 
             $this->assertInstanceOf('Emonkak\Di\Tests\AbstractContrainerTest\Foo', $foo);
             $this->assertInstanceOf('Emonkak\Di\Tests\AbstractContrainerTest\Bar', $foo->bar);
@@ -86,7 +86,7 @@ namespace Emonkak\Di\Tests
             $this->assertSame('payo', $foo->baz->payo);
             $this->assertSame('poyo', $foo->baz->poyo);
 
-            $this->assertInstanceOf('stdClass', $this->container->getInstance('stdClass'));
+            $this->assertInstanceOf('stdClass', $this->container->get('stdClass'));
         }
 
         abstract protected function prepareContainer();

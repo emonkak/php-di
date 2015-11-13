@@ -71,7 +71,7 @@ class PimpleContainer extends AbstractContainer
     /**
      * {@inheritDoc}
      */
-    public function getInstance($key)
+    public function get($key)
     {
         if (!isset($this->container[$key])) {
             $serviceProvider = $this->serviceProviderFactory->create($key, $key . 'Provider');

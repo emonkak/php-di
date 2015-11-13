@@ -57,7 +57,7 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
      */
     public function materializeBy(ContainerInterface $container)
     {
-        return $container->getInstance($this->key);
+        return $container->get($this->key);
     }
 
     /**

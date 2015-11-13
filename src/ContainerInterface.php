@@ -69,7 +69,7 @@ interface ContainerInterface
      * @param string $key
      * @return mixed
      */
-    public function getInstance($key);
+    public function get($key);
 
     /**
      * @param string $key

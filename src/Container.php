@@ -45,7 +45,7 @@ class Container extends AbstractContainer
      * @param string $key
      * @return mixed
      */
-    public function getInstance($key)
+    public function get($key)
     {
         if (isset($this->pool[$key])) {
             return $this->pool[$key];
