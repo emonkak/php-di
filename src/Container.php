@@ -2,6 +2,7 @@
 
 namespace Emonkak\Di;
 
+use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 
@@ -40,8 +41,7 @@ class Container extends AbstractContainer
     }
 
     /**
-     * @param string $key
-     * @return mixed
+     * {@inheritDoc}
      */
     public function get($key)
     {
@@ -49,33 +49,14 @@ class Container extends AbstractContainer
             return $this->pool[$key];
         }
 
-        return $this->resolve($key)->materializeBy($this);
+        return $this->resolve($key)->materializeBy($this, $this->pool);
     }
 
     /**
-     * @param string $key
-     * @return mixed
+     * {@inheritDoc}
      */
-    public function getValue($key)
+    protected function getPool()
     {
-        return $this->pool[$key];
-    }
-
-    /**
-     * @param string $key
-     * @param mixed  $value
-     */
-    public function setValue($key, $value)
-    {
-        $this->pool[$key] = $value;
-    }
-
-    /**
-     * @param string $key
-     * @return boolean
-     */
-    public function hasValue($key)
-    {
-        return isset($this->pool[$key]);
+        return $this->pool;
     }
 }

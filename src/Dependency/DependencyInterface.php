@@ -24,9 +24,10 @@ interface DependencyInterface
 
     /**
      * @param ContainerInterface $container
+     * @param \ArrayAccess       $pool
      * @return mixed
      */
-    public function materializeBy(ContainerInterface $container);
+    public function materializeBy(ContainerInterface $container, \ArrayAccess $pool);
 
     /**
      * @return boolean

@@ -96,8 +96,17 @@ abstract class AbstractContainer implements ContainerInterface
      */
     public function set($key, $value)
     {
-        $this->setValue($key, $value);
+        $pool = $this->getPool();
+        $pool[$key] = $value;
         return $this->definitions[$key] = new ReferenceDependency($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function has($key)
+    {
+        return isset($this->cache[$key]) || isset($this->definitions[$key]) || class_exists($key);
     }
 
     /**
@@ -127,10 +136,16 @@ abstract class AbstractContainer implements ContainerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param DependencyInterface $dependency
+     * @return mixed
      */
-    public function has($key)
+    public function materialize(DependencyInterface $dependency)
     {
-        return isset($this->cache[$key]) || isset($this->definitions[$key]) || class_exists($key);
+        return $dependency->materializeBy($this, $this->getPool());
     }
+
+    /**
+     * @return \ArrayAccess
+     */
+    abstract protected function getPool();
 }

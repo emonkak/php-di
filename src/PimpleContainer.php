@@ -2,6 +2,7 @@
 
 namespace Emonkak\Di;
 
+use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Extras\ServiceProviderFactory;
 use Emonkak\Di\Extras\ServiceProviderGenerator;
 use Emonkak\Di\Extras\ServiceProviderGeneratorInterface;
@@ -11,7 +12,7 @@ use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Pimple\Container as Pimple;
 
-class PimpleContainer extends AbstractContainer
+class PimpleContainer extends AbstractContainer implements \ArrayAccess
 {
     /**
      * @var Pimple
@@ -29,6 +30,7 @@ class PimpleContainer extends AbstractContainer
      * @param Pimple                            $container
      * @param ServiceProviderGeneratorInterface $serviceProviderGenerator
      * @param ServiceProviderLoaderInterface    $serviceProviderLoader
+     * @return self
      */
     public static function create(InjectionPolicyInterface $injectionPolicy = null, \ArrayAccess $cache = null, Pimple $container = null, ServiceProviderGeneratorInterface $serviceProviderGenerator = null, ServiceProviderLoaderInterface $serviceProviderLoader = null)
     {
@@ -63,6 +65,42 @@ class PimpleContainer extends AbstractContainer
     /**
      * {@inheritDoc}
      */
+    public function offsetGet($key)
+    {
+        return $this->container[$key];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function offsetExists($key)
+    {
+        return isset($this->container[$key]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function offsetSet($key, $value)
+    {
+        if (method_exists($value, '__invoke')) {
+            $this->container[$key] = $this->container->protect($value);
+        } else {
+            $this->container[$key] = $value;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function offsetUnset($key)
+    {
+        unset($this->container[$key]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function get($key)
     {
         if (!isset($this->container[$key])) {
@@ -76,28 +114,8 @@ class PimpleContainer extends AbstractContainer
     /**
      * {@inheritDoc}
      */
-    public function getValue($key)
+    protected function getPool()
     {
-        return $this->container[$key];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function hasValue($key)
-    {
-        return isset($this->container[$key]);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setValue($key, $value)
-    {
-        if (method_exists($value, '__invoke')) {
-            $this->container[$key] = $this->container->protect($value);
-        } else {
-            $this->container[$key] = $value;
-        }
+        return $this;
     }
 }

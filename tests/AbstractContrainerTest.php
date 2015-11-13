@@ -47,7 +47,7 @@ namespace Emonkak\Di\Tests
 
             $this->assertInstanceOf('Emonkak\Di\Dependency\ObjectDependency', $fooDependency);
 
-            $foo = $fooDependency->materializeBy($this->container);
+            $foo = $this->container->materialize($fooDependency);
 
             $this->assertInstanceOf('Emonkak\Di\Tests\AbstractContrainerTest\Foo', $foo);
             $this->assertInstanceOf('Emonkak\Di\Tests\AbstractContrainerTest\Bar', $foo->bar);

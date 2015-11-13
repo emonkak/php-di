@@ -33,7 +33,10 @@ namespace Emonkak\Di\Tests\Dependency
 
         public function testMaterializeBy()
         {
-            $container = Container::create();
+            $injectionPolicy = new DefaultInjectionPolicy();
+            $cache = new \ArrayObject();
+            $pool = new \ArrayObject();
+            $container = new Container($injectionPolicy, $cache, $pool);
 
             $dependency = new SingletonDependency(
                 'stdClass',
@@ -41,9 +44,9 @@ namespace Emonkak\Di\Tests\Dependency
                 [], [], []
             );
 
-            $obj = $dependency->materializeBy($container);
+            $obj = $dependency->materializeBy($container, $pool);
 
-            $this->assertSame($obj, $dependency->materializeBy($container));
+            $this->assertSame($obj, $dependency->materializeBy($container, $pool));
         }
 
         public function testIsSingleton()

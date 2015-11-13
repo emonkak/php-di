@@ -4,6 +4,7 @@ namespace Emonkak\Di\Tests\Dependency;
 
 use Emonkak\Di\Container;
 use Emonkak\Di\Dependency\FactoryDependency;
+use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 
 class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 {
@@ -37,20 +38,23 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testMaterializeBy()
     {
-        $container = Container::create();
+        $injectionPolicy = new DefaultInjectionPolicy();
+        $cache = new \ArrayObject();
+        $pool = new \ArrayObject();
+        $container = new Container($injectionPolicy, $cache, $pool);
 
         $parameter1 = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
         $parameter1
             ->expects($this->once())
             ->method('materializeBy')
-            ->with($this->identicalTo($container))
+            ->with($this->identicalTo($container), $this->identicalTo($pool))
             ->willReturn($parameter1Value = new \stdClass());
 
         $parameter2 = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
         $parameter2
             ->expects($this->once())
             ->method('materializeBy')
-            ->with($this->identicalTo($container))
+            ->with($this->identicalTo($container), $this->identicalTo($pool))
             ->willReturn($parameter2Value = new \stdClass());
 
         $factory = $this->getMock('stdClass', ['__invoke']);
@@ -62,7 +66,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
         $dependency = new FactoryDependency('foo', $factory, [$parameter1, $parameter2]);
 
-        $this->assertSame($expectedValue, $dependency->materializeBy($container));
+        $this->assertSame($expectedValue, $dependency->materializeBy($container, $pool));
     }
 
     public function testIsSingleton()

@@ -46,12 +46,15 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testMaterializeBy()
     {
-        $container = Container::create();
+        $injectionPolicy = new DefaultInjectionPolicy();
+        $cache = new \ArrayObject();
+        $pool = new \ArrayObject();
+        $container = new Container($injectionPolicy, $cache, $pool);
         $container->set('foo', $expectedValue = new \stdClass());
 
         $dependency = new ReferenceDependency('foo');
 
-        $this->assertSame($expectedValue, $dependency->materializeBy($container));
+        $this->assertSame($expectedValue, $dependency->materializeBy($container, $pool));
     }
 
     public function testIsSingleton()

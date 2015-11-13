@@ -19,4 +19,27 @@ class PimpleContainerTest extends AbstractContrainerTest
     {
         return PimpleContainer::create(AnnotationInjectionPolicy::create());
     }
+
+    public function testAsArrayAccess()
+    {
+        $obj = new \stdClass();
+        $f = function() {};
+
+        $container = $this->prepareContainer();
+        $container['foo'] = $obj;
+        $container['bar'] = $f;
+
+        $this->assertSame($obj, $container['foo']);
+        $this->assertSame($f, $container['bar']);
+
+        $this->assertTrue(isset($container['foo']));
+        $this->assertTrue(isset($container['bar']));
+        $this->assertFalse(isset($container['baz']));
+
+        unset($container['foo']);
+        unset($container['bar']);
+
+        $this->assertFalse(isset($container['foo']));
+        $this->assertFalse(isset($container['bar']));
+    }
 }

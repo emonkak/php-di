@@ -24,14 +24,14 @@ class SingletonDependency extends ObjectDependency
     /**
      * {@inheritDoc}
      */
-    public function materializeBy(ContainerInterface $container)
+    public function materializeBy(ContainerInterface $container, \ArrayAccess $pool)
     {
-        if ($container->hasValue($this->key)) {
-            return $container->getValue($this->key);
+        if (isset($pool[$this->key])) {
+            return $pool[$this->key];
         }
 
-        $instance = parent::materializeBy($container);
-        $container->setValue($this->key, $instance);
+        $instance = parent::materializeBy($container, $pool);
+        $pool[$this->key] = $instance;
 
         return $instance;
     }
