@@ -25,7 +25,7 @@ class AliasDefinition extends AbstractDefinition
      */
     protected function resolve(ContainerInterface $container)
     {
-        return $container->get($this->target);
+        return $container->resolve($this->target);
     }
 
     /**

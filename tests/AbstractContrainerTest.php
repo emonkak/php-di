@@ -46,9 +46,9 @@ namespace Emonkak\Di\Tests
             $this->assertInstanceOf('Emonkak\Di\InjectionPolicy\InjectionPolicyInterface', $this->container->getInjectionPolicy());
         }
 
-        public function testGet()
+        public function testResolve()
         {
-            $fooDependency = $this->container->get('Emonkak\Di\Tests\AbstractContrainerTest\Foo');
+            $fooDependency = $this->container->resolve('Emonkak\Di\Tests\AbstractContrainerTest\Foo');
 
             $this->assertInstanceOf('Emonkak\Di\Dependency\ObjectDependency', $fooDependency);
 
@@ -68,9 +68,9 @@ namespace Emonkak\Di\Tests
         /**
          * @expectedException InvalidArgumentException
          */
-        public function testGetThrowsInvalidArgumentException()
+        public function testResolveThrowsInvalidArgumentException()
         {
-            $this->container->get('Emonkak\Di\Tests\AbstractContrainerTest\FooInterface');
+            $this->container->resolve('Emonkak\Di\Tests\AbstractContrainerTest\FooInterface');
         }
 
         public function testGetInstance()

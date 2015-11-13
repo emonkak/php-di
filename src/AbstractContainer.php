@@ -102,7 +102,7 @@ abstract class AbstractContainer implements ContainerInterface
     /**
      * {@inheritDoc}
      */
-    public function get($key)
+    public function resolve($key)
     {
         if (isset($this->cache[$key])) {
             return $this->cache[$key];

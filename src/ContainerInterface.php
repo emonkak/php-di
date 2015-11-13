@@ -63,7 +63,7 @@ interface ContainerInterface
      * @param string $key
      * @return DependencyInterface
      */
-    public function get($key);
+    public function resolve($key);
 
     /**
      * @param string $key

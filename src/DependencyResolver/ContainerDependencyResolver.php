@@ -29,9 +29,9 @@ class ContainerDependencyResolver implements DependencyResolverInterface
         $key = $injectionPolicy->getParameterKey($parameter);
 
         if ($parameter->isOptional()) {
-            return $this->container->has($key) ? $this->container->get($key) : null;
+            return $this->container->has($key) ? $this->container->resolve($key) : null;
         } else {
-            return $this->container->get($key);
+            return $this->container->resolve($key);
         }
     }
 
@@ -47,9 +47,9 @@ class ContainerDependencyResolver implements DependencyResolverInterface
         $values = $class->getDefaultProperties();
 
         if (isset($values[$property->name])) {
-            return $this->container->has($key) ? $this->container->get($key) : null;
+            return $this->container->has($key) ? $this->container->resolve($key) : null;
         } else {
-            return $this->container->get($key);
+            return $this->container->resolve($key);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Emonkak\Di\Tests\Extras
                 $className = 'Class_' . md5(mt_rand());
             } while (class_exists($className));
 
-            $dependency = $container->get('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Foo');
+            $dependency = $container->resolve('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Foo');
 
             $source = $generator->generate($className, $dependency);
 

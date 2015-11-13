@@ -44,7 +44,7 @@ namespace Emonkak\Di\Tests\Extras
          */
         public function testGenerate($key)
         {
-            $dependency = $this->container->get($key);
+            $dependency = $this->container->resolve($key);
 
             $generator = new ClassDiagramGenerator();
             $diagram = $generator->generate($dependency);

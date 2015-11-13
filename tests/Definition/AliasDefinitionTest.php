@@ -15,7 +15,7 @@ class AliasDefinitionTest extends \PHPUnit_Framework_TestCase
             $container = $this->getMock('Emonkak\Di\ContainerInterface');
             $container
                 ->expects($this->once())
-                ->method('get')
+                ->method('resolve')
                 ->with($this->identicalTo('stdClass'))
                 ->willReturn($dependency);
 
