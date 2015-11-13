@@ -34,15 +34,6 @@ class Container extends AbstractContainer
 
     /**
      * @param string $key
-     * @param mixed  $value
-     */
-    public function setInstance($key, $value)
-    {
-        $this->pool[$key] = $value;
-    }
-
-    /**
-     * @param string $key
      * @return mixed
      */
     public function get($key)
@@ -56,9 +47,27 @@ class Container extends AbstractContainer
 
     /**
      * @param string $key
+     * @return mixed
+     */
+    public function getValue($key)
+    {
+        return $this->pool[$key];
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $value
+     */
+    public function setValue($key, $value)
+    {
+        $this->pool[$key] = $value;
+    }
+
+    /**
+     * @param string $key
      * @return boolean
      */
-    public function hasInstance($key)
+    public function hasValue($key)
     {
         return isset($this->pool[$key]);
     }

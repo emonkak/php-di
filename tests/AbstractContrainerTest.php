@@ -66,9 +66,9 @@ namespace Emonkak\Di\Tests
         }
 
         /**
-         * @expectedException InvalidArgumentException
+         * @expectedException Interop\Container\Exception\NotFoundException
          */
-        public function testResolveThrowsInvalidArgumentException()
+        public function testResolveThrowsNotFoundException()
         {
             $this->container->resolve('Emonkak\Di\Tests\AbstractContrainerTest\FooInterface');
         }

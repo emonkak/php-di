@@ -8,8 +8,9 @@ use Emonkak\Di\Definition\FactoryDefinition;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\ReferenceDependency;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Interop\Container\ContainerInterface as InteropContainerInterface;
 
-interface ContainerInterface
+interface ContainerInterface extends InteropContainerInterface
 {
     /**
      * @return InjectionFinder
@@ -28,58 +29,25 @@ interface ContainerInterface
 
     /**
      * @param string $key
-     * @param string $target
-     * @return AliasDefinition
+     * @return mixed
      */
-    public function alias($key, $target);
-
-    /**
-     * @param string $target
-     * @return BindingDefinition
-     */
-    public function bind($target);
-
-    /**
-     * @param string   $key
-     * @param callable $target
-     * @return FactoryDefinition
-     */
-    public function factory($key, callable $target);
-
-    /**
-     * @param string $key
-     * @param mixed  $value
-     * @return ReferenceDependency
-     */
-    public function set($key, $value);
+    public function getValue($key);
 
     /**
      * @param string $key
      * @param mixed  $value
      */
-    public function setInstance($key, $value);
+    public function setValue($key, $value);
+
+    /**
+     * @param string $key
+     * @return boolean
+     */
+    public function hasValue($key);
 
     /**
      * @param string $key
      * @return DependencyInterface
      */
     public function resolve($key);
-
-    /**
-     * @param string $key
-     * @return mixed
-     */
-    public function get($key);
-
-    /**
-     * @param string $key
-     * @return boolean
-     */
-    public function has($key);
-
-    /**
-     * @param string $key
-     * @return boolean
-     */
-    public function hasInstance($key);
 }

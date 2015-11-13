@@ -16,7 +16,8 @@
     ],
     "require": {
         "php": ">=5.4",
-        "jeremeamia/SuperClosure": ">=1.0"
+        "jeremeamia/SuperClosure": ">=1.0",
+        "container-interop/container-interop": "~1.1"
     },
     "require-dev": {
         "athletic/athletic": "dev-master",

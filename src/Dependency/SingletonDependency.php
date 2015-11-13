@@ -26,12 +26,12 @@ class SingletonDependency extends ObjectDependency
      */
     public function materializeBy(ContainerInterface $container)
     {
-        if ($container->hasInstance($this->key)) {
-            return $container->get($this->key);
+        if ($container->hasValue($this->key)) {
+            return $container->getValue($this->key);
         }
 
         $instance = parent::materializeBy($container);
-        $container->setInstance($this->key, $instance);
+        $container->setValue($this->key, $instance);
 
         return $instance;
     }

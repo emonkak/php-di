@@ -59,18 +59,6 @@ class PimpleContainer extends AbstractContainer
     /**
      * {@inheritDoc}
      */
-    public function setInstance($key, $value)
-    {
-        if (method_exists($value, '__invoke')) {
-            $this->container[$key] = $this->container->protect($value);
-        } else {
-            $this->container[$key] = $value;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function get($key)
     {
         if (!isset($this->container[$key])) {
@@ -84,8 +72,28 @@ class PimpleContainer extends AbstractContainer
     /**
      * {@inheritDoc}
      */
-    public function hasInstance($key)
+    public function getValue($key)
+    {
+        return $this->container[$key];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function hasValue($key)
     {
         return isset($this->container[$key]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setValue($key, $value)
+    {
+        if (method_exists($value, '__invoke')) {
+            $this->container[$key] = $this->container->protect($value);
+        } else {
+            $this->container[$key] = $value;
+        }
     }
 }

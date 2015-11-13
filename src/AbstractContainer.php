@@ -10,6 +10,7 @@ use Emonkak\Di\DependencyResolver\ContainerDependencyResolver;
 use Emonkak\Di\DependencyResolver\DependencyResolverInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\ReferenceDependency;
+use Emonkak\Di\Exception\NotFoundException;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 
 abstract class AbstractContainer implements ContainerInterface
@@ -76,7 +77,9 @@ abstract class AbstractContainer implements ContainerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $key
+     * @param string $target
+     * @return AliasDefinition
      */
     public function alias($key, $target)
     {
@@ -84,7 +87,8 @@ abstract class AbstractContainer implements ContainerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $target
+     * @return BindingDefinition
      */
     public function bind($target)
     {
@@ -92,11 +96,24 @@ abstract class AbstractContainer implements ContainerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string   $key
+     * @param callable $target
+     * @return FactoryDefinition
      */
     public function factory($key, callable $target)
     {
         return $this->definitions[$key] = new FactoryDefinition($key, $target);
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $value
+     * @return ReferenceDependency
+     */
+    public function set($key, $value)
+    {
+        $this->setValue($key, $value);
+        return $this->definitions[$key] = new ReferenceDependency($key);
     }
 
     /**
@@ -112,7 +129,7 @@ abstract class AbstractContainer implements ContainerInterface
             $definition = $this->definitions[$key];
         } else {
             if (!class_exists($key)) {
-                throw new \InvalidArgumentException(
+                throw new NotFoundException(
                     sprintf('Key "%s" does not registered in this container.', $key)
                 );
             }
@@ -123,15 +140,6 @@ abstract class AbstractContainer implements ContainerInterface
         $this->cache[$key] = $dependency;
 
         return $dependency;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function set($key, $value)
-    {
-        $this->setInstance($key, $value);
-        return $this->definitions[$key] = new ReferenceDependency($key);
     }
 
     /**
