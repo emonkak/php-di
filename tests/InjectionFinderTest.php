@@ -9,7 +9,7 @@ namespace Emonkak\Di\Tests
 
     class InjectionFinderTest extends \PHPUnit_Framework_TestCase
     {
-        public function testGetParameterDependency()
+        public function testResolveParameterDependency()
         {
             $injectionPolicy = new DefaultInjectionPolicy();
             $container = Container::create($injectionPolicy);
@@ -20,12 +20,12 @@ namespace Emonkak\Di\Tests
 
             $barDependency = $container->resolve('Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Bar');
 
-            $this->assertEquals($barDependency, $injectionFinder->getParameterDependency($parameters[0]));
-            $this->assertEquals($barDependency, $injectionFinder->getParameterDependency($parameters[1]));
-            $this->assertNull($injectionFinder->getParameterDependency($parameters[2]));
+            $this->assertEquals($barDependency, $injectionFinder->resolveParameterDependency($parameters[0]));
+            $this->assertEquals($barDependency, $injectionFinder->resolveParameterDependency($parameters[1]));
+            $this->assertNull($injectionFinder->resolveParameterDependency($parameters[2]));
         }
 
-        public function testGetPropertyDependency()
+        public function testResolvePropertyDependency()
         {
             $injectionPolicy = new DefaultInjectionPolicy();
             $container = Container::create($injectionPolicy);
@@ -36,9 +36,9 @@ namespace Emonkak\Di\Tests
             $barDependency = $container->set('$bar', new Bar());
             $optionalBarDependency = $container->set('$optionalBar', new Bar());
 
-            $this->assertEquals($barDependency, $injectionFinder->getPropertyDependency($foo->getProperty('bar')));
-            $this->assertEquals($optionalBarDependency, $injectionFinder->getPropertyDependency($foo->getProperty('optionalBar')));
-            $this->assertNull($injectionFinder->getPropertyDependency($foo->getProperty('optionalBaz')));
+            $this->assertEquals($barDependency, $injectionFinder->resolvePropertyDependency($foo->getProperty('bar')));
+            $this->assertEquals($optionalBarDependency, $injectionFinder->resolvePropertyDependency($foo->getProperty('optionalBar')));
+            $this->assertNull($injectionFinder->resolvePropertyDependency($foo->getProperty('optionalBaz')));
         }
     }
 }

@@ -30,7 +30,7 @@ class InjectionFinder
      * @param \ReflectionClass $class
      * @return DependencyInterface[]
      */
-    public function getConstructorParameters(\ReflectionClass $class)
+    public function getConstructorDependencies(\ReflectionClass $class)
     {
         $constructor = $class->getConstructor();
         return $constructor ? $this->getParameterDependencies($constructor) : [];
@@ -40,7 +40,7 @@ class InjectionFinder
      * @param \ReflectionClass $class
      * @return DependencyInterface[]
      */
-    public function getMethodInjections(\ReflectionClass $class)
+    public function getMethodDependencies(\ReflectionClass $class)
     {
         $injections = [];
 
@@ -56,13 +56,13 @@ class InjectionFinder
      * @param \ReflectionClass $class
      * @return DependencyInterface[]
      */
-    public function getPropertyInjections(\ReflectionClass $class)
+    public function getPropertyDependencies(\ReflectionClass $class)
     {
         $injections = [];
 
         $properties = $this->injectionPolicy->getInjectableProperties($class);
         foreach ($properties as $property) {
-            $dependency = $this->getPropertyDependency($property);
+            $dependency = $this->resolvePropertyDependency($property);
             if ($dependency) {
                 $injections[$property->name] = $dependency;
             }
@@ -79,7 +79,7 @@ class InjectionFinder
     {
         $dependencies = [];
         foreach ($function->getParameters() as $param) {
-            $dependency = $this->getParameterDependency($param);
+            $dependency = $this->resolveParameterDependency($param);
             if ($dependency) {
                 $dependencies[] = $dependency;
             }
@@ -91,7 +91,7 @@ class InjectionFinder
      * @param \ReflectionParameter $param
      * @return DependencyInterface
      */
-    public function getParameterDependency(\ReflectionParameter $parameter)
+    public function resolveParameterDependency(\ReflectionParameter $parameter)
     {
         $key = $this->injectionPolicy->getParameterKey($parameter);
 
@@ -106,7 +106,7 @@ class InjectionFinder
      * @param \ReflectionProperty $property
      * @return DependencyInterface
      */
-    public function getPropertyDependency(\ReflectionProperty $property)
+    public function resolvePropertyDependency(\ReflectionProperty $property)
     {
         $key = $this->injectionPolicy->getPropertyKey($property);
 

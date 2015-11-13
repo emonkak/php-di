@@ -27,8 +27,8 @@ namespace Emonkak\Di\Tests\Dependency
             $this->assertInstanceOf('Emonkak\Di\Dependency\SingletonDependency', $new);
             $this->assertSame($original->getKey(), $new->getKey());
             $this->assertSame($original->getClassName(), $new->getClassName());
-            $this->assertSame($original->getMethodInjections(), $new->getMethodInjections());
-            $this->assertSame($original->getPropertyInjections(), $new->getPropertyInjections());
+            $this->assertSame($original->getMethodDependencies(), $new->getMethodDependencies());
+            $this->assertSame($original->getPropertyDependencies(), $new->getPropertyDependencies());
         }
 
         public function testMaterializeBy()

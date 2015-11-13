@@ -15,9 +15,9 @@ class SingletonDependency extends ObjectDependency
         return new self(
             $dependency->key,
             $dependency->className,
-            $dependency->constructorParameters,
-            $dependency->methodInjections,
-            $dependency->propertyInjections
+            $dependency->constructorDependencies,
+            $dependency->methodDependencies,
+            $dependency->propertyDependencies
         );
     }
 

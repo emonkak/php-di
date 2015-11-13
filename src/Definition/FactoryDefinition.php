@@ -52,7 +52,6 @@ class FactoryDefinition extends AbstractDefinition
      */
     protected function resolveDependency(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
     {
-        $injectionFinder = $container->getInjectionFinder();
         $function = ReflectionUtils::getFunction($this->factory);
 
         if ($this->factory instanceof \Closure) {
@@ -67,6 +66,7 @@ class FactoryDefinition extends AbstractDefinition
                 $parameters[] = $definition->resolveBy($container, $injectionPolicy);
             }
         } else {
+            $injectionFinder = $container->getInjectionFinder();
             $parameters = $injectionFinder->getParameterDependencies($function);
         }
 

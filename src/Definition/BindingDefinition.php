@@ -22,7 +22,7 @@ class BindingDefinition extends AbstractDefinition
     /**
      * @var DefinitionInterface[]
      */
-    private $constructorParamerters;
+    private $constructorParameters;
 
     /**
      * @var DefinitionInterface[] array(methodName => paramerters)
@@ -58,7 +58,7 @@ class BindingDefinition extends AbstractDefinition
      */
     public function with(array $parameters)
     {
-        $this->constructorParamerters = $parameters;
+        $this->constructorParameters = $parameters;
         return $this;
     }
 
@@ -99,35 +99,35 @@ class BindingDefinition extends AbstractDefinition
 
         $injectionFinder = $container->getInjectionFinder();
 
-        if ($this->constructorParamerters !== null) {
-            $constructorParamerters = [];
-            foreach ($this->constructorParamerters as $definition) {
-                $constructorParamerters[] = $definition->resolveBy($container, $injectionPolicy);
+        if ($this->constructorParameters !== null) {
+            $constructorDependencies = [];
+            foreach ($this->constructorParameters as $definition) {
+                $constructorDependencies[] = $definition->resolveBy($container, $injectionPolicy);
             }
         } else {
-            $constructorParamerters = $injectionFinder->getConstructorParameters($class);
+            $constructorDependencies = $injectionFinder->getConstructorDependencies($class);
         }
 
-        $methodInjections = $injectionFinder->getMethodInjections($class);
+        $methodDependencies = $injectionFinder->getMethodDependencies($class);
         foreach ($this->methodInjections as $method => $definitions) {
-            $parameters = [];
+            $dependencies = [];
             foreach ($definitions as $definition) {
-                $parameters[] = $definition->resolveBy($container, $injectionPolicy);
+                $dependencies[] = $definition->resolveBy($container, $injectionPolicy);
             }
-            $methodInjections[$method] = $parameters;
+            $methodDependencies[$method] = $dependencies;
         }
 
-        $propertyInjections = $injectionFinder->getPropertyInjections($class);
+        $propertyDependencies = $injectionFinder->getPropertyDependencies($class);
         foreach ($this->propertyInjections as $property => $definition) {
-            $propertyInjections[$property] = $definition->resolveBy($container, $injectionPolicy);
+            $propertyDependencies[$property] = $definition->resolveBy($container, $injectionPolicy);
         }
 
         return new ObjectDependency(
             $this->key,
             $class->name,
-            $constructorParamerters,
-            $methodInjections,
-            $propertyInjections
+            $constructorDependencies,
+            $methodDependencies,
+            $propertyDependencies
         );
     }
 
