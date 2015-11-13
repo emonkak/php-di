@@ -3,6 +3,7 @@
 namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\ContainerInterface;
+use Emonkak\Di\Dependency\DependencyFinders;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\PrototypeScope;
@@ -66,8 +67,7 @@ class FactoryDefinition extends AbstractDefinition
                 $parameters[] = $definition->resolveBy($container, $injectionPolicy);
             }
         } else {
-            $injectionFinder = $container->getInjectionFinder();
-            $parameters = $injectionFinder->getParameterDependencies($function);
+            $parameters = DependencyFinders::getParameterDependencies($container, $injectionPolicy, $function);
         }
 
         return new FactoryDependency($this->key, $factory, $parameters);

@@ -3,6 +3,7 @@
 namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\ContainerInterface;
+use Emonkak\Di\Dependency\DependencyFinders;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\ScopeInterface;
@@ -97,18 +98,16 @@ class BindingDefinition extends AbstractDefinition
             );
         }
 
-        $injectionFinder = $container->getInjectionFinder();
-
         if ($this->constructorParameters !== null) {
             $constructorDependencies = [];
             foreach ($this->constructorParameters as $definition) {
                 $constructorDependencies[] = $definition->resolveBy($container, $injectionPolicy);
             }
         } else {
-            $constructorDependencies = $injectionFinder->getConstructorDependencies($class);
+            $constructorDependencies = DependencyFinders::getConstructorDependencies($container, $injectionPolicy, $class);
         }
 
-        $methodDependencies = $injectionFinder->getMethodDependencies($class);
+        $methodDependencies = DependencyFinders::getMethodDependencies($container, $injectionPolicy, $class);
         foreach ($this->methodInjections as $method => $definitions) {
             $dependencies = [];
             foreach ($definitions as $definition) {
@@ -117,7 +116,7 @@ class BindingDefinition extends AbstractDefinition
             $methodDependencies[$method] = $dependencies;
         }
 
-        $propertyDependencies = $injectionFinder->getPropertyDependencies($class);
+        $propertyDependencies = DependencyFinders::getPropertyDependencies($container, $injectionPolicy, $class);
         foreach ($this->propertyInjections as $property => $definition) {
             $propertyDependencies[$property] = $definition->resolveBy($container, $injectionPolicy);
         }

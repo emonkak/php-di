@@ -14,11 +14,6 @@ use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 abstract class AbstractContainer implements ContainerInterface
 {
     /**
-     * @var InjectionFinder
-     */
-    private $injectionFinder;
-
-    /**
      * @var InjectionPolicyInterface
      */
     private $injectionPolicy;
@@ -39,17 +34,8 @@ abstract class AbstractContainer implements ContainerInterface
      */
     public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache)
     {
-        $this->injectionFinder = new InjectionFinder($this, $injectionPolicy);
         $this->injectionPolicy = $injectionPolicy;
         $this->cache = $cache;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getInjectionFinder()
-    {
-        return $this->injectionFinder;
     }
 
     /**
