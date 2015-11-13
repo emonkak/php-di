@@ -4,10 +4,10 @@ namespace Emonkak\Di\Tests\Extras
 {
     use Emonkak\Di\Container;
     use Emonkak\Di\Extras\ClassDiagramGenerator;
-    use Emonkak\Di\Tests\Extras\ClassDiagramGeneratorTest\Qux;
-    use Emonkak\Di\Tests\Extras\ClassDiagramGeneratorTest\Quux;
     use Emonkak\Di\Tests\Extras\ClassDiagramGeneratorTest\Corge;
     use Emonkak\Di\Tests\Extras\ClassDiagramGeneratorTest\Grault;
+    use Emonkak\Di\Tests\Extras\ClassDiagramGeneratorTest\Quux;
+    use Emonkak\Di\Tests\Extras\ClassDiagramGeneratorTest\Qux;
     use Symfony\Component\Process\Process;
 
     class ClassDiagramGeneratorTest extends \PHPUnit_Framework_TestCase

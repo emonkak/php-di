@@ -5,7 +5,7 @@ namespace Emonkak\Di;
 interface ContainerConfiguratorInterface
 {
     /**
-     * @param AbstractContainerInterface $container
+     * @param ContainerInterface $container
      */
-    public function configure(AbstractContainerInterface $container);
+    public function configure(ContainerInterface $container);
 }

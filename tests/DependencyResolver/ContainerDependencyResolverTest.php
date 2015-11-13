@@ -4,19 +4,21 @@ namespace Emonkak\Di\Tests\DependencyResolver
 {
     use Emonkak\Di\Container;
     use Emonkak\Di\DependencyResolver\ContainerDependencyResolver;
+    use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
     use Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Bar;
 
     class ContainerDependencyResolverTest extends \PHPUnit_Framework_TestCase
     {
         public function testGetParameterDependency()
         {
-            $container = Container::create();
-            $dependencyResolver = new ContainerDependencyResolver($container);
+            $injectionPolicy = new DefaultInjectionPolicy();
+            $container = Container::create($injectionPolicy);
+            $dependencyResolver = new ContainerDependencyResolver($container, $injectionPolicy);
 
             $foo = new \ReflectionClass('Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Foo');
             $parameters = $foo->getConstructor()->getParameters();
 
-            $barDependency = $container->bind('Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Bar')->resolveBy($container);
+            $barDependency = $container->resolve('Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Bar');
 
             $this->assertEquals($barDependency, $dependencyResolver->getParameterDependency($parameters[0]));
             $this->assertEquals($barDependency, $dependencyResolver->getParameterDependency($parameters[1]));
@@ -25,8 +27,9 @@ namespace Emonkak\Di\Tests\DependencyResolver
 
         public function testGetPropertyDependency()
         {
-            $container = Container::create();
-            $dependencyResolver = new ContainerDependencyResolver($container);
+            $injectionPolicy = new DefaultInjectionPolicy();
+            $container = Container::create($injectionPolicy);
+            $dependencyResolver = new ContainerDependencyResolver($container, $injectionPolicy);
 
             $foo = new \ReflectionClass('Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Foo');
 

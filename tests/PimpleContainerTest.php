@@ -17,12 +17,6 @@ class PimpleContainerTest extends AbstractContrainerTest
 
     protected function prepareContainer()
     {
-        return new PimpleContainer(
-            AnnotationInjectionPolicy::create(),
-            new \ArrayObject(),
-            new Pimple(),
-            ServiceProviderGenerator::create(),
-            ServiceProviderLoader::create()
-        );
+        return PimpleContainer::create(AnnotationInjectionPolicy::create());
     }
 }

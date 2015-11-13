@@ -46,7 +46,7 @@ abstract class AbstractContainer implements ContainerInterface
      */
     public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache)
     {
-        $this->dependencyResolver = new ContainerDependencyResolver($this);
+        $this->dependencyResolver = new ContainerDependencyResolver($this, $injectionPolicy);
         $this->injectionFinder = new InjectionFinder($this->dependencyResolver, $injectionPolicy);
         $this->injectionPolicy = $injectionPolicy;
         $this->cache = $cache;
@@ -58,14 +58,6 @@ abstract class AbstractContainer implements ContainerInterface
     public function getInjectionFinder()
     {
         return $this->injectionFinder;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getInjectionPolicy()
-    {
-        return $this->injectionPolicy;
     }
 
     /**
@@ -136,7 +128,7 @@ abstract class AbstractContainer implements ContainerInterface
             $definition = new BindingDefinition($key);
         }
 
-        $dependency = $definition->resolveBy($this);
+        $dependency = $definition->resolveBy($this, $this->injectionPolicy);
         $this->cache[$key] = $dependency;
 
         return $dependency;

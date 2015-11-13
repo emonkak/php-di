@@ -4,6 +4,7 @@ namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\ObjectDependency;
+use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\ScopeInterface;
 
 class BindingDefinition extends AbstractDefinition
@@ -86,10 +87,9 @@ class BindingDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolveDependency(ContainerInterface $container)
+    protected function resolveDependency(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
     {
         $class = new \ReflectionClass($this->target);
-        $injectionPolicy = $container->getInjectionPolicy();
 
         if (!$injectionPolicy->isInjectableClass($class)) {
             throw new \LogicException(
@@ -102,7 +102,7 @@ class BindingDefinition extends AbstractDefinition
         if ($this->constructorParamerters !== null) {
             $constructorParamerters = [];
             foreach ($this->constructorParamerters as $definition) {
-                $constructorParamerters[] = $definition->resolveBy($container);
+                $constructorParamerters[] = $definition->resolveBy($container, $injectionPolicy);
             }
         } else {
             $constructorParamerters = $injectionFinder->getConstructorParameters($class);
@@ -112,14 +112,14 @@ class BindingDefinition extends AbstractDefinition
         foreach ($this->methodInjections as $method => $definitions) {
             $parameters = [];
             foreach ($definitions as $definition) {
-                $parameters[] = $definition->resolveBy($container);
+                $parameters[] = $definition->resolveBy($container, $injectionPolicy);
             }
             $methodInjections[$method] = $parameters;
         }
 
         $propertyInjections = $injectionFinder->getPropertyInjections($class);
         foreach ($this->propertyInjections as $property => $definition) {
-            $propertyInjections[$property] = $definition->resolveBy($container);
+            $propertyInjections[$property] = $definition->resolveBy($container, $injectionPolicy);
         }
 
         return new ObjectDependency(
@@ -134,10 +134,9 @@ class BindingDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolveScope(ContainerInterface $container)
+    protected function resolveScope(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
     {
         $class = new \ReflectionClass($this->target);
-        $injectionPolicy = $container->getInjectionPolicy();
 
         return $injectionPolicy->getScope($class);
     }

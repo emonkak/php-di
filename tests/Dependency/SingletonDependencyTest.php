@@ -5,6 +5,7 @@ namespace Emonkak\Di\Tests\Dependency
     use Emonkak\Di\Container;
     use Emonkak\Di\Dependency\ObjectDependency;
     use Emonkak\Di\Dependency\SingletonDependency;
+    use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
     use Emonkak\Di\Tests\Dependency\SingletonDependencyTest\Bar;
     use Emonkak\Di\Tests\Dependency\SingletonDependencyTest\Baz;
     use Emonkak\Di\Tests\Dependency\SingletonDependencyTest\Foo;

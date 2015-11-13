@@ -4,6 +4,7 @@ namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
+use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\PrototypeScope;
 use Emonkak\Di\Scope\ScopeInterface;
 use Emonkak\Di\Utils\ReflectionUtils;
@@ -49,7 +50,7 @@ class FactoryDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolveDependency(ContainerInterface $container)
+    protected function resolveDependency(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
     {
         $injectionFinder = $container->getInjectionFinder();
         $function = ReflectionUtils::getFunction($this->factory);
@@ -63,7 +64,7 @@ class FactoryDefinition extends AbstractDefinition
         if ($this->parameters !== null) {
             $parameters = [];
             foreach ($this->parameters as $definition) {
-                $parameters[] = $definition->resolveBy($container);
+                $parameters[] = $definition->resolveBy($container, $injectionPolicy);
             }
         } else {
             $parameters = $injectionFinder->getParameterDependencies($function);
@@ -75,7 +76,7 @@ class FactoryDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolveScope(ContainerInterface $container)
+    protected function resolveScope(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
     {
         return PrototypeScope::getInstance();
     }

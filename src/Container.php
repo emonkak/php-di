@@ -13,11 +13,18 @@ class Container extends AbstractContainer
     private $pool;
 
     /**
+     * @param InjectionPolicyInterface $injectionPolicy
+     * @param \ArrayAccess             $cache
+     * @param \ArrayAccess             $pool
      * @return Container
      */
-    public static function create()
+    public static function create(InjectionPolicyInterface $injectionPolicy = null, \ArrayAccess $cache = null, \ArrayAccess $pool = null)
     {
-        return new self(new DefaultInjectionPolicy(), new \ArrayObject(), new \ArrayObject());
+        return new self(
+            $injectionPolicy ?: new DefaultInjectionPolicy(),
+            $cache ?: new \ArrayObject(),
+            $pool ?: new \ArrayObject()
+        );
     }
 
     /**

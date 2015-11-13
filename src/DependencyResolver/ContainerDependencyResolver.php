@@ -13,11 +13,18 @@ class ContainerDependencyResolver implements DependencyResolverInterface
     private $container;
 
     /**
-     * @param ContainerInterface     $container
+     * @var InjectionPolicyInterface
      */
-    public function __construct(ContainerInterface $container)
+    private $injectionPolicy;
+
+    /**
+     * @param ContainerInterface       $container
+     * @param InjectionPolicyInterface $injectionPolicy
+     */
+    public function __construct(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
     {
         $this->container = $container;
+        $this->injectionPolicy = $injectionPolicy;
     }
 
     /**
@@ -25,8 +32,7 @@ class ContainerDependencyResolver implements DependencyResolverInterface
      */
     public function getParameterDependency(\ReflectionParameter $parameter)
     {
-        $injectionPolicy = $this->container->getInjectionPolicy();
-        $key = $injectionPolicy->getParameterKey($parameter);
+        $key = $this->injectionPolicy->getParameterKey($parameter);
 
         if ($parameter->isOptional()) {
             return $this->container->has($key) ? $this->container->resolve($key) : null;
@@ -40,8 +46,7 @@ class ContainerDependencyResolver implements DependencyResolverInterface
      */
     public function getPropertyDependency(\ReflectionProperty $property)
     {
-        $injectionPolicy = $this->container->getInjectionPolicy();
-        $key = $injectionPolicy->getPropertyKey($property);
+        $key = $this->injectionPolicy->getPropertyKey($property);
 
         $class = $property->getDeclaringClass();
         $values = $class->getDefaultProperties();

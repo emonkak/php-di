@@ -41,11 +41,6 @@ namespace Emonkak\Di\Tests
             $this->assertInstanceOf('Emonkak\Di\InjectionFinder', $this->container->getInjectionFinder());
         }
 
-        public function testGetInjectionPolicy()
-        {
-            $this->assertInstanceOf('Emonkak\Di\InjectionPolicy\InjectionPolicyInterface', $this->container->getInjectionPolicy());
-        }
-
         public function testResolve()
         {
             $fooDependency = $this->container->resolve('Emonkak\Di\Tests\AbstractContrainerTest\Foo');

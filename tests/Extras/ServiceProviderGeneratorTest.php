@@ -2,8 +2,8 @@
 
 namespace Emonkak\Di\Tests\Extras
 {
-    use Emonkak\Di\Extras\ServiceProviderGenerator;
     use Emonkak\Di\Container;
+    use Emonkak\Di\Extras\ServiceProviderGenerator;
     use Pimple\Container as Pimple;
 
     class ServiceProviderGeneratorTest extends \PHPUnit_Framework_TestCase
