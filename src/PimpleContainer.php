@@ -12,7 +12,7 @@ use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Pimple\Container as Pimple;
 
-class PimpleContainer extends AbstractContainer implements \ArrayAccess
+class PimpleContainer extends AbstractContainer
 {
     /**
      * @var Pimple
@@ -52,7 +52,7 @@ class PimpleContainer extends AbstractContainer implements \ArrayAccess
      */
     public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache, Pimple $container, ServiceProviderGeneratorInterface $serviceProviderGenerator, ServiceProviderLoaderInterface $serviceProviderLoader)
     {
-        parent::__construct($injectionPolicy, $cache);
+        parent::__construct($injectionPolicy, $cache, new PimpleContainerWrapper($container));
 
         $this->container = $container;
         $this->serviceProviderFactory = new ServiceProviderFactory(
@@ -60,42 +60,6 @@ class PimpleContainer extends AbstractContainer implements \ArrayAccess
             $serviceProviderLoader,
             $this
         );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetGet($key)
-    {
-        return $this->container[$key];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetExists($key)
-    {
-        return isset($this->container[$key]);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetSet($key, $value)
-    {
-        if (method_exists($value, '__invoke')) {
-            $this->container[$key] = $this->container->protect($value);
-        } else {
-            $this->container[$key] = $value;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetUnset($key)
-    {
-        unset($this->container[$key]);
     }
 
     /**
@@ -109,13 +73,5 @@ class PimpleContainer extends AbstractContainer implements \ArrayAccess
         }
 
         return $this->container[$key];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getPool()
-    {
-        return $this;
     }
 }

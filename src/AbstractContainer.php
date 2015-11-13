@@ -16,26 +16,33 @@ abstract class AbstractContainer implements ContainerInterface
     /**
      * @var InjectionPolicyInterface
      */
-    private $injectionPolicy;
-
-    /**
-     * @var DefinitionInterface[]
-     */
-    private $definitions = [];
+    protected $injectionPolicy;
 
     /**
      * @var \ArrayAccess
      */
-    private $cache;
+    protected $cache;
+
+    /**
+     * @var \ArrayAccess
+     */
+    protected $pool;
+
+    /**
+     * @var DefinitionInterface[]
+     */
+    protected $definitions = [];
 
     /**
      * @param InjectionPolicyInterface $injectionPolicy
      * @param \ArrayAccess             $cache
+     * @param \ArrayAccess             $pool
      */
-    public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache)
+    public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache, \ArrayAccess $pool)
     {
         $this->injectionPolicy = $injectionPolicy;
         $this->cache = $cache;
+        $this->pool = $pool;
     }
 
     /**
@@ -82,8 +89,7 @@ abstract class AbstractContainer implements ContainerInterface
      */
     public function set($key, $value)
     {
-        $pool = $this->getPool();
-        $pool[$key] = $value;
+        $this->pool[$key] = $value;
         return $this->definitions[$key] = new ReferenceDependency($key);
     }
 
@@ -92,7 +98,7 @@ abstract class AbstractContainer implements ContainerInterface
      */
     public function has($key)
     {
-        return isset($this->cache[$key]) || isset($this->definitions[$key]) || class_exists($key);
+        return isset($this->definitions[$key]) || isset($this->pool[$key]) || isset($this->cache[$key]) || class_exists($key);
     }
 
     /**
@@ -127,11 +133,6 @@ abstract class AbstractContainer implements ContainerInterface
      */
     public function materialize(DependencyInterface $dependency)
     {
-        return $dependency->materializeBy($this, $this->getPool());
+        return $dependency->materializeBy($this, $this->pool);
     }
-
-    /**
-     * @return \ArrayAccess
-     */
-    abstract protected function getPool();
 }

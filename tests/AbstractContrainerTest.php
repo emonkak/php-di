@@ -2,6 +2,7 @@
 
 namespace Emonkak\Di\Tests
 {
+    use Emonkak\Di\Dependency\DependencyInterface;
     use Emonkak\Di\Scope\SingletonScope;
 
     abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
@@ -42,6 +43,14 @@ namespace Emonkak\Di\Tests
 
             $this->assertInstanceOf('Emonkak\Di\Dependency\ObjectDependency', $fooDependency);
 
+            return $fooDependency;
+        }
+
+        /**
+         * @depends testResolve
+         */
+        public function testMaterialize(DependencyInterface $fooDependency)
+        {
             $foo = $this->container->materialize($fooDependency);
 
             $this->assertInstanceOf('Emonkak\Di\Tests\AbstractContrainerTest\Foo', $foo);

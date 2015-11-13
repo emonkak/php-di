@@ -9,15 +9,11 @@ use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 class Container extends AbstractContainer
 {
     /**
-     * @var \ArrayAcccess
-     */
-    private $pool;
-
-    /**
      * @param InjectionPolicyInterface $injectionPolicy
      * @param \ArrayAccess             $cache
      * @param \ArrayAccess             $pool
      * @return Container
+     * @return self
      */
     public static function create(InjectionPolicyInterface $injectionPolicy = null, \ArrayAccess $cache = null, \ArrayAccess $pool = null)
     {
@@ -26,18 +22,6 @@ class Container extends AbstractContainer
             $cache ?: new \ArrayObject(),
             $pool ?: new \ArrayObject()
         );
-    }
-
-    /**
-     * @param InjectionPolicyInterface $injectionPolicy
-     * @param \ArrayAccess             $cache
-     * @param \ArrayAccess             $pool
-     */
-    public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache, \ArrayAccess $pool)
-    {
-        parent::__construct($injectionPolicy, $cache);
-
-        $this->pool = $pool;
     }
 
     /**
@@ -50,13 +34,5 @@ class Container extends AbstractContainer
         }
 
         return $this->resolve($key)->materializeBy($this, $this->pool);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getPool()
-    {
-        return $this->pool;
     }
 }
