@@ -61,11 +61,11 @@ class FactoryDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function materialize(ContainerInterface $container)
+    public function materializeBy(ContainerInterface $container)
     {
         $args = [];
         foreach ($this->parameters as $parameter) {
-            $args[] = $parameter->materialize($container);
+            $args[] = $parameter->materializeBy($container);
         }
         return ReflectionUtils::callFunction($this->factory, $args);
     }

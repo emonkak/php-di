@@ -26,7 +26,7 @@ interface DependencyInterface
      * @param ContainerInterface $container
      * @return mixed
      */
-    public function materialize(ContainerInterface $container);
+    public function materializeBy(ContainerInterface $container);
 
     /**
      * @return boolean

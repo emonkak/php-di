@@ -23,7 +23,7 @@ class FlyweightFactoryDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($original->getParameters(), $new->getParameters());
     }
 
-    public function testMaterialize()
+    public function testMaterializeBy()
     {
         $container = Container::create();
 
@@ -35,8 +35,8 @@ class FlyweightFactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
         $dependency = new FlyweightFactoryDependency('foo', $factory, []);
 
-        $this->assertSame($expectedValue, $dependency->materialize($container));
-        $this->assertSame($expectedValue, $dependency->materialize($container));
+        $this->assertSame($expectedValue, $dependency->materializeBy($container));
+        $this->assertSame($expectedValue, $dependency->materializeBy($container));
     }
 
     public function testIsSingleton()

@@ -35,21 +35,21 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo', $dependency->getKey());
     }
 
-    public function testMaterialize()
+    public function testMaterializeBy()
     {
         $container = Container::create();
 
         $parameter1 = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
         $parameter1
             ->expects($this->once())
-            ->method('materialize')
+            ->method('materializeBy')
             ->with($this->identicalTo($container))
             ->willReturn($parameter1Value = new \stdClass());
 
         $parameter2 = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
         $parameter2
             ->expects($this->once())
-            ->method('materialize')
+            ->method('materializeBy')
             ->with($this->identicalTo($container))
             ->willReturn($parameter2Value = new \stdClass());
 
@@ -62,7 +62,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
         $dependency = new FactoryDependency('foo', $factory, [$parameter1, $parameter2]);
 
-        $this->assertSame($expectedValue, $dependency->materialize($container));
+        $this->assertSame($expectedValue, $dependency->materializeBy($container));
     }
 
     public function testIsSingleton()

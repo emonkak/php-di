@@ -30,7 +30,7 @@ namespace Emonkak\Di\Tests\Dependency
             $this->assertSame($original->getPropertyInjections(), $new->getPropertyInjections());
         }
 
-        public function testMaterialize()
+        public function testMaterializeBy()
         {
             $container = Container::create();
 
@@ -40,9 +40,9 @@ namespace Emonkak\Di\Tests\Dependency
                 [], [], []
             );
 
-            $obj = $dependency->materialize($container);
+            $obj = $dependency->materializeBy($container);
 
-            $this->assertSame($obj, $dependency->materialize($container));
+            $this->assertSame($obj, $dependency->materializeBy($container));
         }
 
         public function testIsSingleton()

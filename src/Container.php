@@ -51,7 +51,7 @@ class Container extends AbstractContainer
             return $this->pool[$key];
         }
 
-        return $this->get($key)->materialize($this);
+        return $this->get($key)->materializeBy($this);
     }
 
     /**

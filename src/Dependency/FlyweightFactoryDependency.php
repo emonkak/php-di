@@ -22,13 +22,13 @@ class FlyweightFactoryDependency extends FactoryDependency
     /**
      * {@inheritDoc}
      */
-    public function materialize(ContainerInterface $container)
+    public function materializeBy(ContainerInterface $container)
     {
         if ($container->hasInstance($this->key)) {
             return $container->getInstance($this->key);
         }
 
-        $instance = parent::materialize($container);
+        $instance = parent::materializeBy($container);
         $container->setInstance($this->key, $instance);
 
         return $instance;
