@@ -18,11 +18,6 @@ interface ContainerInterface extends InteropContainerInterface
     public function getInjectionFinder();
 
     /**
-     * @param ContainerConfiguratorInterface $configurator
-     */
-    public function configure(ContainerConfiguratorInterface $configurator);
-
-    /**
      * @param string $key
      * @return mixed
      */

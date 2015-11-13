@@ -53,7 +53,7 @@ abstract class AbstractContainer implements ContainerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param ContainerConfiguratorInterface $configurator
      */
     public function configure(ContainerConfiguratorInterface $configurator)
     {
