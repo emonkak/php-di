@@ -6,8 +6,6 @@ use Emonkak\Di\Definition\AliasDefinition;
 use Emonkak\Di\Definition\BindingDefinition;
 use Emonkak\Di\Definition\DefinitionInterface;
 use Emonkak\Di\Definition\FactoryDefinition;
-use Emonkak\Di\DependencyResolver\ContainerDependencyResolver;
-use Emonkak\Di\DependencyResolver\DependencyResolverInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\ReferenceDependency;
 use Emonkak\Di\Exception\NotFoundException;
@@ -15,11 +13,6 @@ use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 
 abstract class AbstractContainer implements ContainerInterface
 {
-    /**
-     * @var DependencyResolverInterface
-     */
-    private $dependencyResolver;
-
     /**
      * @var InjectionFinder
      */
@@ -46,8 +39,7 @@ abstract class AbstractContainer implements ContainerInterface
      */
     public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache)
     {
-        $this->dependencyResolver = new ContainerDependencyResolver($this, $injectionPolicy);
-        $this->injectionFinder = new InjectionFinder($this->dependencyResolver, $injectionPolicy);
+        $this->injectionFinder = new InjectionFinder($this, $injectionPolicy);
         $this->injectionPolicy = $injectionPolicy;
         $this->cache = $cache;
     }

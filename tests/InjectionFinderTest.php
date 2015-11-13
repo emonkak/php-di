@@ -1,44 +1,44 @@
 <?php
 
-namespace Emonkak\Di\Tests\DependencyResolver
+namespace Emonkak\Di\Tests
 {
     use Emonkak\Di\Container;
-    use Emonkak\Di\DependencyResolver\ContainerDependencyResolver;
+    use Emonkak\Di\InjectionFinder;
     use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
     use Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Bar;
 
-    class ContainerDependencyResolverTest extends \PHPUnit_Framework_TestCase
+    class InjectionFinderTest extends \PHPUnit_Framework_TestCase
     {
         public function testGetParameterDependency()
         {
             $injectionPolicy = new DefaultInjectionPolicy();
             $container = Container::create($injectionPolicy);
-            $dependencyResolver = new ContainerDependencyResolver($container, $injectionPolicy);
+            $injectionFinder = new InjectionFinder($container, $injectionPolicy);
 
             $foo = new \ReflectionClass('Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Foo');
             $parameters = $foo->getConstructor()->getParameters();
 
             $barDependency = $container->resolve('Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Bar');
 
-            $this->assertEquals($barDependency, $dependencyResolver->getParameterDependency($parameters[0]));
-            $this->assertEquals($barDependency, $dependencyResolver->getParameterDependency($parameters[1]));
-            $this->assertNull($dependencyResolver->getParameterDependency($parameters[2]));
+            $this->assertEquals($barDependency, $injectionFinder->getParameterDependency($parameters[0]));
+            $this->assertEquals($barDependency, $injectionFinder->getParameterDependency($parameters[1]));
+            $this->assertNull($injectionFinder->getParameterDependency($parameters[2]));
         }
 
         public function testGetPropertyDependency()
         {
             $injectionPolicy = new DefaultInjectionPolicy();
             $container = Container::create($injectionPolicy);
-            $dependencyResolver = new ContainerDependencyResolver($container, $injectionPolicy);
+            $injectionFinder = new InjectionFinder($container, $injectionPolicy);
 
             $foo = new \ReflectionClass('Emonkak\Di\Tests\DependencyResolver\ContainerDependencyResolverTest\Foo');
 
             $barDependency = $container->set('$bar', new Bar());
             $optionalBarDependency = $container->set('$optionalBar', new Bar());
 
-            $this->assertEquals($barDependency, $dependencyResolver->getPropertyDependency($foo->getProperty('bar')));
-            $this->assertEquals($optionalBarDependency, $dependencyResolver->getPropertyDependency($foo->getProperty('optionalBar')));
-            $this->assertNull($dependencyResolver->getPropertyDependency($foo->getProperty('optionalBaz')));
+            $this->assertEquals($barDependency, $injectionFinder->getPropertyDependency($foo->getProperty('bar')));
+            $this->assertEquals($optionalBarDependency, $injectionFinder->getPropertyDependency($foo->getProperty('optionalBar')));
+            $this->assertNull($injectionFinder->getPropertyDependency($foo->getProperty('optionalBaz')));
         }
     }
 }

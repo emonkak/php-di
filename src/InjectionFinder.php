@@ -3,14 +3,13 @@
 namespace Emonkak\Di;
 
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
-use Emonkak\Di\DependencyResolver\DependencyResolverInterface;
 
 class InjectionFinder
 {
     /**
-     * @var DependencyResolverInterface
+     * @var ContainerInterface
      */
-    private $dependencyResolver;
+    private $container;
 
     /**
      * @var InjectionPolicyInterface
@@ -18,12 +17,12 @@ class InjectionFinder
     private $injectionPolicy;
 
     /**
-     * @param DependencyResolverInterface $dependencyResolver
-     * @param InjectionPolicyInterface    $injectionPolicy
+     * @param ContainerInterface       $container
+     * @param InjectionPolicyInterface $injectionPolicy
      */
-    public function __construct(DependencyResolverInterface $dependencyResolver, InjectionPolicyInterface $injectionPolicy)
+    public function __construct(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
     {
-        $this->dependencyResolver = $dependencyResolver;
+        $this->container = $container;
         $this->injectionPolicy = $injectionPolicy;
     }
 
@@ -63,7 +62,7 @@ class InjectionFinder
 
         $properties = $this->injectionPolicy->getInjectableProperties($class);
         foreach ($properties as $property) {
-            $dependency = $this->dependencyResolver->getPropertyDependency($property);
+            $dependency = $this->getPropertyDependency($property);
             if ($dependency) {
                 $injections[$property->name] = $dependency;
             }
@@ -80,11 +79,44 @@ class InjectionFinder
     {
         $dependencies = [];
         foreach ($function->getParameters() as $param) {
-            $dependency = $this->dependencyResolver->getParameterDependency($param);
+            $dependency = $this->getParameterDependency($param);
             if ($dependency) {
                 $dependencies[] = $dependency;
             }
         }
         return $dependencies;
+    }
+
+    /**
+     * @param \ReflectionParameter $param
+     * @return DependencyInterface
+     */
+    public function getParameterDependency(\ReflectionParameter $parameter)
+    {
+        $key = $this->injectionPolicy->getParameterKey($parameter);
+
+        if ($parameter->isOptional()) {
+            return $this->container->has($key) ? $this->container->resolve($key) : null;
+        } else {
+            return $this->container->resolve($key);
+        }
+    }
+
+    /**
+     * @param \ReflectionProperty $property
+     * @return DependencyInterface
+     */
+    public function getPropertyDependency(\ReflectionProperty $property)
+    {
+        $key = $this->injectionPolicy->getPropertyKey($property);
+
+        $class = $property->getDeclaringClass();
+        $values = $class->getDefaultProperties();
+
+        if (isset($values[$property->name])) {
+            return $this->container->has($key) ? $this->container->resolve($key) : null;
+        } else {
+            return $this->container->resolve($key);
+        }
     }
 }
