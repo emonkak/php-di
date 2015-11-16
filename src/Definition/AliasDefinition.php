@@ -3,6 +3,7 @@
 namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\ContainerInterface;
+use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\PrototypeScope;
 
 class AliasDefinition extends AbstractDefinition
@@ -23,15 +24,15 @@ class AliasDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolve(ContainerInterface $container)
+    protected function resolveDependency(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
     {
-        return $container->get($this->target);
+        return $container->resolve($this->target);
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function resolveScope(ContainerInterface $container)
+    protected function resolveScope(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
     {
         return PrototypeScope::getInstance();
     }

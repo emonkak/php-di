@@ -3,7 +3,9 @@
 namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\ContainerInterface;
+use Emonkak\Di\Dependency\DependencyFinders;
 use Emonkak\Di\Dependency\ObjectDependency;
+use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\ScopeInterface;
 
 class BindingDefinition extends AbstractDefinition
@@ -21,7 +23,7 @@ class BindingDefinition extends AbstractDefinition
     /**
      * @var DefinitionInterface[]
      */
-    private $constructorParamerters;
+    private $constructorParameters;
 
     /**
      * @var DefinitionInterface[] array(methodName => paramerters)
@@ -57,7 +59,7 @@ class BindingDefinition extends AbstractDefinition
      */
     public function with(array $parameters)
     {
-        $this->constructorParamerters = $parameters;
+        $this->constructorParameters = $parameters;
         return $this;
     }
 
@@ -86,10 +88,9 @@ class BindingDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolve(ContainerInterface $container)
+    protected function resolveDependency(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
     {
         $class = new \ReflectionClass($this->target);
-        $injectionPolicy = $container->getInjectionPolicy();
 
         if (!$injectionPolicy->isInjectableClass($class)) {
             throw new \LogicException(
@@ -97,47 +98,44 @@ class BindingDefinition extends AbstractDefinition
             );
         }
 
-        $injectionFinder = $container->getInjectionFinder();
-
-        if ($this->constructorParamerters !== null) {
-            $constructorParamerters = [];
-            foreach ($this->constructorParamerters as $definition) {
-                $constructorParamerters[] = $definition->get($container);
+        if ($this->constructorParameters !== null) {
+            $constructorDependencies = [];
+            foreach ($this->constructorParameters as $definition) {
+                $constructorDependencies[] = $definition->resolveBy($container, $injectionPolicy);
             }
         } else {
-            $constructorParamerters = $injectionFinder->getConstructorParameters($class);
+            $constructorDependencies = DependencyFinders::getConstructorDependencies($container, $injectionPolicy, $class);
         }
 
-        $methodInjections = $injectionFinder->getMethodInjections($class);
+        $methodDependencies = DependencyFinders::getMethodDependencies($container, $injectionPolicy, $class);
         foreach ($this->methodInjections as $method => $definitions) {
-            $parameters = [];
+            $dependencies = [];
             foreach ($definitions as $definition) {
-                $parameters[] = $definition->get($container);
+                $dependencies[] = $definition->resolveBy($container, $injectionPolicy);
             }
-            $methodInjections[$method] = $parameters;
+            $methodDependencies[$method] = $dependencies;
         }
 
-        $propertyInjections = $injectionFinder->getPropertyInjections($class);
+        $propertyDependencies = DependencyFinders::getPropertyDependencies($container, $injectionPolicy, $class);
         foreach ($this->propertyInjections as $property => $definition) {
-            $propertyInjections[$property] = $definition->get($container);
+            $propertyDependencies[$property] = $definition->resolveBy($container, $injectionPolicy);
         }
 
         return new ObjectDependency(
             $this->key,
             $class->name,
-            $constructorParamerters,
-            $methodInjections,
-            $propertyInjections
+            $constructorDependencies,
+            $methodDependencies,
+            $propertyDependencies
         );
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function resolveScope(ContainerInterface $container)
+    protected function resolveScope(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
     {
         $class = new \ReflectionClass($this->target);
-        $injectionPolicy = $container->getInjectionPolicy();
 
         return $injectionPolicy->getScope($class);
     }

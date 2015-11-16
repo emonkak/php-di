@@ -2,6 +2,7 @@
 
 namespace Emonkak\Di\Tests
 {
+    use Emonkak\Di\Dependency\DependencyInterface;
     use Emonkak\Di\Scope\SingletonScope;
 
     abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
@@ -36,23 +37,21 @@ namespace Emonkak\Di\Tests
             $this->container->configure($configurator);
         }
 
-        public function testGetInjectionFinder()
+        public function testResolve()
         {
-            $this->assertInstanceOf('Emonkak\Di\InjectionFinder', $this->container->getInjectionFinder());
-        }
-
-        public function testGetInjectionPolicy()
-        {
-            $this->assertInstanceOf('Emonkak\Di\InjectionPolicy\InjectionPolicyInterface', $this->container->getInjectionPolicy());
-        }
-
-        public function testGet()
-        {
-            $fooDependency = $this->container->get('Emonkak\Di\Tests\AbstractContrainerTest\Foo');
+            $fooDependency = $this->container->resolve('Emonkak\Di\Tests\AbstractContrainerTest\Foo');
 
             $this->assertInstanceOf('Emonkak\Di\Dependency\ObjectDependency', $fooDependency);
 
-            $foo = $fooDependency->materialize($this->container);
+            return $fooDependency;
+        }
+
+        /**
+         * @depends testResolve
+         */
+        public function testMaterialize(DependencyInterface $fooDependency)
+        {
+            $foo = $this->container->materialize($fooDependency);
 
             $this->assertInstanceOf('Emonkak\Di\Tests\AbstractContrainerTest\Foo', $foo);
             $this->assertInstanceOf('Emonkak\Di\Tests\AbstractContrainerTest\Bar', $foo->bar);
@@ -66,16 +65,16 @@ namespace Emonkak\Di\Tests
         }
 
         /**
-         * @expectedException InvalidArgumentException
+         * @expectedException Interop\Container\Exception\NotFoundException
          */
-        public function testGetThrowsInvalidArgumentException()
+        public function testResolveThrowsNotFoundException()
         {
-            $this->container->get('Emonkak\Di\Tests\AbstractContrainerTest\FooInterface');
+            $this->container->resolve('Emonkak\Di\Tests\AbstractContrainerTest\FooInterface');
         }
 
-        public function testGetInstance()
+        public function testGet()
         {
-            $foo = $this->container->getInstance('Emonkak\Di\Tests\AbstractContrainerTest\Foo');
+            $foo = $this->container->get('Emonkak\Di\Tests\AbstractContrainerTest\Foo');
 
             $this->assertInstanceOf('Emonkak\Di\Tests\AbstractContrainerTest\Foo', $foo);
             $this->assertInstanceOf('Emonkak\Di\Tests\AbstractContrainerTest\Bar', $foo->bar);
@@ -86,7 +85,7 @@ namespace Emonkak\Di\Tests
             $this->assertSame('payo', $foo->baz->payo);
             $this->assertSame('poyo', $foo->baz->poyo);
 
-            $this->assertInstanceOf('stdClass', $this->container->getInstance('stdClass'));
+            $this->assertInstanceOf('stdClass', $this->container->get('stdClass'));
         }
 
         abstract protected function prepareContainer();

@@ -21,32 +21,32 @@ class ObjectDependency implements DependencyInterface
     /**
      * @var DependencyInterface[]
      */
-    protected $constructorParameters;
+    protected $constructorDependencies;
 
     /**
      * @var array (string => DependencyInterface[])
      */
-    protected $methodInjections;
+    protected $methodDependencies;
 
     /**
      * @var array (string => DependencyInterface)
      */
-    protected $propertyInjections;
+    protected $propertyDependencies;
 
     /**
      * @param string                $key
      * @param string                $className
-     * @param DependencyInterface[] $constructorParameters
-     * @param array                 $methodInjections      (string => DependencyInterface[])
-     * @param array                 $propertyInjections    (string => DependencyInterface)
+     * @param DependencyInterface[] $constructorDependencies
+     * @param array                 $methodDependencies    (string => DependencyInterface[])
+     * @param array                 $propertyDependencies  (string => DependencyInterface)
      */
-    public function __construct($key, $className, array $constructorParameters, array $methodInjections, array $propertyInjections)
+    public function __construct($key, $className, array $constructorDependencies, array $methodDependencies, array $propertyDependencies)
     {
         $this->key = $key;
         $this->className = $className;
-        $this->constructorParameters = $constructorParameters;
-        $this->methodInjections = $methodInjections;
-        $this->propertyInjections = $propertyInjections;
+        $this->constructorDependencies = $constructorDependencies;
+        $this->methodDependencies = $methodDependencies;
+        $this->propertyDependencies = $propertyDependencies;
     }
 
     /**
@@ -62,13 +62,13 @@ class ObjectDependency implements DependencyInterface
      */
     public function getDependencies()
     {
-        $dependencies = $this->constructorParameters;
+        $dependencies = $this->constructorDependencies;
 
-        foreach ($this->methodInjections as $method => $parameters) {
+        foreach ($this->methodDependencies as $method => $parameters) {
             $dependencies = array_merge($dependencies, array_values($parameters));
         }
 
-        return array_merge($dependencies, array_values($this->propertyInjections));
+        return array_merge($dependencies, array_values($this->propertyDependencies));
     }
 
     /**
@@ -82,24 +82,24 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function materialize(ContainerInterface $container)
+    public function materializeBy(ContainerInterface $container, \ArrayAccess $pool)
     {
         $args = [];
-        foreach ($this->constructorParameters as $parameter) {
-            $args[] = $parameter->materialize($container);
+        foreach ($this->constructorDependencies as $parameter) {
+            $args[] = $parameter->materializeBy($container, $pool);
         }
         $instance = ReflectionUtils::newInstance($this->className, $args);
 
-        foreach ($this->methodInjections as $method => $parameters) {
+        foreach ($this->methodDependencies as $method => $parameters) {
             $args = [];
             foreach ($parameters as $parameter) {
-                $args[] = $parameter->materialize($container);
+                $args[] = $parameter->materializeBy($container, $pool);
             }
             ReflectionUtils::callMethod($instance, $method, $args);
         }
 
-        foreach ($this->propertyInjections as $property => $value) {
-            $instance->$property = $value->materialize($container);
+        foreach ($this->propertyDependencies as $property => $value) {
+            $instance->$property = $value->materializeBy($container, $pool);
         }
 
         return $instance;
@@ -120,17 +120,17 @@ class ObjectDependency implements DependencyInterface
     {
         $callback($this, $this->key);
 
-        foreach ($this->constructorParameters as $parameter) {
+        foreach ($this->constructorDependencies as $parameter) {
             $parameter->traverse($callback);
         }
 
-        foreach ($this->methodInjections as $method => $parameters) {
+        foreach ($this->methodDependencies as $method => $parameters) {
             foreach ($parameters as $parameter) {
                 $parameter->traverse($callback);
             }
         }
 
-        foreach ($this->propertyInjections as $propery => $value) {
+        foreach ($this->propertyDependencies as $propery => $value) {
             $value->traverse($callback);
         }
     }
@@ -146,24 +146,24 @@ class ObjectDependency implements DependencyInterface
     /**
      * @return DependencyInterface[]
      */
-    public function getConstructorParameters()
+    public function getConstructorDependencies()
     {
-        return $this->constructorParameters;
+        return $this->constructorDependencies;
     }
 
     /**
      * @return array (string => DependencyInterface[])
      */
-    public function getMethodInjections()
+    public function getMethodDependencies()
     {
-        return $this->methodInjections;
+        return $this->methodDependencies;
     }
 
     /**
      * @return array (string => DependencyInterface)
      */
-    public function getPropertyInjections()
+    public function getPropertyDependencies()
     {
-        return $this->propertyInjections;
+        return $this->propertyDependencies;
     }
 }

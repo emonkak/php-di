@@ -4,6 +4,7 @@ namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
+use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\ScopeInterface;
 
 abstract class AbstractDefinition implements DefinitionInterface
@@ -24,25 +25,24 @@ abstract class AbstractDefinition implements DefinitionInterface
     }
 
     /**
-     * @param ContainerInterface $container
-     * @return DependencyInterface
+     * {@inheritDoc}
      */
-    public function get(ContainerInterface $container)
+    public function resolveBy(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
     {
-        $scope = $this->scope ?: $this->resolveScope($container);
+        $scope = $this->scope ?: $this->resolveScope($container, $injectionPolicy);
 
-        return $scope->get($this->resolve($container));
+        return $scope->get($this->resolveDependency($container, $injectionPolicy));
     }
 
     /**
      * @param Container $container
      * @return DependencyInterface
      */
-    abstract protected function resolve(ContainerInterface $container);
+    abstract protected function resolveDependency(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy);
 
     /**
      * @param ContainerInterface $container
      * @return ScopeInterface
      */
-    abstract protected function resolveScope(ContainerInterface $container);
+    abstract protected function resolveScope(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy);
 }

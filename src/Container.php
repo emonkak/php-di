@@ -2,64 +2,37 @@
 
 namespace Emonkak\Di;
 
+use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 
 class Container extends AbstractContainer
 {
     /**
-     * @var \ArrayAcccess
-     */
-    private $pool;
-
-    /**
-     * @return Container
-     */
-    public static function create()
-    {
-        return new self(new DefaultInjectionPolicy(), new \ArrayObject(), new \ArrayObject());
-    }
-
-    /**
      * @param InjectionPolicyInterface $injectionPolicy
      * @param \ArrayAccess             $cache
      * @param \ArrayAccess             $pool
+     * @return Container
+     * @return self
      */
-    public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache, \ArrayAccess $pool)
+    public static function create(InjectionPolicyInterface $injectionPolicy = null, \ArrayAccess $cache = null, \ArrayAccess $pool = null)
     {
-        parent::__construct($injectionPolicy, $cache);
-
-        $this->pool = $pool;
+        return new self(
+            $injectionPolicy ?: new DefaultInjectionPolicy(),
+            $cache ?: new \ArrayObject(),
+            $pool ?: new \ArrayObject()
+        );
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
+     * {@inheritDoc}
      */
-    public function setInstance($key, $value)
-    {
-        $this->pool[$key] = $value;
-    }
-
-    /**
-     * @param string $key
-     * @return mixed
-     */
-    public function getInstance($key)
+    public function get($key)
     {
         if (isset($this->pool[$key])) {
             return $this->pool[$key];
         }
 
-        return $this->get($key)->materialize($this);
-    }
-
-    /**
-     * @param string $key
-     * @return boolean
-     */
-    public function hasInstance($key)
-    {
-        return isset($this->pool[$key]);
+        return $this->resolve($key)->materializeBy($this, $this->pool);
     }
 }

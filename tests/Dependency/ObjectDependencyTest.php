@@ -4,6 +4,7 @@ namespace Emonkak\Di\Tests\Dependency
 {
     use Emonkak\Di\Container;
     use Emonkak\Di\Dependency\ObjectDependency;
+    use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
     use Emonkak\Di\Tests\Dependency\ObjectDependencyTest\Bar;
     use Emonkak\Di\Tests\Dependency\ObjectDependencyTest\Baz;
     use Emonkak\Di\Tests\Dependency\ObjectDependencyTest\Foo;
@@ -58,9 +59,12 @@ namespace Emonkak\Di\Tests\Dependency
             $this->assertSame('foo', $dependency->getKey());
         }
 
-        public function testMaterialize()
+        public function testMaterializeBy()
         {
-            $container = Container::create();
+            $injectionPolicy = new DefaultInjectionPolicy();
+            $cache = new \ArrayObject();
+            $pool = new \ArrayObject();
+            $container = new Container($injectionPolicy, $cache, $pool);
 
             $barDependency = new ObjectDependency(
                 'bar',
@@ -82,7 +86,7 @@ namespace Emonkak\Di\Tests\Dependency
                 [$barDependency], ['setBaz' => [$bazDependency]], ['qux' => $quxDependency]
             );
 
-            $foo = $fooDependency->materialize($container);
+            $foo = $fooDependency->materializeBy($container, $pool);
 
             $this->assertInstanceOf('Emonkak\Di\Tests\Dependency\ObjectDependencyTest\Foo', $foo);
             $this->assertInstanceOf('Emonkak\Di\Tests\Dependency\ObjectDependencyTest\Bar', $foo->bar);
@@ -144,23 +148,23 @@ namespace Emonkak\Di\Tests\Dependency
             $paramerters = [$this->getMock('Emonkak\Di\Dependency\DependencyInterface')];
             $dependency = new ObjectDependency('foo', 'stdClass', $paramerters, [], []);
 
-            $this->assertSame($paramerters, $dependency->getConstructorParameters());
+            $this->assertSame($paramerters, $dependency->getConstructorDependencies());
         }
 
-        public function testGetMethodInjections()
+        public function testGetMethodDependencies()
         {
-            $methodInjections = ['setBar' => $this->getMock('Emonkak\Di\Dependency\DependencyInterface')];
-            $dependency = new ObjectDependency('foo', 'stdClass', [], $methodInjections, []);
+            $methodDependencies = ['setBar' => $this->getMock('Emonkak\Di\Dependency\DependencyInterface')];
+            $dependency = new ObjectDependency('foo', 'stdClass', [], $methodDependencies, []);
 
-            $this->assertSame($methodInjections, $dependency->getMethodInjections());
+            $this->assertSame($methodDependencies, $dependency->getMethodDependencies());
         }
 
         public function testGetPropertyInjections()
         {
-            $propertyInjections = ['qux' => $this->getMock('Emonkak\Di\Dependency\DependencyInterface')];
-            $dependency = new ObjectDependency('foo', 'stdClass', [], [], $propertyInjections);
+            $propertyDependencies = ['qux' => $this->getMock('Emonkak\Di\Dependency\DependencyInterface')];
+            $dependency = new ObjectDependency('foo', 'stdClass', [], [], $propertyDependencies);
 
-            $this->assertSame($propertyInjections, $dependency->getPropertyInjections());
+            $this->assertSame($propertyDependencies, $dependency->getPropertyDependencies());
         }
     }
 }

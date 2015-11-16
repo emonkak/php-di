@@ -5,6 +5,7 @@ namespace Emonkak\Di\Tests\Dependency
     use Emonkak\Di\Container;
     use Emonkak\Di\Dependency\ObjectDependency;
     use Emonkak\Di\Dependency\SingletonDependency;
+    use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
     use Emonkak\Di\Tests\Dependency\SingletonDependencyTest\Bar;
     use Emonkak\Di\Tests\Dependency\SingletonDependencyTest\Baz;
     use Emonkak\Di\Tests\Dependency\SingletonDependencyTest\Foo;
@@ -26,13 +27,16 @@ namespace Emonkak\Di\Tests\Dependency
             $this->assertInstanceOf('Emonkak\Di\Dependency\SingletonDependency', $new);
             $this->assertSame($original->getKey(), $new->getKey());
             $this->assertSame($original->getClassName(), $new->getClassName());
-            $this->assertSame($original->getMethodInjections(), $new->getMethodInjections());
-            $this->assertSame($original->getPropertyInjections(), $new->getPropertyInjections());
+            $this->assertSame($original->getMethodDependencies(), $new->getMethodDependencies());
+            $this->assertSame($original->getPropertyDependencies(), $new->getPropertyDependencies());
         }
 
-        public function testMaterialize()
+        public function testMaterializeBy()
         {
-            $container = Container::create();
+            $injectionPolicy = new DefaultInjectionPolicy();
+            $cache = new \ArrayObject();
+            $pool = new \ArrayObject();
+            $container = new Container($injectionPolicy, $cache, $pool);
 
             $dependency = new SingletonDependency(
                 'stdClass',
@@ -40,9 +44,9 @@ namespace Emonkak\Di\Tests\Dependency
                 [], [], []
             );
 
-            $obj = $dependency->materialize($container);
+            $obj = $dependency->materializeBy($container, $pool);
 
-            $this->assertSame($obj, $dependency->materialize($container));
+            $this->assertSame($obj, $dependency->materializeBy($container, $pool));
         }
 
         public function testIsSingleton()

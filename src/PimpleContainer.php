@@ -2,6 +2,7 @@
 
 namespace Emonkak\Di;
 
+use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Extras\ServiceProviderFactory;
 use Emonkak\Di\Extras\ServiceProviderGenerator;
 use Emonkak\Di\Extras\ServiceProviderGeneratorInterface;
@@ -24,16 +25,21 @@ class PimpleContainer extends AbstractContainer
     private $serviceProviderFactory;
 
     /**
-     * @return PimpleContainer
+     * @param InjectionPolicyInterface          $injectionPolicy
+     * @param \ArrayAccess                      $cache
+     * @param Pimple                            $container
+     * @param ServiceProviderGeneratorInterface $serviceProviderGenerator
+     * @param ServiceProviderLoaderInterface    $serviceProviderLoader
+     * @return self
      */
-    public static function create()
+    public static function create(InjectionPolicyInterface $injectionPolicy = null, \ArrayAccess $cache = null, Pimple $container = null, ServiceProviderGeneratorInterface $serviceProviderGenerator = null, ServiceProviderLoaderInterface $serviceProviderLoader = null)
     {
         return new self(
-            new DefaultInjectionPolicy(),
-            new \ArrayObject(),
-            new Pimple(),
-            ServiceProviderGenerator::create(),
-            ServiceProviderLoader::create()
+            $injectionPolicy ?: new DefaultInjectionPolicy(),
+            $cache ?: new \ArrayObject(),
+            $container ?: new Pimple(),
+            $serviceProviderGenerator ?: ServiceProviderGenerator::create(),
+            $serviceProviderLoader ?: ServiceProviderLoader::create()
         );
     }
 
@@ -46,7 +52,7 @@ class PimpleContainer extends AbstractContainer
      */
     public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache, Pimple $container, ServiceProviderGeneratorInterface $serviceProviderGenerator, ServiceProviderLoaderInterface $serviceProviderLoader)
     {
-        parent::__construct($injectionPolicy, $cache);
+        parent::__construct($injectionPolicy, $cache, new PimpleContainerWrapper($container));
 
         $this->container = $container;
         $this->serviceProviderFactory = new ServiceProviderFactory(
@@ -59,19 +65,7 @@ class PimpleContainer extends AbstractContainer
     /**
      * {@inheritDoc}
      */
-    public function setInstance($key, $value)
-    {
-        if (method_exists($value, '__invoke')) {
-            $this->container[$key] = $this->container->protect($value);
-        } else {
-            $this->container[$key] = $value;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getInstance($key)
+    public function get($key)
     {
         if (!isset($this->container[$key])) {
             $serviceProvider = $this->serviceProviderFactory->create($key, $key . 'Provider');
@@ -79,13 +73,5 @@ class PimpleContainer extends AbstractContainer
         }
 
         return $this->container[$key];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function hasInstance($key)
-    {
-        return isset($this->container[$key]);
     }
 }

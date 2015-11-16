@@ -121,11 +121,11 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
             $variable,
             new Expr\New_(
                 new Name\FullyQualified($dependency->getClassName()),
-                array_map([$this, 'createContainerAccessor'], $dependency->getConstructorParameters())
+                array_map([$this, 'createContainerAccessor'], $dependency->getConstructorDependencies())
             )
         )];
 
-        foreach ($dependency->getMethodInjections() as $method => $parameters) {
+        foreach ($dependency->getMethodDependencies() as $method => $parameters) {
             $factoryStmts[] = new Expr\MethodCall(
                 $variable,
                 $method,
@@ -133,7 +133,7 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
             );
         }
 
-        foreach ($dependency->getPropertyInjections() as $propery => $value) {
+        foreach ($dependency->getPropertyDependencies() as $propery => $value) {
             $factoryStmts[] = new Expr\Assign(
                 new Expr\PropertyFetch($variable, $propery),
                 $this->createContainerAccessor($value)

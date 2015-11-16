@@ -14,6 +14,6 @@ class ContainerTest extends AbstractContrainerTest
 
     protected function prepareContainer()
     {
-        return new Container(AnnotationInjectionPolicy::create(), new \ArrayObject(), new \ArrayObject());
+        return Container::create(AnnotationInjectionPolicy::create());
     }
 }

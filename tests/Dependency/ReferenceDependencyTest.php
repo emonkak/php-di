@@ -4,6 +4,7 @@ namespace Emonkak\Di\Tests\Dependency;
 
 use Emonkak\Di\Container;
 use Emonkak\Di\Dependency\ReferenceDependency;
+use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 
 class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,12 +21,13 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expectedValue, $dependency->accept($visitor));
     }
 
-    public function testGet()
+    public function testResolveBy()
     {
-        $container = Container::create();
+        $injectionPolicy = new DefaultInjectionPolicy();
+        $container = Container::create($injectionPolicy);
         $dependency = new ReferenceDependency('foo');
 
-        $this->assertSame($dependency, $dependency->get($container));
+        $this->assertSame($dependency, $dependency->resolveBy($container, $injectionPolicy));
     }
 
     public function testGetDependencies()
@@ -42,14 +44,17 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo', $dependency->getKey());
     }
 
-    public function testMaterialize()
+    public function testMaterializeBy()
     {
-        $container = Container::create();
+        $injectionPolicy = new DefaultInjectionPolicy();
+        $cache = new \ArrayObject();
+        $pool = new \ArrayObject();
+        $container = new Container($injectionPolicy, $cache, $pool);
         $container->set('foo', $expectedValue = new \stdClass());
 
         $dependency = new ReferenceDependency('foo');
 
-        $this->assertSame($expectedValue, $dependency->materialize($container));
+        $this->assertSame($expectedValue, $dependency->materializeBy($container, $pool));
     }
 
     public function testIsSingleton()

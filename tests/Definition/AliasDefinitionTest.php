@@ -6,7 +6,7 @@ use Emonkak\Di\Definition\AliasDefinition;
 
 class AliasDefinitionTest extends \PHPUnit_Framework_TestCase
 {
-    public function testResolve()
+    public function testResolveDependency()
     {
         \Closure::bind(function() {
             $definition = new AliasDefinition('stdClass');
@@ -15,11 +15,12 @@ class AliasDefinitionTest extends \PHPUnit_Framework_TestCase
             $container = $this->getMock('Emonkak\Di\ContainerInterface');
             $container
                 ->expects($this->once())
-                ->method('get')
+                ->method('resolve')
                 ->with($this->identicalTo('stdClass'))
                 ->willReturn($dependency);
+            $injectionPolicy = $this->getMock('Emonkak\Di\InjectionPolicy\InjectionPolicyInterface');
 
-            $this->assertSame($dependency, $definition->resolve($container));
+            $this->assertSame($dependency, $definition->resolveDependency($container, $injectionPolicy));
         }, $this, 'Emonkak\Di\Definition\AliasDefinition')->__invoke();
     }
 
@@ -28,8 +29,9 @@ class AliasDefinitionTest extends \PHPUnit_Framework_TestCase
         \Closure::bind(function() {
             $definition = new AliasDefinition('stdClass');
             $container = $this->getMock('Emonkak\Di\ContainerInterface');
+            $injectionPolicy = $this->getMock('Emonkak\Di\InjectionPolicy\InjectionPolicyInterface');
 
-            $this->assertInstanceOf('Emonkak\Di\Scope\PrototypeScope', $definition->resolveScope($container));
+            $this->assertInstanceOf('Emonkak\Di\Scope\PrototypeScope', $definition->resolveScope($container, $injectionPolicy));
         }, $this, 'Emonkak\Di\Definition\AliasDefinition')->__invoke();
     }
 }

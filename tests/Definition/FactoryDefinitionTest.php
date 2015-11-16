@@ -4,6 +4,7 @@ namespace Emonkak\Di\Tests\Definition
 {
     use Emonkak\Di\Container;
     use Emonkak\Di\Definition\FactoryDefinition;
+    use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
     use Emonkak\Di\Tests\Definition\FactoryDefinitionTest\Bar;
     use Emonkak\Di\Tests\Definition\FactoryDefinitionTest\Baz;
     use Emonkak\Di\Tests\Definition\FactoryDefinitionTest\Foo;
@@ -12,29 +13,30 @@ namespace Emonkak\Di\Tests\Definition
 
     class FactoryDefinitionTest extends \PHPUnit_Framework_TestCase
     {
-        public function testResolve()
+        public function testResolveDependency()
         {
             \Closure::bind(function() {
                 $factory = new FooFactory();
                 $definition = new FactoryDefinition('Emonkak\Di\Tests\Definition\FactoryDefinitionTest\Foo', $factory);
 
-                $container = Container::create();
+                $injectionPolicy = new DefaultInjectionPolicy();
+                $container = Container::create($injectionPolicy);
                 $bazDefinition = $container->set('$baz', new Baz());
                 $barDefinition = $container->factory('$bar', function() {
                     return new Bar(new Baz());
                 });
                 $fooDependency = $definition
                     ->with([$barDefinition, $bazDefinition])
-                    ->resolve($container);
+                    ->resolveDependency($container, $injectionPolicy);
 
                 $this->assertSame('Emonkak\Di\Dependency\FactoryDependency', get_class($fooDependency));
                 $this->assertSame('Emonkak\Di\Tests\Definition\FactoryDefinitionTest\Foo', $fooDependency->getKey());
                 $this->assertEquals($factory, $fooDependency->getFactory());
-                $this->assertEquals([$barDefinition->get($container), $bazDefinition->get($container)], $fooDependency->getParameters());
+                $this->assertEquals([$barDefinition->resolveBy($container, $injectionPolicy), $bazDefinition->resolveBy($container, $injectionPolicy)], $fooDependency->getParameters());
             }, $this, 'Emonkak\Di\Definition\FactoryDefinition')->__invoke();
         }
 
-        public function testResolveWithClosure()
+        public function testResolveDependencyWithClosure()
         {
             \Closure::bind(function() {
                 $factory = function() {
@@ -42,8 +44,9 @@ namespace Emonkak\Di\Tests\Definition
                 };
                 $definition = new FactoryDefinition('Emonkak\Di\Tests\Definition\FactoryDefinitionTest\Foo', $factory);
 
-                $container = Container::create();
-                $fooDependency = $definition->get($container);
+                $injectionPolicy = new DefaultInjectionPolicy();
+                $container = Container::create($injectionPolicy);
+                $fooDependency = $definition->resolveBy($container, $injectionPolicy);
 
                 $this->assertSame('Emonkak\Di\Dependency\FactoryDependency', get_class($fooDependency));
                 $this->assertSame('Emonkak\Di\Tests\Definition\FactoryDefinitionTest\Foo', $fooDependency->getKey());
@@ -59,8 +62,9 @@ namespace Emonkak\Di\Tests\Definition
                 $factory = new FooFactory();
                 $definition = new FactoryDefinition('Emonkak\Di\Tests\Definition\FactoryDefinitionTest\Foo', $factory);
                 $container = $this->getMock('Emonkak\Di\ContainerInterface');
+                $injectionPolicy = $this->getMock('Emonkak\Di\InjectionPolicy\InjectionPolicyInterface');
 
-                $this->assertInstanceOf('Emonkak\Di\Scope\PrototypeScope', $definition->resolveScope($container));
+                $this->assertInstanceOf('Emonkak\Di\Scope\PrototypeScope', $definition->resolveScope($container, $injectionPolicy));
             }, $this, 'Emonkak\Di\Definition\AliasDefinition')->__invoke();
         }
     }

@@ -5,6 +5,7 @@ namespace Emonkak\Di\Tests\Dependency;
 use Emonkak\Di\Container;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Dependency\FlyweightFactoryDependency;
+use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 
 class FlyweightFactoryDependencyTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,9 +24,12 @@ class FlyweightFactoryDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($original->getParameters(), $new->getParameters());
     }
 
-    public function testMaterialize()
+    public function testMaterializeBy()
     {
-        $container = Container::create();
+        $injectionPolicy = new DefaultInjectionPolicy();
+        $cache = new \ArrayObject();
+        $pool = new \ArrayObject();
+        $container = new Container($injectionPolicy, $cache, $pool);
 
         $factory = $this->getMock('stdClass', ['__invoke']);
         $factory
@@ -35,8 +39,8 @@ class FlyweightFactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
         $dependency = new FlyweightFactoryDependency('foo', $factory, []);
 
-        $this->assertSame($expectedValue, $dependency->materialize($container));
-        $this->assertSame($expectedValue, $dependency->materialize($container));
+        $this->assertSame($expectedValue, $dependency->materializeBy($container, $pool));
+        $this->assertSame($expectedValue, $dependency->materializeBy($container, $pool));
     }
 
     public function testIsSingleton()

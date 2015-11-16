@@ -2,8 +2,8 @@
 
 namespace Emonkak\Di\Tests\Extras
 {
-    use Emonkak\Di\Extras\ServiceProviderGenerator;
     use Emonkak\Di\Container;
+    use Emonkak\Di\Extras\ServiceProviderGenerator;
     use Pimple\Container as Pimple;
 
     class ServiceProviderGeneratorTest extends \PHPUnit_Framework_TestCase
@@ -17,7 +17,7 @@ namespace Emonkak\Di\Tests\Extras
                 $className = 'Class_' . md5(mt_rand());
             } while (class_exists($className));
 
-            $dependency = $container->get('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Foo');
+            $dependency = $container->resolve('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Foo');
 
             $source = $generator->generate($className, $dependency);
 

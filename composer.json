@@ -16,7 +16,8 @@
     ],
     "require": {
         "php": ">=5.4",
-        "jeremeamia/SuperClosure": ">=1.0"
+        "jeremeamia/SuperClosure": ">=1.0",
+        "container-interop/container-interop": "~1.1"
     },
     "require-dev": {
         "athletic/athletic": "dev-master",
@@ -34,8 +35,7 @@
         "satooshi/php-coveralls": "dev-master",
         "symfony/dependency-injection": "~2.6",
         "symfony/filesystem": "~2.6",
-        "symfony/process": "~2.6",
-        "tombzombie/dice": "dev-PHP5.4---PHP5.5"
+        "symfony/process": "~2.6"
     },
     "suggest": {
         "doctrine/annotations": "Used for AnnotationInjectionPolicy",
