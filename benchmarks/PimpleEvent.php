@@ -25,7 +25,7 @@ class PimpleEvent extends AthleticEvent
     public function get()
     {
         $container = new Container();
-        $container['Emonkak\Di\Benchmarks\Fixtures\Foo'] = function($c) {
+        $container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'] = function($c) {
             return new Foo($c['Emonkak\Di\Benchmarks\Fixtures\Bar'], $c['Emonkak\Di\Benchmarks\Fixtures\Baz']);
         };
         $container['Emonkak\Di\Benchmarks\Fixtures\Bar'] = function($c) {
@@ -59,7 +59,7 @@ class PimpleEvent extends AthleticEvent
             return new Plugh();
         };
 
-        $foo = $container['Emonkak\Di\Benchmarks\Fixtures\Foo'];
+        $foo = $container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'];
         assert($foo instanceof Foo);
     }
 
@@ -69,7 +69,7 @@ class PimpleEvent extends AthleticEvent
     public function getFactory()
     {
         $container = new Container();
-        $container['Emonkak\Di\Benchmarks\Fixtures\Foo'] = $container->factory(function($c) {
+        $container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'] = $container->factory(function($c) {
             return new Foo($c['Emonkak\Di\Benchmarks\Fixtures\BarInterface'], $c['Emonkak\Di\Benchmarks\Fixtures\BazInterface']);
         });
         $container['Emonkak\Di\Benchmarks\Fixtures\BarInterface'] = $container->factory(function($c) {
@@ -103,7 +103,7 @@ class PimpleEvent extends AthleticEvent
             return new Plugh();
         });
 
-        $foo = $container['Emonkak\Di\Benchmarks\Fixtures\Foo'];
+        $foo = $container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'];
         assert($foo instanceof Foo);
     }
 }

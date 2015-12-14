@@ -31,7 +31,7 @@
         "orno/di": "~2.3",
         "phpunit/phpunit": "~4.4",
         "pimple/pimple": "~3.0",
-        "ray/di": "~1.4",
+        "ray/di": "~1.0",
         "satooshi/php-coveralls": "dev-master",
         "symfony/dependency-injection": "~2.6",
         "symfony/filesystem": "~2.6",

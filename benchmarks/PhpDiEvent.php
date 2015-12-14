@@ -19,13 +19,21 @@ class PhpDiEvent extends AthleticEvent
         $builder = new ContainerBuilder();
         $container = $builder->build();
         $container->set(
-            'Emonkak\Di\Benchmarks\Fixtures\Foo',
-            DI\object()->constructor(
-                DI\link('Emonkak\Di\Benchmarks\Fixtures\Bar'),
-                DI\link('Emonkak\Di\Benchmarks\Fixtures\Baz')
+            'Emonkak\Di\Benchmarks\Fixtures\FooInterface',
+            DI\object('Emonkak\Di\Benchmarks\Fixtures\Foo')->constructor(
+                DI\link('Emonkak\Di\Benchmarks\Fixtures\BarInterface'),
+                DI\link('Emonkak\Di\Benchmarks\Fixtures\BazInterface')
             )
         );
-        $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
+        $container->set(
+            'Emonkak\Di\Benchmarks\Fixtures\BarInterface',
+             DI\object('Emonkak\Di\Benchmarks\Fixtures\Bar')
+        );
+        $container->set(
+            'Emonkak\Di\Benchmarks\Fixtures\BazInterface',
+             DI\object('Emonkak\Di\Benchmarks\Fixtures\Baz')
+        );
+        $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\FooInterface');
         assert($foo instanceof Foo);
     }
 
@@ -38,11 +46,19 @@ class PhpDiEvent extends AthleticEvent
         $builder->setDefinitionCache(extension_loaded('apcu') ? new ApcuCache() : new ApcCache());
         $container = $builder->build();
         $container->set(
-            'Emonkak\Di\Benchmarks\Fixtures\Foo',
-            DI\object()->constructor(
-                DI\link('Emonkak\Di\Benchmarks\Fixtures\Bar'),
-                DI\link('Emonkak\Di\Benchmarks\Fixtures\Baz')
+            'Emonkak\Di\Benchmarks\Fixtures\FooInterface',
+            DI\object('Emonkak\Di\Benchmarks\Fixtures\Foo')->constructor(
+                DI\link('Emonkak\Di\Benchmarks\Fixtures\BarInterface'),
+                DI\link('Emonkak\Di\Benchmarks\Fixtures\BazInterface')
             )
+        );
+        $container->set(
+            'Emonkak\Di\Benchmarks\Fixtures\BarInterface',
+             DI\object('Emonkak\Di\Benchmarks\Fixtures\Bar')
+        );
+        $container->set(
+            'Emonkak\Di\Benchmarks\Fixtures\BazInterface',
+             DI\object('Emonkak\Di\Benchmarks\Fixtures\Baz')
         );
         $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);

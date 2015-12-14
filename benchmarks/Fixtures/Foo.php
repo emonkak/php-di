@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Benchmarks\Fixtures;
 
-class Foo
+class Foo implements FooInterface
 {
     private $bar;
     private $baz;
