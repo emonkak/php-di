@@ -34,7 +34,13 @@ namespace Emonkak\Di\Tests\Extras
             $pimple = new Pimple();
             $pimple->register($serviceProvider);
 
-            $this->assertInstanceOf('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Foo', $pimple['Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Foo']);
+            $foo = $pimple['Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Foo'];
+            $this->assertInstanceOf('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Foo', $foo);
+            $this->assertInstanceOf('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Bar', $foo->bar);
+            $this->assertInstanceOf('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Baz', $foo->baz);
+            $this->assertInstanceOf('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Baz', $foo->bar->baz);
+            $this->assertSame(123, $foo->optionalNum);
+            $this->assertSame('123', $foo->optionalString);
         }
     }
 }
@@ -43,10 +49,12 @@ namespace Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest
 {
     class Foo
     {
-        public function __construct(Bar $bar, Baz $baz)
+        public function __construct(Bar $bar, Baz $baz, $optionalNum = 123, $optionalString = '123')
         {
             $this->bar = $bar;
             $this->baz = $baz;
+            $this->optionalNum = $optionalNum;
+            $this->optionalString = $optionalString;
         }
     }
 

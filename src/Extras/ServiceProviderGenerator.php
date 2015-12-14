@@ -7,6 +7,7 @@ use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Dependency\ReferenceDependency;
+use Emonkak\Di\Dependency\ValueDependency;
 use PhpParser\BuilderFactory;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
@@ -151,6 +152,23 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
     public function visitReferenceDependency(ReferenceDependency $dependency)
     {
         return [];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function visitValueDependency(ValueDependency $dependency)
+    {
+        $deserializeStmt = new Expr\FuncCall(new Name('unserialize'), [
+            new Scalar\String_(serialize($dependency->getValue()))
+        ]);
+
+        $definition = new Expr\Assign(
+            $this->createContainerAccessor($dependency),
+            $deserializeStmt
+        );
+
+        return [$definition];
     }
 
     /**
