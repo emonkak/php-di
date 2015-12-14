@@ -4,6 +4,7 @@ namespace Emonkak\Di\Benchmarks;
 
 use Athletic\AthleticEvent;
 use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\ApcuCache;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Ray\Di\AbstractModule;
 use Ray\Di\CacheInjector;
@@ -32,7 +33,7 @@ class RayDiEvent extends AthleticEvent
             },
             function() {},
             'ray-di',
-            new ApcCache()
+            extension_loaded('apcu') ? new ApcuCache() : new ApcCache()
         );
         $foo = $injector->getInstance('Emonkak\Di\Benchmarks\Fixtures\Foo');
         assert($foo instanceof Foo);

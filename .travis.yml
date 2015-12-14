@@ -4,6 +4,7 @@ php:
   - 5.4
   - 5.5
   - 5.6
+  - 7.0
   - hhvm
 
 cache:
@@ -13,7 +14,7 @@ cache:
 
 before_script:
   - sudo apt-get -qq update && sudo apt-get -qq install graphviz
-  - sh -c "if [ $TRAVIS_PHP_VERSION != 'hhvm' ]; then echo "yes\n" | if [ ${TRAVIS_PHP_VERSION%%.*} -lt 7 ]; then pecl install apcu-4.0.10; else pecl install apcu; fi; else echo 'extension="apc.so"' >> ./php.ini; fi"
+  - sh -c "if [ $TRAVIS_PHP_VERSION != 'hhvm' ]; then if [ ${TRAVIS_PHP_VERSION%%.*} -ge 7 ]; then echo "yes\n" | pecl install apcu; else echo "yes\n" | pecl install apcu-4.0.10; fi; echo 'extension=apcu.so' >> ./php.ini; else echo 'extension=apc.so' >> ./php.ini; fi"
   - composer install --prefer-source
   - sh -c "if [ $TRAVIS_PHP_VERSION != 'hhvm' ]; then phpenv config-add ./php.ini; fi"
 

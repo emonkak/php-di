@@ -6,6 +6,7 @@ use Athletic\AthleticEvent;
 use DI;
 use DI\ContainerBuilder;
 use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\ApcuCache;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 
 class PhpDiEvent extends AthleticEvent
@@ -34,7 +35,7 @@ class PhpDiEvent extends AthleticEvent
     public function getWithCache()
     {
         $builder = new ContainerBuilder();
-        $builder->setDefinitionCache(new ApcCache());
+        $builder->setDefinitionCache(extension_loaded('apcu') ? new ApcuCache() : new ApcCache());
         $container = $builder->build();
         $container->set(
             'Emonkak\Di\Benchmarks\Fixtures\Foo',

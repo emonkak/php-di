@@ -99,7 +99,7 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
             new Expr\Assign(
                 $variable,
                 new Expr\FuncCall(new Name('unserialize'), [
-                    new Scalar\String(serialize($dependency->getFactory()))
+                    new Scalar\String_(serialize($dependency->getFactory()))
                 ])
             ),
             new Stmt\Return_(
@@ -161,7 +161,7 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
     {
         return new Expr\ArrayDimFetch(
             new Expr\Variable('c'),
-            new Scalar\String($dependency->getKey())
+            new Scalar\String_($dependency->getKey())
         );
     }
 

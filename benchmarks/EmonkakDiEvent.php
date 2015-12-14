@@ -5,6 +5,7 @@ namespace Emonkak\Di\Benchmarks;
 use Athletic\AthleticEvent;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Emonkak\Di\Cache\ApcCache;
+use Emonkak\Di\Cache\ApcuCache;
 use Emonkak\Di\Cache\FilesystemCache;
 use Emonkak\Di\Container;
 use Emonkak\Di\Extras\ServiceProviderGenerator;
@@ -34,7 +35,7 @@ class EmonkakDiEvent extends AthleticEvent
     {
         $container = new Container(
             new DefaultInjectionPolicy(),
-            new ApcCache('container'),
+            extension_loaded('apcu') ? new ApcuCache('container') : new ApcCache('container'),
             new \ArrayObject()
         );
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Bar');

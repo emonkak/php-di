@@ -26,7 +26,7 @@
         "doctrine/cache": "~1.4@dev",
         "facebook/xhprof": "dev-master",
         "mnapoli/php-di": "~4.4",
-        "nikic/php-parser": "~1.0",
+        "nikic/php-parser": "~1.2",
         "orno/cache": "~1.0",
         "orno/di": "~2.3",
         "phpunit/phpunit": "~4.4",
