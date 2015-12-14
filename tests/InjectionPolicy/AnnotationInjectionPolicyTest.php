@@ -30,10 +30,11 @@ namespace Emonkak\Di\Tests\InjectionPolicy
                 ->with($this->identicalTo($fooClass))
                 ->willReturn([]);
 
-            $this->assertEquals(
-                [$fooClass->getMethod('setQux')],
-                $this->injectionPolicy->getInjectableMethods($fooClass)
-            );
+            $actual = [$fooClass->getMethod('setQux')];
+            $expected = $this->injectionPolicy->getInjectableMethods($fooClass);
+
+            $this->assertCount(count($actual), $expected);
+            $this->assertSame((string) $actual[0], (string) $expected[0]);
         }
 
         public function testGetInjectableProperties()
@@ -46,10 +47,11 @@ namespace Emonkak\Di\Tests\InjectionPolicy
                 ->with($this->identicalTo($fooClass))
                 ->willReturn([]);
 
-            $this->assertEquals(
-                [$fooClass->getProperty('foo'), $fooClass->getProperty('foobar')],
-                $this->injectionPolicy->getInjectableProperties($fooClass)
-            );
+            $actual = [$fooClass->getProperty('foo'), $fooClass->getProperty('foobar')];
+            $expected = $this->injectionPolicy->getInjectableProperties($fooClass);
+
+            $this->assertCount(count($actual), $expected);
+            $this->assertSame((string) $actual[0], (string) $expected[0]);
         }
 
         public function testGetParameterKey()
