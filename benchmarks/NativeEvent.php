@@ -3,12 +3,6 @@
 namespace Emonkak\Di\Benchmarks;
 
 use Athletic\AthleticEvent;
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\ChainCache;
-use Emonkak\Di\Container;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
-use Emonkak\Di\Injector;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Emonkak\Di\Benchmarks\Fixtures\Bar;
 use Emonkak\Di\Benchmarks\Fixtures\Baz;

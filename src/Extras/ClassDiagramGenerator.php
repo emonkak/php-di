@@ -7,6 +7,7 @@ use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Dependency\ReferenceDependency;
+use Emonkak\Di\Dependency\ValueDependency;
 
 class ClassDiagramGenerator implements DependencyVisitorInterface
 {
@@ -127,6 +128,20 @@ EOL;
                 'edges' => []
             ];
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function visitValueDependency(ValueDependency $dependency)
+    {
+        $key = $dependency->getKey();
+        return [
+            'key' => $key,
+            'namespace' => '',
+            'label' => sprintf('{%s}', $this->escape(var_export($dependency->getValue(), true))),
+            'edges' => []
+        ];
     }
 
     /**

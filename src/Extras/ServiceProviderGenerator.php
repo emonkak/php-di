@@ -7,6 +7,7 @@ use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Dependency\ReferenceDependency;
+use Emonkak\Di\Dependency\ValueDependency;
 use PhpParser\BuilderFactory;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
@@ -99,7 +100,7 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
             new Expr\Assign(
                 $variable,
                 new Expr\FuncCall(new Name('unserialize'), [
-                    new Scalar\String(serialize($dependency->getFactory()))
+                    new Scalar\String_(serialize($dependency->getFactory()))
                 ])
             ),
             new Stmt\Return_(
@@ -154,6 +155,23 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function visitValueDependency(ValueDependency $dependency)
+    {
+        $deserializeStmt = new Expr\FuncCall(new Name('unserialize'), [
+            new Scalar\String_(serialize($dependency->getValue()))
+        ]);
+
+        $definition = new Expr\Assign(
+            $this->createContainerAccessor($dependency),
+            $deserializeStmt
+        );
+
+        return [$definition];
+    }
+
+    /**
      * @param DependencyInterface $dependency
      * @return Expr
      */
@@ -161,7 +179,7 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
     {
         return new Expr\ArrayDimFetch(
             new Expr\Variable('c'),
-            new Scalar\String($dependency->getKey())
+            new Scalar\String_($dependency->getKey())
         );
     }
 

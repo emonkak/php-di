@@ -4,6 +4,8 @@ namespace Emonkak\Di\Dependency;
 
 use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\Exception\NotFoundException;
+use Interop\Container\Exception\NotFoundException as InteropNotFoundException;
 
 class DependencyFinders
 {
@@ -56,10 +58,7 @@ class DependencyFinders
 
         $properties = $injectionPolicy->getInjectableProperties($class);
         foreach ($properties as $property) {
-            $dependency = self::resolvePropertyDependency($container, $injectionPolicy, $property);
-            if ($dependency) {
-                $injections[$property->name] = $dependency;
-            }
+            $injections[$property->name] = self::resolvePropertyDependency($container, $injectionPolicy, $property);
         }
 
         return $injections;
@@ -75,10 +74,7 @@ class DependencyFinders
     {
         $dependencies = [];
         foreach ($function->getParameters() as $param) {
-            $dependency = self::resolveParameterDependency($container, $injectionPolicy, $param);
-            if ($dependency) {
-                $dependencies[] = $dependency;
-            }
+            $dependencies[] = self::resolveParameterDependency($container, $injectionPolicy, $param);
         }
         return $dependencies;
     }
@@ -92,11 +88,14 @@ class DependencyFinders
     public static function resolveParameterDependency(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy, \ReflectionParameter $parameter)
     {
         $key = $injectionPolicy->getParameterKey($parameter);
-
-        if ($parameter->isOptional()) {
-            return $container->has($key) ? $container->resolve($key) : null;
-        } else {
+        try {
             return $container->resolve($key);
+        } catch (InteropNotFoundException $e) {
+            if ($parameter->isOptional()) {
+                $defaultValue = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
+                return new ValueDependency($defaultValue);
+            }
+            throw NotFoundException::ofParameter($key, $parameter, $e);
         }
     }
 
@@ -109,14 +108,15 @@ class DependencyFinders
     public static function resolvePropertyDependency(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy, \ReflectionProperty $property)
     {
         $key = $injectionPolicy->getPropertyKey($property);
-
-        $class = $property->getDeclaringClass();
-        $values = $class->getDefaultProperties();
-
-        if (isset($values[$property->name])) {
-            return $container->has($key) ? $container->resolve($key) : null;
-        } else {
+        try {
             return $container->resolve($key);
+        } catch (InteropNotFoundException $e) {
+            $class = $property->getDeclaringClass();
+            $values = $class->getDefaultProperties();
+            if (isset($values[$property->name])) {
+                return new ValueDependency($values[$property->name]);
+            }
+            throw NotFoundException::ofProperty($key, $property, $e);
         }
     }
 }

@@ -17,7 +17,7 @@ class AuraDiEvent extends AthleticEvent
     {
         $container = new Container(new Forge(new Config()));
 
-        $container->set('Emonkak\Di\Benchmarks\Fixtures\Foo', $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Foo'));
+        $container->set('Emonkak\Di\Benchmarks\Fixtures\FooInterface', $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Foo'));
         $container->params['Emonkak\Di\Benchmarks\Fixtures\Foo'] = [
             'bar' => $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Bar'),
             'baz' => $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Baz'),
@@ -57,7 +57,7 @@ class AuraDiEvent extends AthleticEvent
         $container->set('Emonkak\Di\Benchmarks\Fixtures\Fred', $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Fred'));
         $container->set('Emonkak\Di\Benchmarks\Fixtures\Plugh', $container->lazyNew('Emonkak\Di\Benchmarks\Fixtures\Plugh'));
 
-        $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
+        $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\FooInterface');
         assert($foo instanceof Foo);
     }
 }

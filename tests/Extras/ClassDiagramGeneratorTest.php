@@ -83,11 +83,13 @@ namespace Emonkak\Di\Tests\Extras\ClassDiagramGeneratorTest
         public $corge;
         public $grault;
         public $scalar;
+        public $optional;
 
-        public function __construct(Bar $bar, Baz $baz)
+        public function __construct(Bar $bar, Baz $baz, $optional = 'optional')
         {
             $this->bar = $bar;
             $this->baz = $baz;
+            $this->optional = $optional;
         }
 
         public function setQux(Qux $qux)

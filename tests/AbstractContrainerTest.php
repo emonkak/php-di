@@ -3,27 +3,13 @@
 namespace Emonkak\Di\Tests
 {
     use Emonkak\Di\Dependency\DependencyInterface;
-    use Emonkak\Di\Scope\SingletonScope;
+    use Emonkak\Di\Tests\AbstractContrainerTest\FooBundle;
 
     abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
     {
         public function setUp()
         {
             $this->container = $this->prepareContainer();
-            $this->container
-                ->bind('Emonkak\Di\Tests\AbstractContrainerTest\BarInterface')
-                ->to('Emonkak\Di\Tests\AbstractContrainerTest\Bar');
-            $this->container
-                ->bind('Emonkak\Di\Tests\AbstractContrainerTest\BazInterface')
-                ->to('Emonkak\Di\Tests\AbstractContrainerTest\Baz')
-                ->in(SingletonScope::getInstance());
-            $this->container->alias('$piyo', '$payo');
-            $this->container->set('$payo', 'payo');
-            $this->container->factory('$poyo', function() {
-                return 'poyo';
-            });
-            $this->container->set('$hoge', function() {
-            });
         }
 
         public function testConfigure()
@@ -39,6 +25,8 @@ namespace Emonkak\Di\Tests
 
         public function testResolve()
         {
+            $this->container->configure(new FooBundle());
+
             $fooDependency = $this->container->resolve('Emonkak\Di\Tests\AbstractContrainerTest\Foo');
 
             $this->assertInstanceOf('Emonkak\Di\Dependency\ObjectDependency', $fooDependency);
@@ -51,6 +39,8 @@ namespace Emonkak\Di\Tests
          */
         public function testMaterialize(DependencyInterface $fooDependency)
         {
+            $this->container->configure(new FooBundle());
+
             $foo = $this->container->materialize($fooDependency);
 
             $this->assertInstanceOf('Emonkak\Di\Tests\AbstractContrainerTest\Foo', $foo);
@@ -65,15 +55,27 @@ namespace Emonkak\Di\Tests
         }
 
         /**
+         * @dataProvider provideResolveThrowsNotFoundException
+         *
          * @expectedException Interop\Container\Exception\NotFoundException
          */
-        public function testResolveThrowsNotFoundException()
+        public function testResolveThrowsNotFoundException($key)
         {
-            $this->container->resolve('Emonkak\Di\Tests\AbstractContrainerTest\FooInterface');
+            $this->container->resolve($key);
+        }
+
+        public function provideResolveThrowsNotFoundException()
+        {
+            return [
+                ['Emonkak\Di\Tests\AbstractContrainerTest\Foo'],
+                ['Emonkak\Di\Tests\AbstractContrainerTest\Qux']
+            ];
         }
 
         public function testGet()
         {
+            $this->container->configure(new FooBundle());
+
             $foo = $this->container->get('Emonkak\Di\Tests\AbstractContrainerTest\Foo');
 
             $this->assertInstanceOf('Emonkak\Di\Tests\AbstractContrainerTest\Foo', $foo);
@@ -88,14 +90,47 @@ namespace Emonkak\Di\Tests
             $this->assertInstanceOf('stdClass', $this->container->get('stdClass'));
         }
 
+        public function testHas()
+        {
+            $this->container->configure(new FooBundle());
+
+            $this->assertTrue($this->container->has('Emonkak\Di\Tests\AbstractContrainerTest\Foo'));
+            $this->assertFalse($this->container->has('Emonkak\Di\Tests\AbstractContrainerTest\FooInterface'));
+        }
+
         abstract protected function prepareContainer();
     }
 }
 
 namespace Emonkak\Di\Tests\AbstractContrainerTest
 {
+    use Emonkak\Di\AbstractContainer;
     use Emonkak\Di\Annotation\Inject;
     use Emonkak\Di\Annotation\Qualifier;
+    use Emonkak\Di\ContainerConfiguratorInterface;
+    use Emonkak\Di\Scope\SingletonScope;
+
+    class FooBundle implements ContainerConfiguratorInterface
+    {
+        public function configure(AbstractContainer $container)
+        {
+            $container
+                ->bind('Emonkak\Di\Tests\AbstractContrainerTest\BarInterface')
+                ->to('Emonkak\Di\Tests\AbstractContrainerTest\Bar');
+            $container
+                ->bind('Emonkak\Di\Tests\AbstractContrainerTest\BazInterface')
+                ->to('Emonkak\Di\Tests\AbstractContrainerTest\Baz')
+                ->in(SingletonScope::getInstance());
+            $container->alias('$piyo', '$payo');
+            $container->set('$payo', 'payo');
+            $container->factory('$poyo', function() {
+                return 'poyo';
+            });
+            $container->set('$hoge', function() {
+                return 'hoge';
+            });
+        }
+    }
 
     class Foo implements FooInterface
     {
@@ -157,6 +192,15 @@ namespace Emonkak\Di\Tests\AbstractContrainerTest
         {
             $this->poyo = $poyo;
         }
+    }
+
+    class Qux
+    {
+        /**
+         * @Inject
+         * @Qualifier("$huga")
+         */
+        public $huga;
     }
 
     interface FooInterface

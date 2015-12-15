@@ -9,6 +9,7 @@ use Emonkak\Di\Dependency\FlyweightFactoryDependency;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Dependency\ReferenceDependency;
 use Emonkak\Di\Dependency\SingletonDependency;
+use Emonkak\Di\Dependency\ValueDependency;
 
 class SingletonScope implements ScopeInterface, DependencyVisitorInterface
 {
@@ -60,6 +61,15 @@ class SingletonScope implements ScopeInterface, DependencyVisitorInterface
      * @return mixed
      */
     public function visitReferenceDependency(ReferenceDependency $dependency)
+    {
+        return $dependency;
+    }
+
+    /**
+     * @param ValueDependency $dependency
+     * @return mixed
+     */
+    public function visitValueDependency(ValueDependency $dependency)
     {
         return $dependency;
     }

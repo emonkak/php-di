@@ -5,6 +5,7 @@ namespace Emonkak\Di\Benchmarks;
 use Athletic\AthleticEvent;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Emonkak\Di\Cache\ApcCache;
+use Emonkak\Di\Cache\ApcuCache;
 use Emonkak\Di\Cache\FilesystemCache;
 use Emonkak\Di\Container;
 use Emonkak\Di\Extras\ServiceProviderGenerator;
@@ -21,9 +22,10 @@ class EmonkakDiEvent extends AthleticEvent
     public function get()
     {
         $container = Container::create();
+        $container->bind('Emonkak\Di\Benchmarks\Fixtures\FooInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Foo');
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Bar');
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BazInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Baz');
-        $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
+        $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\FooInterface');
         assert($foo instanceof Foo);
     }
 
@@ -34,9 +36,10 @@ class EmonkakDiEvent extends AthleticEvent
     {
         $container = new Container(
             new DefaultInjectionPolicy(),
-            new ApcCache('container'),
+            extension_loaded('apcu') ? new ApcuCache('container') : new ApcCache('container'),
             new \ArrayObject()
         );
+        $container->bind('Emonkak\Di\Benchmarks\Fixtures\FooInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Foo');
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Bar');
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BazInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Baz');
         $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
@@ -49,6 +52,7 @@ class EmonkakDiEvent extends AthleticEvent
     public function getWithPimple()
     {
         $container = PimpleContainer::create();
+        $container->bind('Emonkak\Di\Benchmarks\Fixtures\FooInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Foo');
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Bar');
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BazInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Baz');
         $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');

@@ -21,4 +21,10 @@ interface DependencyVisitorInterface
      * @return mixed
      */
     public function visitReferenceDependency(ReferenceDependency $dependency);
+
+    /**
+     * @param ValueDependency $dependency
+     * @return mixed
+     */
+    public function visitValueDependency(ValueDependency $dependency);
 }
