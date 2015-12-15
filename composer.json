@@ -21,21 +21,26 @@
     },
     "require-dev": {
         "athletic/athletic": "dev-master",
-        "aura/di": "~1.0",
+        "aura/di": "~2.0",
+        "brick/di": "dev-master",
         "doctrine/annotations": "~1.2",
-        "doctrine/cache": "~1.4@dev",
+        "doctrine/cache": "~1.6@dev",
         "facebook/xhprof": "dev-master",
+        "league/di": "^1.2",
         "mnapoli/php-di": "~4.4",
         "nikic/php-parser": "~1.2",
         "orno/cache": "~1.0",
         "orno/di": "~2.3",
         "phpunit/phpunit": "~4.4",
         "pimple/pimple": "~3.0",
-        "ray/di": "~1.0",
+        "ray/di": "^2.2",
+        "rdlowrey/auryn": "^1.1",
         "satooshi/php-coveralls": "dev-master",
         "symfony/dependency-injection": "~2.6",
         "symfony/filesystem": "~2.6",
-        "symfony/process": "~2.6"
+        "symfony/process": "~2.6",
+        "zendframework/zend-di": "^2.5",
+        "illuminate/container": "^5.1"
     },
     "suggest": {
         "doctrine/annotations": "Used for AnnotationInjectionPolicy",
@@ -53,5 +58,7 @@
             "Emonkak\\Di\\Benchmarks\\": "benchmarks/",
             "Emonkak\\Di\\Tests\\": "tests/"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
