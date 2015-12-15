@@ -9,4 +9,4 @@ MIT Licence
 
 ## Documentation
 
-Please see [Wiki](https://github.com/emonkak/php-di/wiki). (but wiki pages are Japanese only).
+Please see [Wiki](https://github.com/emonkak/php-di/wiki). (but wiki pages are Japanese only)
