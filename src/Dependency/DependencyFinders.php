@@ -4,7 +4,8 @@ namespace Emonkak\Di\Dependency;
 
 use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
-use Interop\Container\Exception\NotFoundException;
+use Emonkak\Di\Exception\NotFoundException;
+use Interop\Container\Exception\NotFoundException as InteropNotFoundException;
 
 class DependencyFinders
 {
@@ -89,12 +90,12 @@ class DependencyFinders
         $key = $injectionPolicy->getParameterKey($parameter);
         try {
             return $container->resolve($key);
-        } catch (NotFoundException $e) {
+        } catch (InteropNotFoundException $e) {
             if ($parameter->isOptional()) {
                 $defaultValue = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
                 return new ValueDependency($defaultValue);
             }
-            throw $e;
+            throw NotFoundException::ofParameter($key, $parameter, $e);
         }
     }
 
@@ -109,13 +110,13 @@ class DependencyFinders
         $key = $injectionPolicy->getPropertyKey($property);
         try {
             return $container->resolve($key);
-        } catch (NotFoundException $e) {
+        } catch (InteropNotFoundException $e) {
             $class = $property->getDeclaringClass();
             $values = $class->getDefaultProperties();
             if (isset($values[$property->name])) {
                 return new ValueDependency($values[$property->name]);
             }
-            throw $e;
+            throw NotFoundException::ofProperty($key, $property, $e);
         }
     }
 }
