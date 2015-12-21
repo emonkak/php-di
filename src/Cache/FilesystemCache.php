@@ -74,6 +74,6 @@ class FilesystemCache implements \ArrayAccess
     {
         $hash = md5($key);
         $parts = array_slice(str_split($hash, 2), 0, 2);
-        return $this->directory .'/' . implode('/', $parts) . '/' . $hash;
+        return $this->directory . '/' . implode('/', $parts) . '/' . $hash;
     }
 }
