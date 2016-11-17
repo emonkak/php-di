@@ -1,6 +1,6 @@
 {
     "name": "emonkak/di",
-    "description": "A fast dependency injection framework for PHP",
+    "description": "A fast dependency injection library for PHP",
     "license": "MIT",
     "authors": [
         {
