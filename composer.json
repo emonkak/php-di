@@ -40,6 +40,9 @@
         "zendframework/zend-di": "^2.5",
         "illuminate/container": "^5.1"
     },
+    "conflict": {
+        "phpdocumentor/reflection-docblock": ">=3.0"
+    },
     "suggest": {
         "doctrine/annotations": "Used for AnnotationInjectionPolicy",
         "pimple/pimple": "Used for PimpleContainer",

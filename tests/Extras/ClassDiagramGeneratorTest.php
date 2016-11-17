@@ -67,7 +67,7 @@ namespace Emonkak\Di\Tests\Extras
             $process->run();
 
             $this->assertTrue($process->isSuccessful());
-            $this->assertNull($process->getErrorOutput());
+            $this->assertEquals('', $process->getErrorOutput());
         }
     }
 }

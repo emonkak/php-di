@@ -12,46 +12,41 @@ namespace Emonkak\Di\Tests\Definition
 
     class BindingDefinitionTest extends \PHPUnit_Framework_TestCase
     {
-        public function testResolveDependency()
+        public function testResolveBy()
         {
-            \Closure::bind(function() {
-                $definition = new BindingDefinition('Emonkak\Di\Tests\Definition\BindingDefinitionTest\FooInterface');
+            $definition = new BindingDefinition('Emonkak\Di\Tests\Definition\BindingDefinitionTest\FooInterface');
 
-                $injectionPolicy = new DefaultInjectionPolicy();
-                $container = Container::create($injectionPolicy);
-                $barDefinition = $container->set('Emonkak\Di\Tests\Definition\BindingDefinitionTest\Bar', new Bar());
-                $bazDefinition = $container->set('Emonkak\Di\Tests\Definition\BindingDefinitionTest\Baz', new Baz());
-                $quxDefinition = $container->factory('Emonkak\Di\Tests\Definition\BindingDefinitionTest\Qux', function() {
-                    return new Qux();
-                });
+            $injectionPolicy = new DefaultInjectionPolicy();
+            $container = Container::create($injectionPolicy);
+            $barDefinition = $container->set('Emonkak\Di\Tests\Definition\BindingDefinitionTest\Bar', new Bar());
+            $bazDefinition = $container->set('Emonkak\Di\Tests\Definition\BindingDefinitionTest\Baz', new Baz());
+            $quxDefinition = $container->factory('Emonkak\Di\Tests\Definition\BindingDefinitionTest\Qux', function() {
+                return new Qux();
+            });
+            $fooDependency = $definition
+                ->to('Emonkak\Di\Tests\Definition\BindingDefinitionTest\Foo')
+                ->with([$barDefinition])
+                ->withMethod('setBaz', [$bazDefinition])
+                ->withProperty('qux', $quxDefinition)
+                ->resolveBy($container, $injectionPolicy);
 
-                $fooDependency = $definition
-                    ->to('Emonkak\Di\Tests\Definition\BindingDefinitionTest\Foo')
-                    ->with([$barDefinition])
-                    ->withMethod('setBaz', [$bazDefinition])
-                    ->withProperty('qux', $quxDefinition)
-                    ->resolveDependency($container, $injectionPolicy);
-
-                $this->assertSame('Emonkak\Di\Dependency\ObjectDependency', get_class($fooDependency));
-                $this->assertSame('Emonkak\Di\Tests\Definition\BindingDefinitionTest\FooInterface', $fooDependency->getKey());
-                $this->assertEquals([$barDefinition->resolveBy($container, $injectionPolicy)], $fooDependency->getConstructorDependencies());
-                $this->assertEquals(['setBaz' => [$bazDefinition->resolveBy($container, $injectionPolicy)]], $fooDependency->getMethodDependencies());
-                $this->assertEquals(['qux' => $quxDefinition->resolveBy($container, $injectionPolicy)], $fooDependency->getPropertyDependencies());
-            }, $this, 'Emonkak\Di\Definition\BindingDefinition')->__invoke();
+            $this->assertInstanceOf('Emonkak\Di\Dependency\ObjectDependency', $fooDependency);
+            $this->assertSame('Emonkak\Di\Tests\Definition\BindingDefinitionTest\FooInterface', $fooDependency->getKey());
+            $this->assertEquals([$barDefinition->resolveBy($container, $injectionPolicy)], $fooDependency->getConstructorDependencies());
+            $this->assertEquals(['setBaz' => [$bazDefinition->resolveBy($container, $injectionPolicy)]], $fooDependency->getMethodDependencies());
+            $this->assertEquals(['qux' => $quxDefinition->resolveBy($container, $injectionPolicy)], $fooDependency->getPropertyDependencies());
         }
 
         /**
          * @expectedException LogicException
          */
-        public function testResolveDependencyThrowsLogicException()
+        public function testResolveByThrowsLogicException()
         {
-            \Closure::bind(function() {
-                $injectionPolicy = new DefaultInjectionPolicy();
-                $container = Container::create($injectionPolicy);
+            $injectionPolicy = new DefaultInjectionPolicy();
+            $container = Container::create($injectionPolicy);
 
-                $definition = new BindingDefinition('Emonkak\Di\Tests\Definition\BindingDefinitionTest\FooInterface');
-                $definition->resolveDependency($container, $injectionPolicy);
-            }, $this, 'Emonkak\Di\Definition\BindingDefinition')->__invoke();
+            $definition = new BindingDefinition('Emonkak\Di\Tests\Definition\BindingDefinitionTest\FooInterface');
+            $definition->resolveBy($container, $injectionPolicy);
         }
     }
 }
