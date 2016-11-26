@@ -27,6 +27,9 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
         return new self(new DefaultInjectionPolicy(), new AnnotationReader());
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     private static function registerLoader()
     {
         if (!self::$isRegistered) {

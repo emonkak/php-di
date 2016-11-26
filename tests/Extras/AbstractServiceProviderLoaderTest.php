@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Tests\Extras;
 
-abstract class AbstractServiceProviderTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractServiceProviderLoaderTest extends \PHPUnit_Framework_TestCase
 {
     protected $loader;
 

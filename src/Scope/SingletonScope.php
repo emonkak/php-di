@@ -16,6 +16,8 @@ class SingletonScope implements ScopeInterface, DependencyVisitorInterface
     /**
      * Gets the singleton instance of this classs.
      *
+     * @codeCoverageIgnore
+     *
      * @return SingletonScope
      */
     public static function getInstance()

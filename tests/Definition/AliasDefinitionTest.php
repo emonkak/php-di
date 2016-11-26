@@ -4,6 +4,9 @@ namespace Emonkak\Di\Tests\Definition;
 
 use Emonkak\Di\Definition\AliasDefinition;
 
+/**
+ * @covers Emonkak\Di\Definition\AliasDefinition
+ */
 class AliasDefinitionTest extends \PHPUnit_Framework_TestCase
 {
     public function testResolveBy()

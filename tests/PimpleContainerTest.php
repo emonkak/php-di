@@ -5,6 +5,10 @@ namespace Emonkak\Di\Tests;
 use Emonkak\Di\InjectionPolicy\AnnotationInjectionPolicy;
 use Emonkak\Di\PimpleContainer;
 
+/**
+ * @covers Emonkak\Di\AbstractContainer
+ * @covers Emonkak\Di\PimpleContainer
+ */
 class PimpleContainerTest extends AbstractContrainerTest
 {
     public function testCreate()

@@ -4,6 +4,9 @@ namespace Emonkak\Di\Tests\Annotation;
 
 use Emonkak\Di\Annotation\Qualifier;
 
+/**
+ * @covers Emonkak\Di\Annotation\Qualifier
+ */
 class QualifierTest extends \PHPUnit_Framework_TestCase
 {
     /**

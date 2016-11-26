@@ -4,7 +4,10 @@ namespace Emonkak\Di\Tests\Extras;
 
 use Emonkak\Di\Extras\ServiceProviderLoader;
 
-class ServiceProviderLoaderTest extends AbstractServiceProviderTest
+/**
+ * @covers Emonkak\Di\Extras\ServiceProviderLoader
+ */
+class ServiceProviderLoaderTest extends AbstractServiceProviderLoaderTest
 {
     public function testCreate()
     {

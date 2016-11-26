@@ -6,6 +6,8 @@ use Emonkak\Di\Cache\ApcuCache;
 
 /**
  * @requires extension apcu
+ *
+ * @covers Emonkak\Di\Cache\ApcuCache
  */
 class ApcuCacheTest extends \PHPUnit_Framework_TestCase
 {

@@ -5,7 +5,10 @@ namespace Emonkak\Di\Tests\Extras;
 use Emonkak\Di\Extras\ServiceProviderLoaderOnFilesystem;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ServiceProviderLoaderOnFilesystemTest extends AbstractServiceProviderTest
+/**
+ * @covers Emonkak\Di\Extras\ServiceProviderLoaderOnFilesystem
+ */
+class ServiceProviderLoaderOnFilesystemTest extends AbstractServiceProviderLoaderTest
 {
     public function setUp()
     {

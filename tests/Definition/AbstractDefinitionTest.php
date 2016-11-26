@@ -2,6 +2,9 @@
 
 namespace Emonkak\Di\Tests\Definition;
 
+/**
+ * @covers Emonkak\Di\Definition\AbstractDefinition
+ */
 class AbstractDefinitionTest extends \PHPUnit_Framework_TestCase
 {
     public function testGet()

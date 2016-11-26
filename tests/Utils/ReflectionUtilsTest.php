@@ -1,278 +1,132 @@
 <?php
 
-namespace Emonkak\Di\Tests\Utils
+namespace Emonkak\Di\Tests\Utils;
+
+use Emonkak\Di\Tests\Utils\Stubs\Functions;
+use Emonkak\Di\Tests\Utils\Stubs\Lambda;
+use Emonkak\Di\Utils\ReflectionUtils50;
+use Emonkak\Di\Utils\ReflectionUtils56;
+
+class ReflectionUtilsTest extends \PHPUnit_Framework_TestCase
 {
-    use Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Functions;
-    use Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Lambda;
-    use Emonkak\Di\Utils\ReflectionUtils50;
-    use Emonkak\Di\Utils\ReflectionUtils56;
-
-    class ReflectionUtilsTest extends \PHPUnit_Framework_TestCase
+    /**
+     * @dataProvider provideGetFunction
+     */
+    public function testGetFunction(callable $f)
     {
-        /**
-         * @dataProvider provideGetFunction
-         */
-        public function testGetFunction(callable $f)
-        {
-            $this->assertInstanceof('ReflectionFunctionAbstract', ReflectionUtils50::getFunction($f));
-        }
-
-        public function provideGetFunction()
-        {
-            return [
-                [[$this, 'assertEquals']],
-                [function() {}],
-                ['var_dump'],
-                [new Lambda()],
-            ];
-        }
-
-        /**
-         * @dataProvider provideNewInstance
-         */
-        public function testNewInstance($class, $args)
-        {
-            $this->assertInstanceof($class, ReflectionUtils50::newInstance($class, $args));
-        }
-
-        /**
-         * @requires PHP 5.6
-         * @dataProvider provideNewInstance
-         */
-        public function testNewInstance56($class, $args)
-        {
-            $this->assertInstanceof($class, ReflectionUtils56::newInstance($class, $args));
-        }
-
-        /**
-         * @dataProvider provideNewInstance
-         */
-        public function testnewInstanceWithReflection($class, $args)
-        {
-            $this->assertInstanceof($class, ReflectionUtils50::newInstanceWithReflection($class, $args));
-        }
-
-        public function provideNewInstance()
-        {
-            return [
-                ['Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Zero',   []],
-                ['Emonkak\Di\Tests\Utils\ReflectionUtilsTest\One',    [1]],
-                ['Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Two',    [1, 2]],
-                ['Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Three',  [1, 2, 3]],
-                ['Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Four',   [1, 2, 3, 4]],
-                ['Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Five',   [1, 2, 3, 4, 5]],
-                ['Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Six',    [1, 2, 3, 4, 5, 6]],
-                ['Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Seven',  [1, 2, 3, 4, 5, 6, 7]],
-                ['Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Eight',  [1, 2, 3, 4, 5, 6, 7, 8]],
-                ['Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Nine',   [1, 2, 3, 4, 5, 6, 7, 8, 9]],
-                ['Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Ten',    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]],
-                ['Emonkak\Di\Tests\Utils\ReflectionUtilsTest\Eleven', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]],
-            ];
-        }
-
-        /**
-         * @dataProvider provideCallMethod
-         */
-        public function testCallMethod($instance, $method, $args)
-        {
-            ReflectionUtils50::callMethod($instance, $method, $args);
-        }
-
-        /**
-         * @requires PHP 5.6
-         * @dataProvider provideCallMethod
-         */
-        public function testCallMethod56($instance, $method, $args)
-        {
-            ReflectionUtils56::callMethod($instance, $method, $args);
-        }
-
-        /**
-         * @dataProvider provideCallMethod
-         */
-        public function testCallMethodWithReflection($instance, $method, $args)
-        {
-            ReflectionUtils50::callMethodWithReflection($instance, $method, $args);
-        }
-
-        /**
-         * @dataProvider provideCallMethod
-         */
-        public function testCallFunction($instance, $method, $args)
-        {
-            ReflectionUtils50::callFunction([$instance, $method], $args);
-        }
-
-        /**
-         * @requires PHP 5.6
-         * @dataProvider provideCallMethod
-         */
-        public function testCallFunction56($instance, $method, $args)
-        {
-            ReflectionUtils56::callFunction([$instance, $method], $args);
-        }
-
-        public function provideCallMethod()
-        {
-            return [
-                [new Functions(), 'zero',   []],
-                [new Functions(), 'one',    [1]],
-                [new Functions(), 'two',    [1, 2]],
-                [new Functions(), 'three',  [1, 2, 3]],
-                [new Functions(), 'four',   [1, 2, 3, 4]],
-                [new Functions(), 'five',   [1, 2, 3, 4, 5]],
-                [new Functions(), 'six',    [1, 2, 3, 4, 5, 6]],
-                [new Functions(), 'seven',  [1, 2, 3, 4, 5, 6, 7]],
-                [new Functions(), 'eight',  [1, 2, 3, 4, 5, 6, 7, 8]],
-                [new Functions(), 'nine',   [1, 2, 3, 4, 5, 6, 7, 8, 9]],
-                [new Functions(), 'ten',    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]],
-                [new Functions(), 'eleven', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]],
-            ];
-        }
-    }
-}
-
-namespace Emonkak\Di\Tests\Utils\ReflectionUtilsTest
-{
-    class Lambda
-    {
-        public function __invoke()
-        {
-        }
+        $this->assertInstanceof('ReflectionFunctionAbstract', ReflectionUtils50::getFunction($f));
     }
 
-    class Functions
+    public function provideGetFunction()
     {
-        public function zero()
-        {
-        }
-
-        public function one($a)
-        {
-        }
-
-        public function two($a, $b)
-        {
-        }
-
-        public function three($a, $b, $c)
-        {
-        }
-
-        public function four($a, $b, $c, $d)
-        {
-        }
-
-        public function five($a, $b, $c, $d, $e)
-        {
-        }
-
-        public function six($a, $b, $c, $d, $e, $f)
-        {
-        }
-
-        public function seven($a, $b, $c, $d, $e, $f, $g)
-        {
-        }
-
-        public function eight($a, $b, $c, $d, $e, $f, $g, $h)
-        {
-        }
-
-        public function nine($a, $b, $c, $d, $e, $f, $g, $h, $i)
-        {
-        }
-
-        public function ten($a, $b, $c, $d, $e, $f, $g, $h, $i, $j)
-        {
-        }
-
-        public function eleven($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k)
-        {
-        }
+        return [
+            [[$this, 'assertEquals']],
+            [function() {}],
+            ['var_dump'],
+            [new Lambda()],
+        ];
     }
 
-    class Zero
+    /**
+     * @dataProvider provideNewInstance
+     */
+    public function testNewInstance($class, $args)
     {
-        public function __construct()
-        {
-        }
+        $this->assertInstanceof($class, ReflectionUtils50::newInstance($class, $args));
     }
 
-    class One
+    /**
+     * @requires PHP 5.6
+     * @dataProvider provideNewInstance
+     */
+    public function testNewInstance56($class, $args)
     {
-        public function __construct($a)
-        {
-        }
+        $this->assertInstanceof($class, ReflectionUtils56::newInstance($class, $args));
     }
 
-    class Two
+    /**
+     * @dataProvider provideNewInstance
+     */
+    public function testnewInstanceWithReflection($class, $args)
     {
-        public function __construct($a, $b)
-        {
-        }
+        $this->assertInstanceof($class, ReflectionUtils50::newInstanceWithReflection($class, $args));
     }
 
-    class Three
+    public function provideNewInstance()
     {
-        public function __construct($a, $b, $c)
-        {
-        }
+        return [
+            ['Emonkak\Di\Tests\Utils\Stubs\Zero',   []],
+            ['Emonkak\Di\Tests\Utils\Stubs\One',    [1]],
+            ['Emonkak\Di\Tests\Utils\Stubs\Two',    [1, 2]],
+            ['Emonkak\Di\Tests\Utils\Stubs\Three',  [1, 2, 3]],
+            ['Emonkak\Di\Tests\Utils\Stubs\Four',   [1, 2, 3, 4]],
+            ['Emonkak\Di\Tests\Utils\Stubs\Five',   [1, 2, 3, 4, 5]],
+            ['Emonkak\Di\Tests\Utils\Stubs\Six',    [1, 2, 3, 4, 5, 6]],
+            ['Emonkak\Di\Tests\Utils\Stubs\Seven',  [1, 2, 3, 4, 5, 6, 7]],
+            ['Emonkak\Di\Tests\Utils\Stubs\Eight',  [1, 2, 3, 4, 5, 6, 7, 8]],
+            ['Emonkak\Di\Tests\Utils\Stubs\Nine',   [1, 2, 3, 4, 5, 6, 7, 8, 9]],
+            ['Emonkak\Di\Tests\Utils\Stubs\Ten',    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]],
+            ['Emonkak\Di\Tests\Utils\Stubs\Eleven', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]],
+        ];
     }
 
-    class Four
+    /**
+     * @dataProvider provideCallMethod
+     */
+    public function testCallMethod($instance, $method, $args)
     {
-        public function __construct($a, $b, $c, $d)
-        {
-        }
+        ReflectionUtils50::callMethod($instance, $method, $args);
     }
 
-    class Five
+    /**
+     * @requires PHP 5.6
+     * @dataProvider provideCallMethod
+     */
+    public function testCallMethod56($instance, $method, $args)
     {
-        public function __construct($a, $b, $c, $d, $e)
-        {
-        }
+        ReflectionUtils56::callMethod($instance, $method, $args);
     }
 
-    class Six
+    /**
+     * @dataProvider provideCallMethod
+     */
+    public function testCallMethodWithReflection($instance, $method, $args)
     {
-        public function __construct($a, $b, $c, $d, $e, $f)
-        {
-        }
+        ReflectionUtils50::callMethodWithReflection($instance, $method, $args);
     }
 
-    class Seven
+    /**
+     * @dataProvider provideCallMethod
+     */
+    public function testCallFunction($instance, $method, $args)
     {
-        public function __construct($a, $b, $c, $d, $e, $f, $g)
-        {
-        }
+        ReflectionUtils50::callFunction([$instance, $method], $args);
     }
 
-    class Eight
+    /**
+     * @requires PHP 5.6
+     * @dataProvider provideCallMethod
+     */
+    public function testCallFunction56($instance, $method, $args)
     {
-        public function __construct($a, $b, $c, $d, $e, $f, $g, $h)
-        {
-        }
+        ReflectionUtils56::callFunction([$instance, $method], $args);
     }
 
-    class Nine
+    public function provideCallMethod()
     {
-        public function __construct($a, $b, $c, $d, $e, $f, $g, $h, $i)
-        {
-        }
-    }
-
-    class Ten
-    {
-        public function __construct($a, $b, $c, $d, $e, $f, $g, $h, $i, $j)
-        {
-        }
-    }
-
-    class Eleven
-    {
-        public function __construct($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k)
-        {
-        }
+        return [
+            [new Functions(), 'zero',   []],
+            [new Functions(), 'one',    [1]],
+            [new Functions(), 'two',    [1, 2]],
+            [new Functions(), 'three',  [1, 2, 3]],
+            [new Functions(), 'four',   [1, 2, 3, 4]],
+            [new Functions(), 'five',   [1, 2, 3, 4, 5]],
+            [new Functions(), 'six',    [1, 2, 3, 4, 5, 6]],
+            [new Functions(), 'seven',  [1, 2, 3, 4, 5, 6, 7]],
+            [new Functions(), 'eight',  [1, 2, 3, 4, 5, 6, 7, 8]],
+            [new Functions(), 'nine',   [1, 2, 3, 4, 5, 6, 7, 8, 9]],
+            [new Functions(), 'ten',    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]],
+            [new Functions(), 'eleven', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]],
+        ];
     }
 }
