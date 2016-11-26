@@ -8,6 +8,9 @@ use Emonkak\Di\Dependency\ValueDependency;
 use Emonkak\Di\Dependency\ReferenceDependency;
 use Emonkak\Di\Scope\SingletonScope;
 
+/**
+ * @covers Emonkak\Di\Scope\SingletonScope
+ */
 class SingletonScopeTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetInstance()

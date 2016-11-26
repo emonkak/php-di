@@ -1,0 +1,24 @@
+{
+    "require": {
+        "aura/di": "~3.2",
+        "brick/di": "dev-master",
+        "doctrine/cache": "~1.6",
+        "emonkak/di": "~2.0",
+        "illuminate/container": "~5.3",
+        "league/container": "~2.2",
+        "php-di/php-di": "~5.4",
+        "phpbench/phpbench": "~0.10",
+        "pimple/pimple": "~3.0",
+        "ray/di": "~2.4",
+        "rdlowrey/auryn": "~1.4",
+        "symfony/dependency-injection": "~3.1",
+        "zendframework/zend-di": "~2.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Emonkak\\Di\\Benchmarks\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

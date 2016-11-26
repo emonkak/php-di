@@ -6,6 +6,9 @@ use Emonkak\Di\Container;
 use Emonkak\Di\Dependency\ReferenceDependency;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 
+/**
+ * @covers Emonkak\Di\Dependency\ReferenceDependency
+ */
 class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
 {
     public function testAccept()

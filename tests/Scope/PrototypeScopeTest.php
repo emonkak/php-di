@@ -7,6 +7,9 @@ use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Dependency\ReferenceDependency;
 use Emonkak\Di\Scope\PrototypeScope;
 
+/**
+ * @covers Emonkak\Di\Scope\PrototypeScope
+ */
 class PrototypeScopeTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetInstance()

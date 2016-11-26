@@ -6,6 +6,9 @@ use Emonkak\Di\Container;
 use Emonkak\Di\Dependency\ValueDependency;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 
+/**
+ * @covers Emonkak\Di\Dependency\ValueDependency
+ */
 class ValueDependencyTest extends \PHPUnit_Framework_TestCase
 {
     public function testAccept()
@@ -33,6 +36,13 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
         $dependency = new ValueDependency(123);
 
         $this->assertSame(sha1(serialize(123)), $dependency->getKey());
+    }
+
+    public function testGetValue()
+    {
+        $dependency = new ValueDependency(123);
+
+        $this->assertSame(123, $dependency->getValue());
     }
 
     public function testMaterializeBy()

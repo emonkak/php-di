@@ -4,6 +4,9 @@ namespace Emonkak\Di\Tests\Annotation;
 
 use Emonkak\Di\Annotation\Scope;
 
+/**
+ * @covers Emonkak\Di\Annotation\Scope
+ */
 class ScopeTest extends \PHPUnit_Framework_TestCase
 {
     /**

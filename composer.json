@@ -8,37 +8,22 @@
             "email": "emonkak@gmail.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/emonkak/athletic"
-        }
-    ],
     "require": {
         "php": ">=5.4",
         "jeremeamia/SuperClosure": ">=1.0",
         "container-interop/container-interop": "~1.1"
     },
     "require-dev": {
-        "athletic/athletic": "dev-master",
-        "aura/di": "~2.0",
-        "brick/di": "dev-master",
         "doctrine/annotations": "~1.2",
-        "doctrine/cache": "~1.6@dev",
-        "facebook/xhprof": "dev-master",
-        "league/container": "^2.0",
-        "mnapoli/php-di": "~4.4",
         "nikic/php-parser": "~1.2",
         "phpunit/phpunit": "~4.4",
         "pimple/pimple": "~3.0",
-        "ray/di": "^2.2",
-        "rdlowrey/auryn": "^1.1",
-        "satooshi/php-coveralls": "dev-master",
-        "symfony/dependency-injection": "~2.6",
+        "satooshi/php-coveralls": "~1.0",
         "symfony/filesystem": "~2.6",
-        "symfony/process": "~2.6",
-        "zendframework/zend-di": "^2.5",
-        "illuminate/container": "^5.1"
+        "symfony/process": "~2.6"
+    },
+    "conflict": {
+        "phpdocumentor/reflection-docblock": ">=3.0"
     },
     "suggest": {
         "doctrine/annotations": "Used for AnnotationInjectionPolicy",
@@ -53,10 +38,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Emonkak\\Di\\Benchmarks\\": "benchmarks/",
             "Emonkak\\Di\\Tests\\": "tests/"
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }

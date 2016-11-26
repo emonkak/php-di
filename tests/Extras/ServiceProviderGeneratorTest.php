@@ -1,72 +1,47 @@
 <?php
 
-namespace Emonkak\Di\Tests\Extras
+namespace Emonkak\Di\Tests\Extras;
+
+use Emonkak\Di\Container;
+use Emonkak\Di\Extras\ServiceProviderGenerator;
+use Pimple\Container as Pimple;
+
+/**
+ * @covers Emonkak\Di\Extras\ServiceProviderGenerator
+ */
+class ServiceProviderGeneratorTest extends \PHPUnit_Framework_TestCase
 {
-    use Emonkak\Di\Container;
-    use Emonkak\Di\Extras\ServiceProviderGenerator;
-    use Pimple\Container as Pimple;
-
-    class ServiceProviderGeneratorTest extends \PHPUnit_Framework_TestCase
+    public function testGenerate()
     {
-        public function testGenerate()
-        {
-            $container = Container::create();
-            $generator = ServiceProviderGenerator::create();
+        $container = Container::create();
+        $generator = ServiceProviderGenerator::create();
 
-            do {
-                $className = 'Class_' . md5(mt_rand());
-            } while (class_exists($className));
+        do {
+            $className = 'Class_' . md5(mt_rand());
+        } while (class_exists($className));
 
-            $dependency = $container->resolve('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Foo');
+        $dependency = $container->resolve('Emonkak\Di\Tests\Extras\Stubs\Foo');
 
-            $source = $generator->generate($className, $dependency);
+        $source = $generator->generate($className, $dependency);
 
-            $this->assertInternalType('string', $source);
+        $this->assertInternalType('string', $source);
 
-            eval($source);
+        eval($source);
 
-            $this->assertTrue(class_exists($className));
+        $this->assertTrue(class_exists($className));
 
-            $serviceProvider = new $className();
+        $serviceProvider = new $className();
 
-            $this->assertInstanceOf('Pimple\ServiceProviderInterface', $serviceProvider);
+        $this->assertInstanceOf('Pimple\ServiceProviderInterface', $serviceProvider);
 
-            $pimple = new Pimple();
-            $pimple->register($serviceProvider);
+        $pimple = new Pimple();
+        $pimple->register($serviceProvider);
 
-            $foo = $pimple['Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Foo'];
-            $this->assertInstanceOf('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Foo', $foo);
-            $this->assertInstanceOf('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Bar', $foo->bar);
-            $this->assertInstanceOf('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Baz', $foo->baz);
-            $this->assertInstanceOf('Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest\Baz', $foo->bar->baz);
-            $this->assertSame(123, $foo->optionalNum);
-            $this->assertSame('123', $foo->optionalString);
-        }
+        $foo = $pimple['Emonkak\Di\Tests\Extras\Stubs\Foo'];
+        $this->assertInstanceOf('Emonkak\Di\Tests\Extras\Stubs\Foo', $foo);
+        $this->assertInstanceOf('Emonkak\Di\Tests\Extras\Stubs\Bar', $foo->bar);
+        $this->assertSame('optional', $foo->optional1);
+        $this->assertSame(123, $foo->optional2);
     }
 }
 
-namespace Emonkak\Di\Tests\Extras\ServiceProviderGeneratorTest
-{
-    class Foo
-    {
-        public function __construct(Bar $bar, Baz $baz, $optionalNum = 123, $optionalString = '123')
-        {
-            $this->bar = $bar;
-            $this->baz = $baz;
-            $this->optionalNum = $optionalNum;
-            $this->optionalString = $optionalString;
-        }
-    }
-
-    class Bar
-    {
-        public function __construct(Baz $baz)
-        {
-            $this->baz = $baz;
-        }
-    }
-
-    class Baz
-    {
-    }
-}

@@ -5,6 +5,9 @@ namespace Emonkak\Di\Tests;
 use Emonkak\Di\PimpleContainerWrapper;
 use Pimple\Container as Pimple;
 
+/**
+ * @covers Emonkak\Di\PimpleContainerWrapper
+ */
 class PimpleContainerWrapperTest extends \PHPUnit_Framework_TestCase
 {
     public function testAsArrayAccess()

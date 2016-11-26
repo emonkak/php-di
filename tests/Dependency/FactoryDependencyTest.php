@@ -6,6 +6,9 @@ use Emonkak\Di\Container;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 
+/**
+ * @covers Emonkak\Di\Dependency\FactoryDependency
+ */
 class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 {
     public function testAccept()

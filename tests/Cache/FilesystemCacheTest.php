@@ -5,6 +5,9 @@ namespace Emonkak\Di\Tests\Cache;
 use Emonkak\Di\Cache\FilesystemCache;
 use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * @covers Emonkak\Di\Cache\FilesystemCache
+ */
 class FilesystemCacheTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()

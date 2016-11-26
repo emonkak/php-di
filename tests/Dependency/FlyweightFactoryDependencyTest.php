@@ -7,6 +7,9 @@ use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Dependency\FlyweightFactoryDependency;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 
+/**
+ * @covers Emonkak\Di\Dependency\FlyweightFactoryDependency
+ */
 class FlyweightFactoryDependencyTest extends \PHPUnit_Framework_TestCase
 {
     public function testFrom()

@@ -10,6 +10,7 @@ class NotFoundException extends \Exception implements InteropNotFoundException
      * @param string                   $key
      * @param \ReflectionProperty      $property
      * @param InteropNotFoundException $prev
+     * @return NotFoundException
      */
     public static function ofProperty($key, \ReflectionProperty $property, InteropNotFoundException $prev)
     {
@@ -28,6 +29,7 @@ class NotFoundException extends \Exception implements InteropNotFoundException
      * @param string                   $key
      * @param \ReflectionParameter     $parameter
      * @param InteropNotFoundException $prev
+     * @return NotFoundException
      */
     public static function ofParameter($key, \ReflectionParameter $parameter, InteropNotFoundException $prev)
     {

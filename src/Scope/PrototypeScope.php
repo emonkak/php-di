@@ -9,6 +9,8 @@ class PrototypeScope implements ScopeInterface
     /**
      * Gets the singleton instance of this classs.
      *
+     * @codeCoverageIgnore
+     *
      * @return PrototypeScope
      */
     public static function getInstance()
