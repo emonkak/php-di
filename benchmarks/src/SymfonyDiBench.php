@@ -2,17 +2,16 @@
 
 namespace Emonkak\Di\Benchmarks;
 
-use Athletic\AthleticEvent;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
-class SymfonyDiEvent extends AthleticEvent
+/**
+ * @Groups({"di"})
+ */
+class SymfonyDiBench
 {
-    /**
-     * @iterations 1000
-     */
-    public function get()
+    public function benchGet()
     {
         $container = new ContainerBuilder();
 
@@ -42,7 +41,6 @@ class SymfonyDiEvent extends AthleticEvent
         $container->register('Emonkak\Di\Benchmarks\Fixtures\Fred', 'Emonkak\Di\Benchmarks\Fixtures\Fred');
         $container->register('Emonkak\Di\Benchmarks\Fixtures\Plugh', 'Emonkak\Di\Benchmarks\Fixtures\Plugh');
 
-        $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\FooInterface');
-        assert($foo instanceof Foo);
+        assert($container->get('Emonkak\Di\Benchmarks\Fixtures\FooInterface') instanceof Foo);
     }
 }

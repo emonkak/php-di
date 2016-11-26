@@ -2,7 +2,6 @@
 
 namespace Emonkak\Di\Benchmarks;
 
-use Athletic\AthleticEvent;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Emonkak\Di\Benchmarks\Fixtures\Bar;
 use Emonkak\Di\Benchmarks\Fixtures\Baz;
@@ -15,12 +14,12 @@ use Emonkak\Di\Benchmarks\Fixtures\Waldo;
 use Emonkak\Di\Benchmarks\Fixtures\Fred;
 use Emonkak\Di\Benchmarks\Fixtures\Plugh;
 
-class NativeEvent extends AthleticEvent
+/**
+ * @Groups({"di"})
+ */
+class NativeBench
 {
-    /**
-     * @iterations 1000
-     */
-    public function get()
+    public function benchGet()
     {
         $foo = new Foo(
             new Bar(

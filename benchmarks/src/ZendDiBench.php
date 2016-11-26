@@ -2,17 +2,16 @@
 
 namespace Emonkak\Di\Benchmarks;
 
-use Athletic\AthleticEvent;
 use Auryn\Injector;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Zend\Di\Di;
 
-class ZendDiEvent extends AthleticEvent
+/**
+ * @Groups({"di"})
+ */
+class ZendDiBench
 {
-    /**
-     * @iterations 1000
-     */
-    public function get()
+    public function benchGet()
     {
         $di = new Di();
 
@@ -21,7 +20,6 @@ class ZendDiEvent extends AthleticEvent
             ->addTypePreference('Emonkak\Di\Benchmarks\Fixtures\BarInterface', 'Emonkak\Di\Benchmarks\Fixtures\Bar')
             ->addTypePreference('Emonkak\Di\Benchmarks\Fixtures\BazInterface', 'Emonkak\Di\Benchmarks\Fixtures\Baz');
 
-        $foo = $di->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
-        assert($foo instanceof Foo);
+        assert($di->get('Emonkak\Di\Benchmarks\Fixtures\Foo') instanceof Foo);
     }
 }

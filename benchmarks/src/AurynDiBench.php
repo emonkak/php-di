@@ -2,16 +2,16 @@
 
 namespace Emonkak\Di\Benchmarks;
 
-use Athletic\AthleticEvent;
+use Athletic\AthleticBench;
 use Auryn\Injector;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 
-class AurynDiEvent extends AthleticEvent
+/**
+ * @Groups({"di"})
+ */
+class AurynDiBench
 {
-    /**
-     * @iterations 1000
-     */
-    public function get()
+    public function benchGet()
     {
         $injector = new Injector();
 
@@ -19,7 +19,6 @@ class AurynDiEvent extends AthleticEvent
         $injector->alias('Emonkak\Di\Benchmarks\Fixtures\BarInterface', 'Emonkak\Di\Benchmarks\Fixtures\Bar');
         $injector->alias('Emonkak\Di\Benchmarks\Fixtures\BazInterface', 'Emonkak\Di\Benchmarks\Fixtures\Baz');
 
-        $foo = $injector->make('Emonkak\Di\Benchmarks\Fixtures\FooInterface');
-        assert($foo instanceof Foo);
+        assert($injector->make('Emonkak\Di\Benchmarks\Fixtures\FooInterface') instanceof Foo);
     }
 }

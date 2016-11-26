@@ -4,7 +4,6 @@ namespace Emonkak\Di\Benchmarks;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Athletic\AthleticEvent;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Emonkak\Di\Benchmarks\Fixtures\Bar;
 use Emonkak\Di\Benchmarks\Fixtures\Baz;
@@ -17,12 +16,12 @@ use Emonkak\Di\Benchmarks\Fixtures\Waldo;
 use Emonkak\Di\Benchmarks\Fixtures\Fred;
 use Emonkak\Di\Benchmarks\Fixtures\Plugh;
 
-class PimpleEvent extends AthleticEvent
+/**
+ * @Groups({"di"})
+ */
+class PimpleBench
 {
-    /**
-     * @iterations 1000
-     */
-    public function get()
+    public function benchGet()
     {
         $container = new Container();
         $container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'] = function($c) {
@@ -59,14 +58,10 @@ class PimpleEvent extends AthleticEvent
             return new Plugh();
         };
 
-        $foo = $container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'];
-        assert($foo instanceof Foo);
+        assert($container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'] instanceof Foo);
     }
 
-    /**
-     * @iterations 1000
-     */
-    public function getFactory()
+    public function benchFactory()
     {
         $container = new Container();
         $container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'] = $container->factory(function($c) {
@@ -103,7 +98,6 @@ class PimpleEvent extends AthleticEvent
             return new Plugh();
         });
 
-        $foo = $container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'];
-        assert($foo instanceof Foo);
+        assert($container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'] instanceof Foo);
     }
 }

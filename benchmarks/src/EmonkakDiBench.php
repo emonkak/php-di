@@ -2,7 +2,6 @@
 
 namespace Emonkak\Di\Benchmarks;
 
-use Athletic\AthleticEvent;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Emonkak\Di\Cache\ApcCache;
 use Emonkak\Di\Cache\ApcuCache;
@@ -14,25 +13,21 @@ use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\PimpleContainer;
 use Pimple\Container as Pimple;
 
-class EmonkakDiEvent extends AthleticEvent
+/**
+ * @Groups({"di"})
+ */
+class EmonkakDiBench
 {
-    /**
-     * @iterations 1000
-     */
-    public function get()
+    public function benchGet()
     {
         $container = Container::create();
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\FooInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Foo');
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Bar');
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BazInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Baz');
-        $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\FooInterface');
-        assert($foo instanceof Foo);
+        assert($container->get('Emonkak\Di\Benchmarks\Fixtures\FooInterface') instanceof Foo);
     }
 
-    /**
-     * @iterations 1000
-     */
-    public function getWithApcCache()
+    public function benchGetWithApcCache()
     {
         $container = new Container(
             new DefaultInjectionPolicy(),
@@ -42,20 +37,15 @@ class EmonkakDiEvent extends AthleticEvent
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\FooInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Foo');
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Bar');
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BazInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Baz');
-        $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
-        assert($foo instanceof Foo);
+        assert($container->get('Emonkak\Di\Benchmarks\Fixtures\Foo') instanceof Foo);
     }
 
-    /**
-     * @iterations 1000
-     */
-    public function getWithPimple()
+    public function benchGetWithPimple()
     {
         $container = PimpleContainer::create();
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\FooInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Foo');
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Bar');
         $container->bind('Emonkak\Di\Benchmarks\Fixtures\BazInterface')->to('Emonkak\Di\Benchmarks\Fixtures\Baz');
-        $foo = $container->get('Emonkak\Di\Benchmarks\Fixtures\Foo');
-        assert($foo instanceof Foo);
+        assert($container->get('Emonkak\Di\Benchmarks\Fixtures\Foo') instanceof Foo);
     }
 }
