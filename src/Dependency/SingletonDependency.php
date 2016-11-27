@@ -9,7 +9,7 @@ class SingletonDependency extends ObjectDependency
     /**
      * {@inheritDoc}
      */
-    public function instantiateBy(ContainerInterface $container, \ArrayAccess $pool)
+    public function instantiateBy(ContainerInterface $container, array &$pool)
     {
         if (isset($pool[$this->key])) {
             return $pool[$this->key];

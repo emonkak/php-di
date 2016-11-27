@@ -11,7 +11,7 @@ class SingletonDependencyTest extends \PHPUnit_Framework_TestCase
     public function testInstantiateBy()
     {
         $container = $this->createMock(ContainerInterface::class);
-        $pool = new \ArrayObject();
+        $pool = [];
 
         $dependency = new SingletonDependency(
             \stdClass::class,

@@ -63,7 +63,7 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('get')
             ->willReturn(123);
-        $pool = new \ArrayObject();
+        $pool = [];
 
         $dependency = new ReferenceDependency('foo');
 

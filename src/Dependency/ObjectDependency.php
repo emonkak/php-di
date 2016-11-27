@@ -109,7 +109,7 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function instantiateBy(ContainerInterface $container, \ArrayAccess $pool)
+    public function instantiateBy(ContainerInterface $container, array &$pool)
     {
         $args = [];
         foreach ($this->constructorDependencies as $parameter) {

@@ -74,7 +74,7 @@ class FactoryDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function instantiateBy(ContainerInterface $container, \ArrayAccess $pool)
+    public function instantiateBy(ContainerInterface $container, array &$pool)
     {
         $args = [];
         foreach ($this->parameterDependencies as $dependency) {

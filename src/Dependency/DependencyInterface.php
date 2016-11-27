@@ -24,8 +24,8 @@ interface DependencyInterface extends \IteratorAggregate
 
     /**
      * @param ContainerInterface $container
-     * @param \ArrayAccess       $pool
+     * @param array              &$pool
      * @return mixed
      */
-    public function instantiateBy(ContainerInterface $container, \ArrayAccess $pool);
+    public function instantiateBy(ContainerInterface $container, array &$pool);
 }

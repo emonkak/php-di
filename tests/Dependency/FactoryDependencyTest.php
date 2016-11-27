@@ -62,7 +62,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
     public function testInstantiateBy()
     {
         $container = $this->createMock(ContainerInterface::class);
-        $pool = new \ArrayObject();
+        $pool = [];
 
         $parameter1 = $this->createMock(DependencyInterface::class);
         $parameter1

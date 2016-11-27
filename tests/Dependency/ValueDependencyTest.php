@@ -66,7 +66,7 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
     public function testInstantiateBy()
     {
         $container = $this->createMock(ContainerInterface::class);
-        $pool = new \ArrayObject();
+        $pool = [];
 
         $dependency = new ValueDependency('foo', 123);
 
