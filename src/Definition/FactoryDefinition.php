@@ -26,7 +26,7 @@ class FactoryDefinition extends AbstractDefinition
     /**
      * @var DependencyInterface[]
      */
-    private $parameters;
+    private $injections;
 
     /**
      * @param stirng    $key
@@ -39,12 +39,12 @@ class FactoryDefinition extends AbstractDefinition
     }
 
     /**
-     * @param DefinitionInterface[] $parameters
+     * @param DefinitionInterface[] $injections
      * @return $this
      */
-    public function with(array $parameters)
+    public function with(array $injections)
     {
-        $this->parameters = $parameters;
+        $this->injections = $injections;
         return $this;
     }
 
@@ -60,8 +60,8 @@ class FactoryDefinition extends AbstractDefinition
         }
 
         $dependencies = [];
-        if ($this->parameters !== null) {
-            foreach ($this->parameters as $definition) {
+        if ($this->injections !== null) {
+            foreach ($this->injections as $definition) {
                 $dependencies[] = $definition->resolveBy($resolver, $injectionPolicy);
             }
         } else {

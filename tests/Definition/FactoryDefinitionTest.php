@@ -33,7 +33,7 @@ class FactoryDefinitionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(FactoryDependency::class, $fooDependency);
         $this->assertSame(Foo::class, $fooDependency->getKey());
         $this->assertEquals($factory, $fooDependency->getFactory());
-        $this->assertEquals([$barDefinition->resolveBy($container, $injectionPolicy), $bazDefinition->resolveBy($container, $injectionPolicy)], $fooDependency->getParameters());
+        $this->assertEquals([$barDefinition->resolveBy($container, $injectionPolicy), $bazDefinition->resolveBy($container, $injectionPolicy)], $fooDependency->getDependencies());
     }
 
     public function testResolveByWithClosure()
@@ -51,6 +51,6 @@ class FactoryDefinitionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(Foo::class, $fooDependency->getKey());
         $this->assertInstanceOf(SerializableClosure::class, $fooDependency->getFactory());
         $this->assertSame((new SerializableClosure($factory))->serialize(), $fooDependency->getFactory()->serialize());
-        $this->assertEquals([], $fooDependency->getParameters());
+        $this->assertEquals([], $fooDependency->getDependencies());
     }
 }

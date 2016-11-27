@@ -104,7 +104,7 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
                 ])
             ),
             new Stmt\Return_(
-                new Expr\FuncCall($variable, array_map([$this, 'createContainerAccessor'], $dependency->getParameters()))
+                new Expr\FuncCall($variable, array_map([$this, 'createContainerAccessor'], $dependency->getDependencies()))
             )
         ];
 

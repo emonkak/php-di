@@ -24,7 +24,7 @@ class BindingDefinition extends AbstractDefinition
     /**
      * @var DefinitionInterface[]
      */
-    private $constructorParameters;
+    private $constructorInjections;
 
     /**
      * @var array array(string => DefinitionInterface[])
@@ -56,34 +56,34 @@ class BindingDefinition extends AbstractDefinition
     }
 
     /**
-     * @param DefinitionInterface[] $parameters
+     * @param DefinitionInterface[] $injections
      * @return $this
      */
-    public function with(array $parameters)
+    public function with(array $injections)
     {
-        $this->constructorParameters = $parameters;
+        $this->constructorInjections = $injections;
         return $this;
     }
 
     /**
      * @param string                $method
-     * @param DefinitionInterface[] $parameters
+     * @param DefinitionInterface[] $injections
      * @return $this
      */
-    public function withMethod($method, array $parameters)
+    public function withMethod($method, array $injections)
     {
-        $this->methodInjections[$method] = $parameters;
+        $this->methodInjections[$method] = $injections;
         return $this;
     }
 
     /**
-     * @param string                $method
-     * @param DefinitionInterface[] $parameters
+     * @param string              $method
+     * @param DefinitionInterface $injection
      * @return $this
      */
-    public function withProperty($property, DefinitionInterface $value)
+    public function withProperty($property, DefinitionInterface $injection)
     {
-        $this->propertyInjections[$property] = $value;
+        $this->propertyInjections[$property] = $injection;
         return $this;
     }
 
@@ -98,8 +98,8 @@ class BindingDefinition extends AbstractDefinition
         }
 
         $constructorDependencies = [];
-        if ($this->constructorParameters !== null) {
-            foreach ($this->constructorParameters as $definition) {
+        if ($this->constructorInjections !== null) {
+            foreach ($this->constructorInjections as $definition) {
                 $constructorDependencies[] = $definition->resolveBy($resolver, $injectionPolicy);
             }
         } else {

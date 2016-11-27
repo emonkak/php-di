@@ -107,14 +107,6 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($factory, $dependency->getFactory());
     }
 
-    public function testGetParameters()
-    {
-        $paramerters = [$this->getMock(DependencyInterface::class)];
-        $dependency = new FactoryDependency('foo', function() {}, $paramerters);
-
-        $this->assertSame($paramerters, $dependency->getParameters());
-    }
-
     public function testAsSingleton()
     {
         $original = new FactoryDependency(
@@ -126,7 +118,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($original->getKey(), $singleton->getKey());
         $this->assertSame($original->getFactory(), $singleton->getFactory());
-        $this->assertSame($original->getParameters(), $singleton->getParameters());
+        $this->assertSame($original->getDependencies(), $singleton->getDependencies());
         $this->assertTrue($singleton->isSingleton());
     }
 }
