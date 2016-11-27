@@ -17,7 +17,7 @@ class Container extends AbstractContainer
      */
     public static function create(InjectionPolicyInterface $injectionPolicy = null, \ArrayAccess $cache = null, \ArrayAccess $pool = null)
     {
-        return new self(
+        return new Container(
             $injectionPolicy ?: new DefaultInjectionPolicy(),
             $cache ?: new \ArrayObject(),
             $pool ?: new \ArrayObject()

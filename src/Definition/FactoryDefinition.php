@@ -24,12 +24,12 @@ class FactoryDefinition extends AbstractDefinition
     private $factory;
 
     /**
-     * @var DependencyInterface[]
+     * @var DefinitionInterface[]
      */
     private $injections;
 
     /**
-     * @param stirng    $key
+     * @param string   $key
      * @param callable $factory
      */
     public function __construct($key, callable $factory)

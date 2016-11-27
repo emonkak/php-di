@@ -24,13 +24,18 @@ class SingletonScope implements ScopeInterface, DependencyVisitorInterface
         static $instance;
 
         if (!isset($instance)) {
-            $instance = new self();
+            $instance = new SingletonScope();
         }
 
         return $instance;
     }
 
-    private function __construct() {}
+    /**
+     * @codeCoverageIgnore
+     */
+    private function __construct()
+    {
+    }
 
     /**
      * {@inheritDoc}

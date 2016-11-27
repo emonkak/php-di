@@ -27,11 +27,11 @@ class ServiceProviderFactory
     private $resolver;
 
     /**
-     * @param ServiceProviderGenerator       $generator
-     * @param ServiceProviderLoaderInterface $loader
-     * @param ResolverInterface              $resolver
+     * @param ServiceProviderGeneratorInterfae $generator
+     * @param ServiceProviderLoaderInterface   $loader
+     * @param ResolverInterface                $resolver
      */
-    public function __construct(ServiceProviderGenerator $generator, ServiceProviderLoaderInterface $loader, ResolverInterface $resolver)
+    public function __construct(ServiceProviderGeneratorInterface $generator, ServiceProviderLoaderInterface $loader, ResolverInterface $resolver)
     {
         $this->generator = $generator;
         $this->loader = $loader;

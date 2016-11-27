@@ -12,7 +12,7 @@ class FactoryDependency implements DependencyInterface
     protected $key;
 
     /**
-     * @var callbale
+     * @var callable
      */
     protected $factory;
 

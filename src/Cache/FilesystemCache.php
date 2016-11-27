@@ -12,12 +12,17 @@ class FilesystemCache implements \ArrayAccess
     private $directory;
 
     /**
+     * @var Filesystem
+     */
+    private $filesystem;
+
+    /**
      * @param string $directory
      * @return FilesystemCache
      */
     public static function create($directory)
     {
-        return new self($directory, new Filesystem());
+        return new FilesystemCache($directory, new Filesystem());
     }
 
     /**

@@ -30,7 +30,7 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
      */
     public static function create()
     {
-        return new self(new PrettyPrinterStandard());
+        return new ServiceProviderGenerator(new PrettyPrinterStandard());
     }
 
     /**

@@ -86,7 +86,7 @@ EOL;
         $key = $dependency->getKey();
         if (class_exists($key) || interface_exists($key)) {
             $class = new \ReflectionClass($key);
-            return $this->getItemByClass($dependency, $class, $class->getShortName() . '@factory', $key);
+            return $this->getItemByClass($dependency, $class, $class->getShortName() . '@factory');
         } else {
             return [
                 'key' => $key,

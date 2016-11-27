@@ -2,6 +2,8 @@
 
 namespace Emonkak\Di;
 
+use Emonkak\Di\Dependency\DependencyInterface;
+
 interface ResolverInterface
 {
     /**

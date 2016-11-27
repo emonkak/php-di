@@ -31,14 +31,6 @@ class ValueDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function getValue()
-    {
-        return $this->value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function accept(DependencyVisitorInterface $visitor)
     {
         return $visitor->visitValueDependency($this);
@@ -64,6 +56,14 @@ class ValueDependency implements DependencyInterface
      * {@inheritDoc}
      */
     public function instantiateBy(ContainerInterface $container, \ArrayAccess $pool)
+    {
+        return $this->value;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValue()
     {
         return $this->value;
     }

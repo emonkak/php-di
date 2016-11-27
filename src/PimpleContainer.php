@@ -30,11 +30,11 @@ class PimpleContainer extends AbstractContainer
      * @param Pimple                            $container
      * @param ServiceProviderGeneratorInterface $serviceProviderGenerator
      * @param ServiceProviderLoaderInterface    $serviceProviderLoader
-     * @return self
+     * @return PimpleContainer
      */
     public static function create(InjectionPolicyInterface $injectionPolicy = null, \ArrayAccess $cache = null, Pimple $container = null, ServiceProviderGeneratorInterface $serviceProviderGenerator = null, ServiceProviderLoaderInterface $serviceProviderLoader = null)
     {
-        return new self(
+        return new PimpleContainer(
             $injectionPolicy ?: new DefaultInjectionPolicy(),
             $cache ?: new \ArrayObject(),
             $container ?: new Pimple(),

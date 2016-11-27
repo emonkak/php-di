@@ -133,14 +133,6 @@ class ObjectDependency implements DependencyInterface
     }
 
     /**
-     * @return boolean
-     */
-    public function isSingleton()
-    {
-        return false;
-    }
-
-    /**
      * @return string
      */
     public function getClassName()
@@ -170,6 +162,14 @@ class ObjectDependency implements DependencyInterface
     public function getPropertyDependencies()
     {
         return $this->propertyDependencies;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSingleton()
+    {
+        return false;
     }
 
     /**

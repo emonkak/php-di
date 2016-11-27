@@ -26,7 +26,7 @@ class ServiceProviderLoaderOnFilesystem implements ServiceProviderLoaderInterfac
      */
     public static function create($directory)
     {
-        return new self($directory, new Filesystem());
+        return new ServiceProviderLoaderOnFilesystem($directory, new Filesystem());
     }
 
     /**

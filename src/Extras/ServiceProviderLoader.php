@@ -17,7 +17,7 @@ class ServiceProviderLoader implements ServiceProviderLoaderInterface
      */
     public static function create()
     {
-        return new self(new \ArrayObject());
+        return new ServiceProviderLoader(new \ArrayObject());
     }
 
     /**
