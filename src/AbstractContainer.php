@@ -9,10 +9,10 @@ use Emonkak\Di\Definition\FactoryDefinition;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\ReferenceDependency;
 use Emonkak\Di\Dependency\ValueDependency;
-use Emonkak\Di\Exception\NotFoundException;
+use Emonkak\Di\Exception\KeyNotFoundException;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\NotFoundException as InteropNotFoundException;
+use Interop\Container\Exception\NotFoundException;
 
 abstract class AbstractContainer implements ContainerInterface, ResolverInterface
 {
@@ -126,7 +126,7 @@ abstract class AbstractContainer implements ContainerInterface, ResolverInterfac
             $definition = $this->definitions[$key];
         } else {
             if (!class_exists($key)) {
-                throw new NotFoundException(
+                throw new KeyNotFoundException(
                     sprintf('Key "%s" does not registered in this container.', $key)
                 );
             }
@@ -147,9 +147,9 @@ abstract class AbstractContainer implements ContainerInterface, ResolverInterfac
         $key = $this->injectionPolicy->getParameterKey($parameter);
         try {
             return $this->resolve($key);
-        } catch (InteropNotFoundException $e) {
+        } catch (NotFoundException $e) {
             if (!$parameter->isOptional()) {
-                throw NotFoundException::ofParameter($key, $parameter, $e);
+                throw KeyNotFoundException::fromParameter($key, $parameter, $e);
             }
             $defaultValue = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
             return new ValueDependency($defaultValue);
@@ -164,11 +164,11 @@ abstract class AbstractContainer implements ContainerInterface, ResolverInterfac
         $key = $this->injectionPolicy->getPropertyKey($property);
         try {
             return $this->resolve($key);
-        } catch (InteropNotFoundException $e) {
+        } catch (NotFoundException $e) {
             $class = $property->getDeclaringClass();
             $values = $class->getDefaultProperties();
             if (!array_key_exists($property->name, $values)) {
-                throw NotFoundException::ofProperty($key, $property, $e);
+                throw KeyNotFoundException::fromProperty($key, $property, $e);
             }
             return new ValueDependency($values[$property->name]);
         }

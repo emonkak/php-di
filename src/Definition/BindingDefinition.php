@@ -4,6 +4,7 @@ namespace Emonkak\Di\Definition;
 
 use Emonkak\Di\Dependency\DependencyFinders;
 use Emonkak\Di\Dependency\ObjectDependency;
+use Emonkak\Di\Exception\UninjectableClassException;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\ResolverInterface;
 use Emonkak\Di\Scope\ScopeInterface;
@@ -93,9 +94,7 @@ class BindingDefinition extends AbstractDefinition
     {
         $class = new \ReflectionClass($this->target);
         if (!$injectionPolicy->isInjectableClass($class)) {
-            throw new \LogicException(
-                sprintf('Class "%s" is not injectable.', $class->name)
-            );
+            throw new UninjectableClassException("Class '$class->name' is not injectable.");
         }
 
         $constructorDependencies = [];

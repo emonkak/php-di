@@ -43,7 +43,7 @@ class BindingDefinitionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException LogicException
+     * @expectedException Emonkak\Di\Exception\UninjectableClassException
      */
     public function testResolveByThrowsLogicException()
     {
