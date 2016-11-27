@@ -2,15 +2,19 @@
 
 namespace Emonkak\Di\Tests\Definition;
 
-use Emonkak\Di\Container;
 use Emonkak\Di\Definition\BindingDefinition;
+use Emonkak\Di\Definition\DefinitionInterface;
+use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\ObjectDependency;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
-use Emonkak\Di\Tests\Definition\Stubs\Bar;
-use Emonkak\Di\Tests\Definition\Stubs\Baz;
-use Emonkak\Di\Tests\Definition\Stubs\Foo;
-use Emonkak\Di\Tests\Definition\Stubs\FooInterface;
-use Emonkak\Di\Tests\Definition\Stubs\Qux;
+use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
+use Emonkak\Di\Scope\ScopeInterface;
+use Emonkak\Di\Tests\Fixtures\Bar;
+use Emonkak\Di\Tests\Fixtures\BarInterface;
+use Emonkak\Di\Tests\Fixtures\Baz;
+use Emonkak\Di\Tests\Fixtures\BazInterface;
+use Emonkak\Di\Tests\Fixtures\Foo;
+use Emonkak\Di\Tests\Fixtures\FooInterface;
 
 /**
  * @covers Emonkak\Di\Definition\BindingDefinition
@@ -19,38 +23,176 @@ class BindingDefinitionTest extends \PHPUnit_Framework_TestCase
 {
     public function testResolveBy()
     {
-        $definition = new BindingDefinition(FooInterface::class);
+        $serviceClass = new \ReflectionClass(BindingDefinitionTestService::class);
 
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $container = Container::create($injectionPolicy);
-        $barDefinition = $container->bind(Bar::class);
-        $bazDefinition = $container->set(Baz::class, new Baz());
-        $quxDefinition = $container->factory(Qux::class, function() {
-            return new Qux();
-        });
-        $fooDependency = $definition
-            ->to(Foo::class)
-            ->with([$barDefinition])
-            ->withMethod('setBaz', [$bazDefinition])
-            ->withProperty('qux', $quxDefinition)
-            ->resolveBy($container, $injectionPolicy);
+        $fooDependency = $this->getMock(DependencyInterface::class);
+        $barDependency = $this->getMock(DependencyInterface::class);
+        $bazDependency = $this->getMock(DependencyInterface::class);
 
-        $this->assertInstanceOf(ObjectDependency::class, $fooDependency);
-        $this->assertSame(FooInterface::class, $fooDependency->getKey());
-        $this->assertEquals([$barDefinition->resolveBy($container, $injectionPolicy)], $fooDependency->getConstructorDependencies());
-        $this->assertEquals(['setBaz' => [$bazDefinition->resolveBy($container, $injectionPolicy)]], $fooDependency->getMethodDependencies());
-        $this->assertEquals(['qux' => $quxDefinition->resolveBy($container, $injectionPolicy)], $fooDependency->getPropertyDependencies());
+        $scope = $this->getMock(ScopeInterface::class);
+        $scope
+            ->expects($this->once())
+            ->method('get')
+            ->will($this->returnArgument(0));
+
+        $resolver = $this->getMock(ResolverInterface::class);
+        $resolver
+            ->expects($this->exactly(2))
+            ->method('resolveParameter')
+            ->withConsecutive(
+                $serviceClass->getConstructor()->getParameters(),
+                $serviceClass->getMethod('setBar')->getParameters()
+            )
+            ->will($this->onConsecutiveCalls(
+                $fooDependency,
+                $barDependency
+            ));
+        $resolver
+            ->expects($this->once())
+            ->method('resolveProperty')
+            ->with($serviceClass->getProperty('baz'))
+            ->willReturn($bazDependency);
+
+        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $injectionPolicy
+            ->expects($this->once())
+            ->method('isInjectableClass')
+            ->with($serviceClass)
+            ->willReturn(true);
+        $injectionPolicy
+            ->expects($this->once())
+            ->method('getInjectableMethods')
+            ->with($serviceClass)
+            ->willReturn([$serviceClass->getMethod('setBar')]);
+        $injectionPolicy
+            ->expects($this->once())
+            ->method('getInjectableProperties')
+            ->with($serviceClass)
+            ->willReturn([$serviceClass->getProperty('baz')]);
+        $injectionPolicy
+            ->expects($this->once())
+            ->method('getScope')
+            ->with($serviceClass)
+            ->willReturn($scope);
+
+        $dependency = (new BindingDefinition(BindingDefinitionTestServiceInterface::class))
+            ->to($serviceClass->name)
+            ->resolveBy($resolver, $injectionPolicy);
+
+        $this->assertInstanceOf(ObjectDependency::class, $dependency);
+        $this->assertSame(BindingDefinitionTestServiceInterface::class, $dependency->getKey());
+        $this->assertSame(BindingDefinitionTestService::class, $dependency->getClassName());
+        $this->assertSame([$fooDependency], $dependency->getConstructorDependencies());
+        $this->assertSame(['setBar' => [$barDependency]], $dependency->getMethodDependencies());
+        $this->assertSame(['baz' => $bazDependency], $dependency->getPropertyDependencies());
+    }
+
+    public function testResolveByWithPreDefining()
+    {
+        $serviceClass = new \ReflectionClass(BindingDefinitionTestService::class);
+
+        $scope = $this->getMock(ScopeInterface::class);
+        $scope
+            ->expects($this->once())
+            ->method('get')
+            ->will($this->returnArgument(0));
+
+        $resolver = $this->getMock(ResolverInterface::class);
+
+        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $injectionPolicy
+            ->expects($this->once())
+            ->method('isInjectableClass')
+            ->with($serviceClass)
+            ->willReturn(true);
+        $injectionPolicy
+            ->expects($this->once())
+            ->method('getInjectableMethods')
+            ->with($serviceClass)
+            ->willReturn([]);
+        $injectionPolicy
+            ->expects($this->once())
+            ->method('getInjectableProperties')
+            ->with($serviceClass)
+            ->willReturn([]);
+        $injectionPolicy
+            ->expects($this->once())
+            ->method('getScope')
+            ->with($serviceClass)
+            ->willReturn($scope);
+
+        $fooDependency = $this->getMock(DependencyInterface::class);
+        $barDependency = $this->getMock(DependencyInterface::class);
+        $bazDependency = $this->getMock(DependencyInterface::class);
+
+        $fooDefinition = $this->getMock(DefinitionInterface::class);
+        $fooDefinition
+            ->expects($this->once())
+            ->method('resolveBy')
+            ->with($this->identicalTo($resolver), $this->identicalTo($injectionPolicy))
+            ->willReturn($fooDependency);
+        $barDefinition = $this->getMock(DefinitionInterface::class);
+        $barDefinition
+            ->expects($this->once())
+            ->method('resolveBy')
+            ->with($this->identicalTo($resolver), $this->identicalTo($injectionPolicy))
+            ->willReturn($barDependency);
+        $bazDefinition = $this->getMock(DefinitionInterface::class);
+        $bazDefinition
+            ->expects($this->once())
+            ->method('resolveBy')
+            ->with($this->identicalTo($resolver), $this->identicalTo($injectionPolicy))
+            ->willReturn($bazDependency);
+
+        $dependency = (new BindingDefinition(BindingDefinitionTestServiceInterface::class))
+            ->to($serviceClass->name)
+            ->with([$fooDefinition])
+            ->withMethod('setBar', [$barDefinition])
+            ->withProperty('baz', $bazDefinition)
+            ->resolveBy($resolver, $injectionPolicy);
+
+        $this->assertInstanceOf(ObjectDependency::class, $dependency);
+        $this->assertSame(BindingDefinitionTestServiceInterface::class, $dependency->getKey());
+        $this->assertSame(BindingDefinitionTestService::class, $dependency->getClassName());
+        $this->assertSame([$fooDependency], $dependency->getConstructorDependencies());
+        $this->assertSame(['setBar' => [$barDependency]], $dependency->getMethodDependencies());
+        $this->assertSame(['baz' => $bazDependency], $dependency->getPropertyDependencies());
     }
 
     /**
      * @expectedException Emonkak\Di\Exception\UninjectableClassException
      */
-    public function testResolveByThrowsLogicException()
+    public function testResolveByThrowsUninjectableClassException()
     {
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $container = Container::create($injectionPolicy);
+        $serviceClass = new \ReflectionClass(BindingDefinitionTestService::class);
 
-        $definition = new BindingDefinition(FooInterface::class);
-        $definition->resolveBy($container, $injectionPolicy);
+        $resolver = $this->getMock(ResolverInterface::class);
+
+        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $injectionPolicy
+            ->expects($this->once())
+            ->method('isInjectableClass')
+            ->with($serviceClass)
+            ->willReturn(false);
+
+        (new BindingDefinition($serviceClass->name))
+            ->resolveBy($resolver, $injectionPolicy);
     }
+}
+
+class BindingDefinitionTestService implements BindingDefinitionTestServiceInterface
+{
+    private $baz;
+
+    public function __construct(FooInterface $foo)
+    {
+    }
+
+    public function setBar(BarInterface $bar)
+    {
+    }
+}
+
+interface BindingDefinitionTestServiceInterface
+{
 }

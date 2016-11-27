@@ -2,16 +2,20 @@
 
 namespace Emonkak\Di\Tests;
 
+use Emonkak\Di\AbstractContainer;
+use Emonkak\Di\Annotation\Inject;
+use Emonkak\Di\Annotation\Qualifier;
 use Emonkak\Di\ContainerConfiguratorInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\Dependency\ValueDependency;
-use Emonkak\Di\Tests\Stubs\Bar;
-use Emonkak\Di\Tests\Stubs\Baz;
-use Emonkak\Di\Tests\Stubs\Foo;
-use Emonkak\Di\Tests\Stubs\FooBundle;
-use Emonkak\Di\Tests\Stubs\Optional;
-use Emonkak\Di\Tests\Stubs\Required;
+use Emonkak\Di\Scope\SingletonScope;
+use Emonkak\Di\Tests\Fixtures\Bar;
+use Emonkak\Di\Tests\Fixtures\BarInterface;
+use Emonkak\Di\Tests\Fixtures\Baz;
+use Emonkak\Di\Tests\Fixtures\BazInterface;
+use Emonkak\Di\Tests\Fixtures\Foo;
+use Emonkak\Di\Tests\Fixtures\FooInterface;
 
 abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,7 +24,6 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->container = $this->prepareContainer();
-        $this->container->configure(new FooBundle());
     }
 
     public function testConfigure()
@@ -36,8 +39,8 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
 
     public function testResolve()
     {
-        $fooDependency = $this->container->resolve(Foo::class);
-        $this->assertInstanceOf(ObjectDependency::class, $fooDependency);
+        $dependency = $this->container->resolve(Foo::class);
+        $this->assertInstanceOf(ObjectDependency::class, $dependency);
     }
 
     /**
@@ -45,19 +48,15 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testResolveThrowsKeyNotFoundException()
     {
-        $this->container->resolve(FooInterface::class);
+        $this->container->resolve(FooService::class);
     }
 
     public function testResolveParameterDependency()
     {
-        $optional = new \ReflectionClass(Optional::class);
-        $parameters = $optional->getConstructor()->getParameters();
+        $serviceClass = new \ReflectionClass(FooService::class);
+        $parameters = $serviceClass->getConstructor()->getParameters();
 
-        $fooDependency = $this->container->resolve(Foo::class);
-        $nullDependency = new ValueDependency(null);
-
-        $this->assertEquals($fooDependency, $this->container->resolveParameter($parameters[0]));
-        $this->assertEquals($nullDependency, $this->container->resolveParameter($parameters[1]));
+        $this->assertEquals(new ValueDependency(null), $this->container->resolveParameter($parameters[1]));
     }
 
     /**
@@ -65,21 +64,17 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testResolveParameterDependencyThrowsKeyNotFoundException()
     {
-        $required = new \ReflectionClass(Required::class);
-        $parameters = $required->getConstructor()->getParameters();
+        $serviceClass = new \ReflectionClass(BarService::class);
+        $parameters = $serviceClass->getConstructor()->getParameters();
 
         $this->container->resolveParameter($parameters[0]);
     }
 
     public function testResolvePropertyDependency()
     {
-        $optional = new \ReflectionClass(Optional::class);
+        $serviceClass = new \ReflectionClass(FooService::class);
 
-        $fooDependency = $this->container->set('$foo', $this->container->get(Foo::class));
-        $valueDependency = new ValueDependency(123);
-
-        $this->assertEquals($fooDependency, $this->container->resolveProperty($optional->getProperty('foo')));
-        $this->assertEquals($valueDependency, $this->container->resolveProperty($optional->getProperty('optionalFoo')));
+        $this->assertEquals(new ValueDependency('baz'), $this->container->resolveProperty($serviceClass->getProperty('baz')));
     }
 
     /**
@@ -87,22 +82,25 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testResolvePropertyDependencyThrowsKeyNotFoundException()
     {
-        $required = new \ReflectionClass(Required::class);
+        $serviceClass = new \ReflectionClass(FooService::class);
 
-        $this->container->resolveProperty($required->getProperty('foo'));
+        $this->container->resolveProperty($serviceClass->getProperty('barService'));
     }
 
     public function testGet()
     {
-        $foo = $this->container->get(Foo::class);
-        $this->assertInstanceOf(Foo::class, $foo);
-        $this->assertInstanceOf(Bar::class, $foo->bar);
-        $this->assertInstanceOf(Baz::class, $foo->bar->baz);
-        $this->assertInstanceOf(Baz::class, $foo->baz);
-        $this->assertSame($foo->baz, $foo->bar->baz);
-        $this->assertSame('payo', $foo->baz->piyo);
-        $this->assertSame('payo', $foo->baz->payo);
-        $this->assertSame('poyo', $foo->baz->poyo);
+        $this->container->configure(new FooBundle());
+
+        $service = $this->container->get(FooService::class);
+
+        $this->assertInstanceOf(FooService::class, $service);
+        $this->assertInstanceOf(BarService::class, $service->barService);
+        $this->assertInstanceOf(Baz::class, $service->barService->baz);
+        $this->assertInstanceOf(Foo::class, $service->bazService->foo);
+        $this->assertInstanceOf(Bar::class, $service->bazService->bar);
+        $this->assertInstanceOf(Baz::class, $service->bazService->baz);
+        $this->assertInstanceOf(Baz::class, $service->baz);
+        $this->assertSame($service->bazService->baz, $service->baz);
     }
 
     public function testHas()
@@ -113,19 +111,104 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiate()
     {
-        $fooDependency = $this->container->resolve(Foo::class);
-        $foo = $this->container->instantiate($fooDependency);
+        $this->container->configure(new FooBundle());
 
-        $this->assertInstanceOf(Foo::class, $foo);
-        $this->assertInstanceOf(Bar::class, $foo->bar);
-        $this->assertInstanceOf(Baz::class, $foo->bar->baz);
-        $this->assertInstanceOf(Baz::class, $foo->baz);
-        $this->assertInstanceOf(\Closure::class, $foo->hoge);
-        $this->assertSame($foo->baz, $foo->bar->baz);
-        $this->assertSame('payo', $foo->baz->piyo);
-        $this->assertSame('payo', $foo->baz->payo);
-        $this->assertSame('poyo', $foo->baz->poyo);
+        $dependency = $this->container->resolve(FooService::class);
+        $service = $this->container->instantiate($dependency);
+
+        $this->assertInstanceOf(FooService::class, $service);
+        $this->assertInstanceOf(BarService::class, $service->barService);
+        $this->assertInstanceOf(Baz::class, $service->barService->baz);
+        $this->assertInstanceOf(Foo::class, $service->bazService->foo);
+        $this->assertInstanceOf(Bar::class, $service->bazService->bar);
+        $this->assertInstanceOf(Baz::class, $service->bazService->baz);
+        $this->assertInstanceOf(Baz::class, $service->baz);
+        $this->assertSame($service->bazService->baz, $service->baz);
     }
 
     abstract protected function prepareContainer();
+}
+
+class FooService
+{
+    public $barService;
+
+    public $bazService;
+
+    /**
+     * @Inject
+     * @Qualifier(BazInterface::class)
+     */
+    public $baz = 'baz';
+
+    public function __construct(BarService $barService, BazService $bazService = null)
+    {
+        $this->barService = $barService;
+        $this->bazService = $bazService;
+    }
+}
+
+class BarService
+{
+    public $baz;
+
+    public function __construct(BazInterface $baz)
+    {
+        $this->baz = $baz;
+    }
+}
+
+class BazService
+{
+    public $foo;
+
+    public $bar;
+
+    public $baz;
+
+    /**
+     * @Inject
+     */
+    public function setFoo($foo)
+    {
+        $this->foo = $foo;
+    }
+
+    /**
+     * @Inject
+     */
+    public function setBar($bar)
+    {
+        $this->bar = $bar;
+    }
+
+    /**
+     * @Inject
+     */
+    public function setBaz($baz)
+    {
+        $this->baz = $baz;
+    }
+}
+
+class FooBundle implements ContainerConfiguratorInterface
+{
+    public function configure(AbstractContainer $container)
+    {
+        $container
+            ->bind(FooInterface::class)
+            ->to(Bar::class);
+        $container
+            ->bind(BarInterface::class)
+            ->to(Bar::class);
+        $container
+            ->bind(BazInterface::class)
+            ->to(Baz::class)
+            ->in(SingletonScope::getInstance());
+        $container->factory('$foo', function() {
+            return new Foo();
+        });
+        $container->set('$bar', new Bar());
+        $container->alias('$baz', BazInterface::class);
+    }
 }

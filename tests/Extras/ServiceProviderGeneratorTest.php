@@ -46,4 +46,3 @@ class ServiceProviderGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(123, $foo->optional2);
     }
 }
-

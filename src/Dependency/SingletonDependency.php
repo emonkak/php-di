@@ -4,7 +4,7 @@ namespace Emonkak\Di\Dependency;
 
 use Interop\Container\ContainerInterface;
 
-class SingletonDependency extends ObjectDependency 
+class SingletonDependency extends ObjectDependency
 {
     /**
      * {@inheritDoc}

@@ -4,11 +4,9 @@ namespace Emonkak\Di\Tests\Extras;
 
 use Emonkak\Di\Container;
 use Emonkak\Di\Extras\ClassDiagramGenerator;
-use Emonkak\Di\Tests\Extras\Stubs\Corge;
-use Emonkak\Di\Tests\Extras\Stubs\Foo;
-use Emonkak\Di\Tests\Extras\Stubs\Grault;
-use Emonkak\Di\Tests\Extras\Stubs\Quux;
-use Emonkak\Di\Tests\Extras\Stubs\Qux;
+use Emonkak\Di\Tests\Fixtures\Bar;
+use Emonkak\Di\Tests\Fixtures\Baz;
+use Emonkak\Di\Tests\Fixtures\Foo;
 use Symfony\Component\Process\Process;
 
 /**
@@ -25,22 +23,21 @@ class ClassDiagramGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $this->container = Container::create();
         $this->container
-            ->bind(Foo::class)
-            ->withMethod('setQux', [
-                $this->container->factory(Qux::class, function() {
-                    return new Qux();
+            ->bind(ClassDiagramGeneratorTestService::class)
+            ->withMethod('setBar', [
+                $this->container->factory(Bar::class, function() {
+                    return new Bar();
                 })
+            ])
+            ->withMethod('setQux', [
+                $this->container->set('$qux', 'qux')
             ])
             ->withMethod('setQuux', [
                 $this->container->factory('$quux', function() {
-                    return new Quux();
+                    return 'quux';
                 })
             ])
-            ->withMethod('setAny', [
-                $this->container->set('$any', 'any')
-            ])
-            ->withProperty('corge', $this->container->set(Corge::class, new Corge()))
-            ->withProperty('grault', $this->container->set('$grault', new Grault()));
+            ->withProperty('baz', $this->container->set(Baz::class, new Baz()));
     }
 
     /**
@@ -59,7 +56,7 @@ class ClassDiagramGeneratorTest extends \PHPUnit_Framework_TestCase
     public function provideGenerate()
     {
         return [
-            [Foo::class],
+            [ClassDiagramGeneratorTestService::class],
             [\stdClass::class],
         ];
     }
@@ -72,5 +69,33 @@ class ClassDiagramGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($process->isSuccessful());
         $this->assertEquals('', $process->getErrorOutput());
+    }
+}
+
+class ClassDiagramGeneratorTestService
+{
+    public $foo;
+
+    public $bar;
+
+    public $baz;
+
+    public $qux;
+
+    public $quux;
+
+    public function __construct(Foo $foo, $optional = null)
+    {
+        $this->foo = $bar;
+    }
+
+    public function setBar(Bar $bar)
+    {
+        $this->bar = $bar;
+    }
+
+    public function setQux($qux)
+    {
+        $this->qux = $qux;
     }
 }

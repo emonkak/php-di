@@ -2,10 +2,11 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
-use Emonkak\Di\Container;
+use Interop\Container\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\ReferenceDependency;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
+use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
 
 /**
  * @covers Emonkak\Di\Dependency\ReferenceDependency
@@ -34,11 +35,11 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testResolveBy()
     {
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $container = Container::create($injectionPolicy);
+        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $resolver = $this->getMock(ResolverInterface::class);
         $dependency = new ReferenceDependency('foo');
 
-        $this->assertSame($dependency, $dependency->resolveBy($container, $injectionPolicy));
+        $this->assertSame($dependency, $dependency->resolveBy($resolver, $injectionPolicy));
     }
 
     public function testGetDependencies()
@@ -57,14 +58,15 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiateBy()
     {
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $cache = new \ArrayObject();
+        $container = $this->getMock(ContainerInterface::class);
+        $container
+            ->expects($this->once())
+            ->method('get')
+            ->willReturn(123);
         $pool = new \ArrayObject();
-        $container = new Container($injectionPolicy, $cache, $pool);
-        $container->set('foo', $expectedValue = new \stdClass());
 
         $dependency = new ReferenceDependency('foo');
 
-        $this->assertSame($expectedValue, $dependency->instantiateBy($container, $pool));
+        $this->assertSame(123, $dependency->instantiateBy($container, $pool));
     }
 }

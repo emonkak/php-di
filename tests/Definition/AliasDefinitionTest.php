@@ -14,17 +14,19 @@ class AliasDefinitionTest extends \PHPUnit_Framework_TestCase
 {
     public function testResolveBy()
     {
-        $definition = new AliasDefinition(\stdClass::class);
         $dependency = $this->getMock(DependencyInterface::class);
 
-        $container = $this->getMock(ResolverInterface::class);
-        $container
+        $resolver = $this->getMock(ResolverInterface::class);
+        $resolver
             ->expects($this->once())
             ->method('resolve')
             ->with(\stdClass::class)
             ->willReturn($dependency);
+
         $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
 
-        $this->assertSame($dependency, $definition->resolveBy($container, $injectionPolicy));
+        $definition = new AliasDefinition(\stdClass::class);
+
+        $this->assertSame($dependency, $definition->resolveBy($resolver, $injectionPolicy));
     }
 }

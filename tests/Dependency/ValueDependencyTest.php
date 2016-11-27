@@ -2,10 +2,11 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
-use Emonkak\Di\Container;
+use Interop\Container\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\ValueDependency;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
+use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
 
 /**
  * @covers Emonkak\Di\Dependency\ValueDependency
@@ -32,6 +33,15 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expectedValue, $dependency->accept($visitor));
     }
 
+    public function testResolveBy()
+    {
+        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $resolver = $this->getMock(ResolverInterface::class);
+        $dependency = new ValueDependency('foo');
+
+        $this->assertSame($dependency, $dependency->resolveBy($resolver, $injectionPolicy));
+    }
+
     public function testGetDependencies()
     {
         $dependency = new ValueDependency(123);
@@ -55,10 +65,8 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiateBy()
     {
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $cache = new \ArrayObject();
+        $container = $this->getMock(ContainerInterface::class);
         $pool = new \ArrayObject();
-        $container = new Container($injectionPolicy, $cache, $pool);
 
         $dependency = new ValueDependency(123);
 

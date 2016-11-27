@@ -2,10 +2,12 @@
 
 namespace Emonkak\Di\Dependency;
 
+use Emonkak\Di\Definition\DefinitionInterface;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
 use Interop\Container\ContainerInterface;
 
-class ValueDependency implements DependencyInterface
+class ValueDependency implements DefinitionInterface, DependencyInterface
 {
     /**
      * @var mixed
@@ -34,6 +36,14 @@ class ValueDependency implements DependencyInterface
     public function accept(DependencyVisitorInterface $visitor)
     {
         return $visitor->visitValueDependency($this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function resolveBy(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy)
+    {
+        return $this;
     }
 
     /**

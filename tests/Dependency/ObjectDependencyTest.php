@@ -2,15 +2,13 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
-use Emonkak\Di\Container;
+use Interop\Container\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\ObjectDependency;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
-use Emonkak\Di\Tests\Dependency\Stubs\Bar;
-use Emonkak\Di\Tests\Dependency\Stubs\Baz;
-use Emonkak\Di\Tests\Dependency\Stubs\Foo;
-use Emonkak\Di\Tests\Dependency\Stubs\Qux;
+use Emonkak\Di\Tests\Fixtures\Bar;
+use Emonkak\Di\Tests\Fixtures\Baz;
+use Emonkak\Di\Tests\Fixtures\Foo;
 
 /**
  * @covers Emonkak\Di\Dependency\ObjectDependency
@@ -19,6 +17,11 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
 {
     public function testTraverse()
     {
+        $foo = $this->getMock(DependencyInterface::class);
+        $foo
+            ->expects($this->once())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator(['foo' => $foo]));
         $bar = $this->getMock(DependencyInterface::class);
         $bar
             ->expects($this->once())
@@ -29,19 +32,16 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator(['baz' => $baz]));
-        $qux = $this->getMock(DependencyInterface::class);
-        $qux
-            ->expects($this->once())
-            ->method('getIterator')
-            ->willReturn(new \ArrayIterator(['qux' => $qux]));
 
-        $foo = new ObjectDependency(
-            'foo',
+        $dependency = new ObjectDependency(
+            'service',
             \stdClass::class,
-            [$bar], ['setBaz' => [$baz]], ['qux' => $qux]
+            [$foo],
+            ['setBar' => [$bar]],
+            ['baz' => $baz]
         );
 
-        $this->assertEquals(['foo' => $foo, 'bar' => $bar, 'baz' => $baz, 'qux' => $qux], iterator_to_array($foo));
+        $this->assertEquals(['service' => $dependency, 'foo' => $foo, 'bar' => $bar, 'baz' => $baz], iterator_to_array($dependency));
     }
 
     public function testAccept()
@@ -59,8 +59,13 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testDependencies()
     {
-        $container = Container::create();
-
+        $fooDependency = new ObjectDependency(
+            'foo',
+            Foo::class,
+            [],
+            [],
+            []
+        );
         $barDependency = new ObjectDependency(
             'bar',
             Bar::class,
@@ -75,38 +80,37 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
             [],
             []
         );
-        $quxDependency = new ObjectDependency(
-            'qux',
-            Qux::class,
-            [],
-            [],
-            []
-        );
-        $fooDependency = new ObjectDependency(
-            'foo',
-            Foo::class,
-            [$barDependency],
-            ['setBaz' => [$bazDependency]],
-            ['qux' => $quxDependency]
+
+        $dependency = new ObjectDependency(
+            'service',
+            ObjectDependencyTestService::class,
+            [$fooDependency],
+            ['setBar' => [$barDependency]],
+            ['baz' => $bazDependency]
         );
 
-        $this->assertSame([$barDependency, $bazDependency, $quxDependency], $fooDependency->getDependencies());
+        $this->assertSame([$fooDependency, $barDependency, $bazDependency], $dependency->getDependencies());
     }
 
     public function testKey()
     {
-        $dependency = new ObjectDependency('foo', \stdClass::class, [], [], []);
+        $dependency = new ObjectDependency('service', ObjectDependencyTestService::class, [], [], []);
 
-        $this->assertSame('foo', $dependency->getKey());
+        $this->assertSame('service', $dependency->getKey());
     }
 
     public function testInstantiateBy()
     {
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $cache = new \ArrayObject();
+        $container = $this->getMock(ContainerInterface::class);
         $pool = new \ArrayObject();
-        $container = new Container($injectionPolicy, $cache, $pool);
 
+        $fooDependency = new ObjectDependency(
+            'foo',
+            Foo::class,
+            [],
+            [],
+            []
+        );
         $barDependency = new ObjectDependency(
             'bar',
             Bar::class,
@@ -121,63 +125,57 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
             [],
             []
         );
-        $quxDependency = new ObjectDependency(
-            'qux',
-            Qux::class,
-            [],
-            [],
-            []
-        );
-        $fooDependency = new ObjectDependency(
-            'foo',
-            Foo::class,
-            [$barDependency],
-            ['setBaz' => [$bazDependency]],
-            ['qux' => $quxDependency]
+
+        $dependency = new ObjectDependency(
+            'service',
+            ObjectDependencyTestService::class,
+            [$fooDependency],
+            ['setBar' => [$barDependency]],
+            ['baz' => $bazDependency]
         );
 
-        $foo = $fooDependency->instantiateBy($container, $pool);
+        $service = $dependency->instantiateBy($container, $pool);
 
-        $this->assertInstanceOf(Foo::class, $foo);
-        $this->assertInstanceOf(Bar::class, $foo->bar);
-        $this->assertInstanceOf(Baz::class, $foo->baz);
-        $this->assertInstanceOf(Qux::class, $foo->qux);
+        $this->assertInstanceOf(ObjectDependencyTestService::class, $service);
+        $this->assertInstanceOf(Foo::class, $service->foo);
+        $this->assertInstanceOf(Bar::class, $service->bar);
+        $this->assertInstanceOf(Baz::class, $service->baz);
     }
 
     public function testIsSingleton()
     {
-        $dependency = new ObjectDependency('foo', \stdClass::class, [], [], []);
+        $dependency = new ObjectDependency('service', ObjectDependencyTestService::class, [], [], []);
 
         $this->assertFalse($dependency->isSingleton());
     }
 
     public function testGetClassName()
     {
-        $dependency = new ObjectDependency('foo', \stdClass::class, [], [], []);
+        $dependency = new ObjectDependency('service', ObjectDependencyTestService::class, [], [], []);
 
-        $this->assertSame(\stdClass::class, $dependency->getClassName());
+        $this->assertSame(ObjectDependencyTestService::class, $dependency->getClassName());
     }
 
     public function testGetConstructorParameters()
     {
         $paramerters = [$this->getMock(DependencyInterface::class)];
-        $dependency = new ObjectDependency('foo', \stdClass::class, $paramerters, [], []);
+        $dependency = new ObjectDependency('service', ObjectDependencyTestService::class, $paramerters, [], []);
 
         $this->assertSame($paramerters, $dependency->getConstructorDependencies());
     }
 
     public function testGetMethodDependencies()
     {
-        $methodDependencies = ['setBar' => $this->getMock(DependencyInterface::class)];
-        $dependency = new ObjectDependency('foo', \stdClass::class, [], $methodDependencies, []);
+        $methodDependencies = ['setFoo' => $this->getMock(DependencyInterface::class)];
+        $dependency = new ObjectDependency('service', ObjectDependencyTestService::class, [], $methodDependencies, []);
 
         $this->assertSame($methodDependencies, $dependency->getMethodDependencies());
     }
 
     public function testGetPropertyInjections()
     {
-        $propertyDependencies = ['qux' => $this->getMock(DependencyInterface::class)];
-        $dependency = new ObjectDependency('foo', \stdClass::class, [], [], $propertyDependencies);
+        $propertyDependencies = ['baz' => $this->getMock(DependencyInterface::class)];
+        $dependency = new ObjectDependency('service', ObjectDependencyTestService::class, [], [], $propertyDependencies);
 
         $this->assertSame($propertyDependencies, $dependency->getPropertyDependencies());
     }
@@ -185,11 +183,11 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
     public function testAsSingleton()
     {
         $original = new ObjectDependency(
-            'foo',
-            \stdClass::class,
+            'service',
+            ObjectDependencyTestService::class,
             [$this->getMock(DependencyInterface::class)],
-            ['setBaz' => $this->getMock(DependencyInterface::class)],
-            ['qux' => $this->getMock(DependencyInterface::class)]
+            ['setBar' => $this->getMock(DependencyInterface::class)],
+            ['baz' => $this->getMock(DependencyInterface::class)]
         );
         $singleton = $original->asSingleton();
 
@@ -198,5 +196,24 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($original->getMethodDependencies(), $singleton->getMethodDependencies());
         $this->assertSame($original->getPropertyDependencies(), $singleton->getPropertyDependencies());
         $this->assertSame($original->getPropertyDependencies(), $singleton->getPropertyDependencies());
+    }
+}
+
+class ObjectDependencyTestService
+{
+    public $foo;
+
+    public $bar;
+
+    public $baz;
+
+    public function __construct(Foo $foo)
+    {
+        $this->foo = $foo;
+    }
+
+    public function setBar(Bar $bar)
+    {
+        $this->bar = $bar;
     }
 }

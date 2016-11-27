@@ -25,7 +25,7 @@ class AbstractDefinitionTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('get')
             ->with($this->identicalTo($dependency))
-            ->willReturn($dependency);
+            ->will($this->returnArgument(0));
 
         $definition = $this->getMockForAbstractClass(AbstractDefinition::class);
         $definition
@@ -54,7 +54,7 @@ class AbstractDefinitionTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('get')
             ->with($this->identicalTo($dependency))
-            ->willReturn($dependency);
+            ->will($this->returnArgument(0));
 
         $definition = $this->getMockForAbstractClass(AbstractDefinition::class);
         $definition

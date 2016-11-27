@@ -29,9 +29,9 @@ abstract class AbstractDefinition implements DefinitionInterface
      */
     public function resolveBy(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy)
     {
+        $dependency = $this->resolveDependency($resolver, $injectionPolicy);
         $scope = $this->scope ?: $this->resolveScope($resolver, $injectionPolicy);
-
-        return $scope->get($this->resolveDependency($resolver, $injectionPolicy));
+        return $scope->get($dependency);
     }
 
     /**

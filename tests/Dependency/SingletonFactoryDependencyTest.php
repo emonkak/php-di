@@ -2,10 +2,8 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
-use Emonkak\Di\Container;
-use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Dependency\SingletonFactoryDependency;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
+use Interop\Container\ContainerInterface;
 
 /**
  * @covers Emonkak\Di\Dependency\SingletonFactoryDependency
@@ -14,16 +12,16 @@ class SingletonFactoryDependencyTest extends \PHPUnit_Framework_TestCase
 {
     public function testInstantiateBy()
     {
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $cache = new \ArrayObject();
+        $container = $this->getMock(ContainerInterface::class);
         $pool = new \ArrayObject();
-        $container = new Container($injectionPolicy, $cache, $pool);
+
+        $expectedValue = new \stdClass();
 
         $factory = $this->getMock(\stdClass::class, ['__invoke']);
         $factory
             ->expects($this->once())
             ->method('__invoke')
-            ->willReturn($expectedValue = new \stdClass());
+            ->willReturn($expectedValue);
 
         $dependency = new SingletonFactoryDependency('foo', $factory, []);
 

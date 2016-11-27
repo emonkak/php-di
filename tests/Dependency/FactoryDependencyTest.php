@@ -2,11 +2,10 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
-use Emonkak\Di\Container;
+use Interop\Container\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 
 /**
  * @covers Emonkak\Di\Dependency\FactoryDependency
@@ -61,10 +60,8 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiateBy()
     {
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $cache = new \ArrayObject();
+        $container = $this->getMock(ContainerInterface::class);
         $pool = new \ArrayObject();
-        $container = new Container($injectionPolicy, $cache, $pool);
 
         $parameter1 = $this->getMock(DependencyInterface::class);
         $parameter1

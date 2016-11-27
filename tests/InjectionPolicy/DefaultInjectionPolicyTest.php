@@ -2,9 +2,7 @@
 
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\Scope\PrototypeScope;
-use Emonkak\Di\Tests\InjectionPolicy\Stubs\Bar;
-use Emonkak\Di\Tests\InjectionPolicy\Stubs\Baz;
-use Emonkak\Di\Tests\InjectionPolicy\Stubs\Foo;
+use Emonkak\Di\Tests\Fixtures\Foo;
 
 /**
  * @covers Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy
@@ -43,9 +41,10 @@ class DefaultInjectionPolicyTest extends \PHPUnit_Framework_TestCase
     {
         $injectionPolicy = new DefaultInjectionPolicy();
 
-        $reflectionProperty = new \ReflectionProperty(Foo::class, 'bar');
+        $obj = (object) ['foo' => 123];
+        $property = (new ReflectionObject($obj))->getProperty('foo');
 
-        $this->assertSame('$bar', $injectionPolicy->getPropertyKey($reflectionProperty));
+        $this->assertSame('$foo', $injectionPolicy->getPropertyKey($property));
     }
 
     public function testGetScope()
@@ -61,12 +60,18 @@ class DefaultInjectionPolicyTest extends \PHPUnit_Framework_TestCase
     {
         $injectionPolicy = new DefaultInjectionPolicy();
 
-        $fooClass = new \ReflectionClass(Foo::class);
-        $barClass = new \ReflectionClass(Bar::class);
-        $bazClass = new \ReflectionClass(Baz::class);
+        $this->assertTrue($injectionPolicy->isInjectableClass(new \ReflectionClass(InjectableService::class)));
+        $this->assertFalse($injectionPolicy->isInjectableClass(new \ReflectionClass(NotInjectableService::class)));
+    }
+}
 
-        $this->assertTrue($injectionPolicy->isInjectableClass($fooClass));
-        $this->assertFalse($injectionPolicy->isInjectableClass($barClass));
-        $this->assertTrue($injectionPolicy->isInjectableClass($bazClass));
+class InjectableService
+{
+}
+
+class NotInjectableService
+{
+    private function __construct()
+    {
     }
 }
