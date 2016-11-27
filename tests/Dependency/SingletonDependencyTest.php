@@ -14,7 +14,7 @@ use Emonkak\Di\Tests\Dependency\Stubs\Qux;
  */
 class SingletonDependencyTest extends \PHPUnit_Framework_TestCase
 {
-    public function testMaterializeBy()
+    public function testInstantiateBy()
     {
         $injectionPolicy = new DefaultInjectionPolicy();
         $cache = new \ArrayObject();
@@ -27,9 +27,9 @@ class SingletonDependencyTest extends \PHPUnit_Framework_TestCase
             [], [], []
         );
 
-        $obj = $dependency->materializeBy($container, $pool);
+        $obj = $dependency->instantiateBy($container, $pool);
 
-        $this->assertSame($obj, $dependency->materializeBy($container, $pool));
+        $this->assertSame($obj, $dependency->instantiateBy($container, $pool));
     }
 
     public function testIsSingleton()

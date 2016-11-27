@@ -105,6 +105,15 @@ abstract class AbstractContainer implements ContainerInterface, ResolverInterfac
     }
 
     /**
+     * @param DependencyInterface $dependency
+     * @return mixed
+     */
+    public function instantiate(DependencyInterface $dependency)
+    {
+        return $dependency->instantiateBy($this, $this->pool);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function resolve($key)
@@ -163,14 +172,5 @@ abstract class AbstractContainer implements ContainerInterface, ResolverInterfac
             }
             return new ValueDependency($values[$property->name]);
         }
-    }
-
-    /**
-     * @param DependencyInterface $dependency
-     * @return mixed
-     */
-    public function materialize(DependencyInterface $dependency)
-    {
-        return $dependency->materializeBy($this, $this->pool);
     }
 }

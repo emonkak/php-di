@@ -12,7 +12,7 @@ use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
  */
 class SingletonFactoryDependencyTest extends \PHPUnit_Framework_TestCase
 {
-    public function testMaterializeBy()
+    public function testInstantiateBy()
     {
         $injectionPolicy = new DefaultInjectionPolicy();
         $cache = new \ArrayObject();
@@ -27,8 +27,8 @@ class SingletonFactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
         $dependency = new SingletonFactoryDependency('foo', $factory, []);
 
-        $this->assertSame($expectedValue, $dependency->materializeBy($container, $pool));
-        $this->assertSame($expectedValue, $dependency->materializeBy($container, $pool));
+        $this->assertSame($expectedValue, $dependency->instantiateBy($container, $pool));
+        $this->assertSame($expectedValue, $dependency->instantiateBy($container, $pool));
     }
 
     public function testIsSingleton()

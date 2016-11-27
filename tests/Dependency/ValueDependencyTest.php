@@ -53,7 +53,7 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(123, $dependency->getValue());
     }
 
-    public function testMaterializeBy()
+    public function testInstantiateBy()
     {
         $injectionPolicy = new DefaultInjectionPolicy();
         $cache = new \ArrayObject();
@@ -62,6 +62,6 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
 
         $dependency = new ValueDependency(123);
 
-        $this->assertSame(123, $dependency->materializeBy($container, $pool));
+        $this->assertSame(123, $dependency->instantiateBy($container, $pool));
     }
 }

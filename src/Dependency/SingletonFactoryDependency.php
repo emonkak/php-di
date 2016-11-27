@@ -9,13 +9,13 @@ class SingletonFactoryDependency extends FactoryDependency
     /**
      * {@inheritDoc}
      */
-    public function materializeBy(ContainerInterface $container, \ArrayAccess $pool)
+    public function instantiateBy(ContainerInterface $container, \ArrayAccess $pool)
     {
         if (isset($pool[$this->key])) {
             return $pool[$this->key];
         }
 
-        $instance = parent::materializeBy($container, $pool);
+        $instance = parent::instantiateBy($container, $pool);
         $pool[$this->key] = $instance;
 
         return $instance;

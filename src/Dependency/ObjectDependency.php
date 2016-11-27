@@ -109,24 +109,24 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function materializeBy(ContainerInterface $container, \ArrayAccess $pool)
+    public function instantiateBy(ContainerInterface $container, \ArrayAccess $pool)
     {
         $args = [];
         foreach ($this->constructorDependencies as $parameter) {
-            $args[] = $parameter->materializeBy($container, $pool);
+            $args[] = $parameter->instantiateBy($container, $pool);
         }
         $instance = new $this->className(...$args);
 
         foreach ($this->methodDependencies as $method => $parameters) {
             $args = [];
             foreach ($parameters as $parameter) {
-                $args[] = $parameter->materializeBy($container, $pool);
+                $args[] = $parameter->instantiateBy($container, $pool);
             }
             $instance->$method(...$args);
         }
 
         foreach ($this->propertyDependencies as $property => $value) {
-            $instance->$property = $value->materializeBy($container, $pool);
+            $instance->$property = $value->instantiateBy($container, $pool);
         }
 
         return $instance;

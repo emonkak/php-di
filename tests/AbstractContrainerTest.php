@@ -89,10 +89,10 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->container->has(FooInterface::class));
     }
 
-    public function testMaterialize()
+    public function testInstantiate()
     {
         $fooDependency = $this->container->resolve(Foo::class);
-        $foo = $this->container->materialize($fooDependency);
+        $foo = $this->container->instantiate($fooDependency);
 
         $this->assertInstanceOf('Emonkak\Di\Tests\Stubs\Foo', $foo);
         $this->assertInstanceOf('Emonkak\Di\Tests\Stubs\Bar', $foo->bar);

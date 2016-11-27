@@ -59,7 +59,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo', $dependency->getKey());
     }
 
-    public function testMaterializeBy()
+    public function testInstantiateBy()
     {
         $injectionPolicy = new DefaultInjectionPolicy();
         $cache = new \ArrayObject();
@@ -69,14 +69,14 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
         $parameter1 = $this->getMock(DependencyInterface::class);
         $parameter1
             ->expects($this->once())
-            ->method('materializeBy')
+            ->method('instantiateBy')
             ->with($this->identicalTo($container), $this->identicalTo($pool))
             ->willReturn($parameter1Value = new \stdClass());
 
         $parameter2 = $this->getMock(DependencyInterface::class);
         $parameter2
             ->expects($this->once())
-            ->method('materializeBy')
+            ->method('instantiateBy')
             ->with($this->identicalTo($container), $this->identicalTo($pool))
             ->willReturn($parameter2Value = new \stdClass());
 
@@ -89,7 +89,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
         $dependency = new FactoryDependency('foo', $factory, [$parameter1, $parameter2]);
 
-        $this->assertSame($expectedValue, $dependency->materializeBy($container, $pool));
+        $this->assertSame($expectedValue, $dependency->instantiateBy($container, $pool));
     }
 
     public function testIsSingleton()

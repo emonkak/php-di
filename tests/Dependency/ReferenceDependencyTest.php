@@ -55,7 +55,7 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo', $dependency->getKey());
     }
 
-    public function testMaterializeBy()
+    public function testInstantiateBy()
     {
         $injectionPolicy = new DefaultInjectionPolicy();
         $cache = new \ArrayObject();
@@ -65,6 +65,6 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
 
         $dependency = new ReferenceDependency('foo');
 
-        $this->assertSame($expectedValue, $dependency->materializeBy($container, $pool));
+        $this->assertSame($expectedValue, $dependency->instantiateBy($container, $pool));
     }
 }

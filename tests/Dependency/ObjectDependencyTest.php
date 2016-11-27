@@ -100,7 +100,7 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo', $dependency->getKey());
     }
 
-    public function testMaterializeBy()
+    public function testInstantiateBy()
     {
         $injectionPolicy = new DefaultInjectionPolicy();
         $cache = new \ArrayObject();
@@ -136,7 +136,7 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
             ['qux' => $quxDependency]
         );
 
-        $foo = $fooDependency->materializeBy($container, $pool);
+        $foo = $fooDependency->instantiateBy($container, $pool);
 
         $this->assertInstanceOf(Foo::class, $foo);
         $this->assertInstanceOf(Bar::class, $foo->bar);

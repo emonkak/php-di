@@ -74,11 +74,11 @@ class FactoryDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function materializeBy(ContainerInterface $container, \ArrayAccess $pool)
+    public function instantiateBy(ContainerInterface $container, \ArrayAccess $pool)
     {
         $args = [];
         foreach ($this->parameters as $parameter) {
-            $args[] = $parameter->materializeBy($container, $pool);
+            $args[] = $parameter->instantiateBy($container, $pool);
         }
         $factory = $this->factory;
         return $factory(...$args);

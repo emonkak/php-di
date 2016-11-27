@@ -63,7 +63,7 @@ class ValueDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function materializeBy(ContainerInterface $container, \ArrayAccess $pool)
+    public function instantiateBy(ContainerInterface $container, \ArrayAccess $pool)
     {
         return $this->value;
     }
