@@ -17,17 +17,17 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
 {
     public function testTraverse()
     {
-        $foo = $this->getMock(DependencyInterface::class);
+        $foo = $this->createMock(DependencyInterface::class);
         $foo
             ->expects($this->once())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator(['foo' => $foo]));
-        $bar = $this->getMock(DependencyInterface::class);
+        $bar = $this->createMock(DependencyInterface::class);
         $bar
             ->expects($this->once())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator(['bar' => $bar]));
-        $baz = $this->getMock(DependencyInterface::class);
+        $baz = $this->createMock(DependencyInterface::class);
         $baz
             ->expects($this->once())
             ->method('getIterator')
@@ -48,7 +48,7 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
     {
         $dependency = new ObjectDependency('foo', \stdClass::class, [], [], []);
 
-        $visitor = $this->getMock(DependencyVisitorInterface::class);
+        $visitor = $this->createMock(DependencyVisitorInterface::class);
         $visitor
             ->expects($this->once())
             ->method('visitObjectDependency')
@@ -101,7 +101,7 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiateBy()
     {
-        $container = $this->getMock(ContainerInterface::class);
+        $container = $this->createMock(ContainerInterface::class);
         $pool = new \ArrayObject();
 
         $fooDependency = new ObjectDependency(
@@ -158,7 +158,7 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testGetConstructorParameters()
     {
-        $paramerters = [$this->getMock(DependencyInterface::class)];
+        $paramerters = [$this->createMock(DependencyInterface::class)];
         $dependency = new ObjectDependency('service', ObjectDependencyTestService::class, $paramerters, [], []);
 
         $this->assertSame($paramerters, $dependency->getConstructorDependencies());
@@ -166,7 +166,7 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testGetMethodDependencies()
     {
-        $methodDependencies = ['setFoo' => $this->getMock(DependencyInterface::class)];
+        $methodDependencies = ['setFoo' => $this->createMock(DependencyInterface::class)];
         $dependency = new ObjectDependency('service', ObjectDependencyTestService::class, [], $methodDependencies, []);
 
         $this->assertSame($methodDependencies, $dependency->getMethodDependencies());
@@ -174,7 +174,7 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPropertyInjections()
     {
-        $propertyDependencies = ['baz' => $this->getMock(DependencyInterface::class)];
+        $propertyDependencies = ['baz' => $this->createMock(DependencyInterface::class)];
         $dependency = new ObjectDependency('service', ObjectDependencyTestService::class, [], [], $propertyDependencies);
 
         $this->assertSame($propertyDependencies, $dependency->getPropertyDependencies());
@@ -185,9 +185,9 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
         $original = new ObjectDependency(
             'service',
             ObjectDependencyTestService::class,
-            [$this->getMock(DependencyInterface::class)],
-            ['setBar' => $this->getMock(DependencyInterface::class)],
-            ['baz' => $this->getMock(DependencyInterface::class)]
+            [$this->createMock(DependencyInterface::class)],
+            ['setBar' => $this->createMock(DependencyInterface::class)],
+            ['baz' => $this->createMock(DependencyInterface::class)]
         );
         $singleton = $original->asSingleton();
 

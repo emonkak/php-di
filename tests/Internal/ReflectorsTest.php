@@ -2,6 +2,7 @@
 
 namespace Emonkak\Di\Tests\Internal;
 
+use Emonkak\Di\Tests\Fixtures\Lambda;
 use Emonkak\Di\Internal\Reflectors;
 
 class ReflectorsTest extends \PHPUnit_Framework_TestCase
@@ -22,12 +23,5 @@ class ReflectorsTest extends \PHPUnit_Framework_TestCase
             [new Lambda()],
             [[new Lambda(), '__invoke']],
         ];
-    }
-}
-
-class Lambda
-{
-    public function __invoke()
-    {
     }
 }

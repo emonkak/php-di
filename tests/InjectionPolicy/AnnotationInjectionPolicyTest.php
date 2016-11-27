@@ -18,7 +18,7 @@ class AnnotationInjectionPolicyTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->fallback = $this->getMock(InjectionPolicyInterface::class);
+        $this->fallback = $this->createMock(InjectionPolicyInterface::class);
         $this->injectionPolicy = new AnnotationInjectionPolicy($this->fallback, new AnnotationReader());
     }
 

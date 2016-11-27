@@ -25,17 +25,17 @@ class BindingDefinitionTest extends \PHPUnit_Framework_TestCase
     {
         $serviceClass = new \ReflectionClass(BindingDefinitionTestService::class);
 
-        $fooDependency = $this->getMock(DependencyInterface::class);
-        $barDependency = $this->getMock(DependencyInterface::class);
-        $bazDependency = $this->getMock(DependencyInterface::class);
+        $fooDependency = $this->createMock(DependencyInterface::class);
+        $barDependency = $this->createMock(DependencyInterface::class);
+        $bazDependency = $this->createMock(DependencyInterface::class);
 
-        $scope = $this->getMock(ScopeInterface::class);
+        $scope = $this->createMock(ScopeInterface::class);
         $scope
             ->expects($this->once())
             ->method('get')
             ->will($this->returnArgument(0));
 
-        $resolver = $this->getMock(ResolverInterface::class);
+        $resolver = $this->createMock(ResolverInterface::class);
         $resolver
             ->expects($this->exactly(2))
             ->method('resolveParameter')
@@ -53,7 +53,7 @@ class BindingDefinitionTest extends \PHPUnit_Framework_TestCase
             ->with($serviceClass->getProperty('baz'))
             ->willReturn($bazDependency);
 
-        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
         $injectionPolicy
             ->expects($this->once())
             ->method('isInjectableClass')
@@ -91,15 +91,15 @@ class BindingDefinitionTest extends \PHPUnit_Framework_TestCase
     {
         $serviceClass = new \ReflectionClass(BindingDefinitionTestService::class);
 
-        $scope = $this->getMock(ScopeInterface::class);
+        $scope = $this->createMock(ScopeInterface::class);
         $scope
             ->expects($this->once())
             ->method('get')
             ->will($this->returnArgument(0));
 
-        $resolver = $this->getMock(ResolverInterface::class);
+        $resolver = $this->createMock(ResolverInterface::class);
 
-        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
         $injectionPolicy
             ->expects($this->once())
             ->method('isInjectableClass')
@@ -121,23 +121,23 @@ class BindingDefinitionTest extends \PHPUnit_Framework_TestCase
             ->with($serviceClass)
             ->willReturn($scope);
 
-        $fooDependency = $this->getMock(DependencyInterface::class);
-        $barDependency = $this->getMock(DependencyInterface::class);
-        $bazDependency = $this->getMock(DependencyInterface::class);
+        $fooDependency = $this->createMock(DependencyInterface::class);
+        $barDependency = $this->createMock(DependencyInterface::class);
+        $bazDependency = $this->createMock(DependencyInterface::class);
 
-        $fooDefinition = $this->getMock(DefinitionInterface::class);
+        $fooDefinition = $this->createMock(DefinitionInterface::class);
         $fooDefinition
             ->expects($this->once())
             ->method('resolveBy')
             ->with($this->identicalTo($resolver), $this->identicalTo($injectionPolicy))
             ->willReturn($fooDependency);
-        $barDefinition = $this->getMock(DefinitionInterface::class);
+        $barDefinition = $this->createMock(DefinitionInterface::class);
         $barDefinition
             ->expects($this->once())
             ->method('resolveBy')
             ->with($this->identicalTo($resolver), $this->identicalTo($injectionPolicy))
             ->willReturn($barDependency);
-        $bazDefinition = $this->getMock(DefinitionInterface::class);
+        $bazDefinition = $this->createMock(DefinitionInterface::class);
         $bazDefinition
             ->expects($this->once())
             ->method('resolveBy')
@@ -166,9 +166,9 @@ class BindingDefinitionTest extends \PHPUnit_Framework_TestCase
     {
         $serviceClass = new \ReflectionClass(BindingDefinitionTestService::class);
 
-        $resolver = $this->getMock(ResolverInterface::class);
+        $resolver = $this->createMock(ResolverInterface::class);
 
-        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
         $injectionPolicy
             ->expects($this->once())
             ->method('isInjectableClass')

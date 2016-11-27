@@ -24,7 +24,7 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
     {
         $dependency = new ValueDependency('foo', 123);
 
-        $visitor = $this->getMock(DependencyVisitorInterface::class);
+        $visitor = $this->createMock(DependencyVisitorInterface::class);
         $visitor
             ->expects($this->once())
             ->method('visitValueDependency')
@@ -35,8 +35,8 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testResolveBy()
     {
-        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
-        $resolver = $this->getMock(ResolverInterface::class);
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
+        $resolver = $this->createMock(ResolverInterface::class);
         $dependency = new ValueDependency('foo', 123);
 
         $this->assertSame($dependency, $dependency->resolveBy($resolver, $injectionPolicy));
@@ -65,7 +65,7 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiateBy()
     {
-        $container = $this->getMock(ContainerInterface::class);
+        $container = $this->createMock(ContainerInterface::class);
         $pool = new \ArrayObject();
 
         $dependency = new ValueDependency('foo', 123);

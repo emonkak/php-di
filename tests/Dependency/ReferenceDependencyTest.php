@@ -24,7 +24,7 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
     {
         $dependency = new ReferenceDependency('foo');
 
-        $visitor = $this->getMock(DependencyVisitorInterface::class);
+        $visitor = $this->createMock(DependencyVisitorInterface::class);
         $visitor
             ->expects($this->once())
             ->method('visitReferenceDependency')
@@ -35,8 +35,8 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testResolveBy()
     {
-        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
-        $resolver = $this->getMock(ResolverInterface::class);
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
+        $resolver = $this->createMock(ResolverInterface::class);
         $dependency = new ReferenceDependency('foo');
 
         $this->assertSame($dependency, $dependency->resolveBy($resolver, $injectionPolicy));
@@ -58,7 +58,7 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiateBy()
     {
-        $container = $this->getMock(ContainerInterface::class);
+        $container = $this->createMock(ContainerInterface::class);
         $container
             ->expects($this->once())
             ->method('get')

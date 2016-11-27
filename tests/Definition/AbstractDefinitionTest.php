@@ -15,12 +15,12 @@ class AbstractDefinitionTest extends \PHPUnit_Framework_TestCase
 {
     public function testGet()
     {
-        $resolver = $this->getMock(ResolverInterface::class);
-        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $resolver = $this->createMock(ResolverInterface::class);
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
 
-        $dependency = $this->getMock(DependencyInterface::class);
+        $dependency = $this->createMock(DependencyInterface::class);
 
-        $scope = $this->getMock(ScopeInterface::class);
+        $scope = $this->createMock(ScopeInterface::class);
         $scope
             ->expects($this->once())
             ->method('get')
@@ -44,12 +44,12 @@ class AbstractDefinitionTest extends \PHPUnit_Framework_TestCase
 
     public function testIn()
     {
-        $resolver = $this->getMock(ResolverInterface::class);
-        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $resolver = $this->createMock(ResolverInterface::class);
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
 
-        $dependency = $this->getMock(DependencyInterface::class);
+        $dependency = $this->createMock(DependencyInterface::class);
 
-        $scope = $this->getMock(ScopeInterface::class);
+        $scope = $this->createMock(ScopeInterface::class);
         $scope
             ->expects($this->once())
             ->method('get')

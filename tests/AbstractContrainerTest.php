@@ -28,7 +28,7 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
 
     public function testConfigure()
     {
-        $configurator = $this->getMock(ContainerConfiguratorInterface::class);
+        $configurator = $this->createMock(ContainerConfiguratorInterface::class);
         $configurator
             ->expects($this->once())
             ->method('configure')

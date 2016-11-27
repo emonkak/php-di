@@ -2,10 +2,11 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
-use Interop\Container\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
+use Emonkak\Di\Tests\Fixtures\Lambda;
+use Interop\Container\ContainerInterface;
 
 /**
  * @covers Emonkak\Di\Dependency\FactoryDependency
@@ -14,12 +15,12 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetIterator()
     {
-        $bar = $this->getMock(DependencyInterface::class);
+        $bar = $this->createMock(DependencyInterface::class);
         $bar
             ->expects($this->once())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator(['bar' => $bar]));
-        $baz = $this->getMock(DependencyInterface::class);
+        $baz = $this->createMock(DependencyInterface::class);
         $baz
             ->expects($this->once())
             ->method('getIterator')
@@ -34,7 +35,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
     {
         $dependency = new FactoryDependency('foo', function() {}, []);
 
-        $visitor = $this->getMock(DependencyVisitorInterface::class);
+        $visitor = $this->createMock(DependencyVisitorInterface::class);
         $visitor
             ->expects($this->once())
             ->method('visitFactoryDependency')
@@ -45,7 +46,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testDependencies()
     {
-        $paramerters = [$this->getMock(DependencyInterface::class)];
+        $paramerters = [$this->createMock(DependencyInterface::class)];
         $dependency = new FactoryDependency('foo', function() {}, $paramerters);
 
         $this->assertSame($paramerters, $dependency->getDependencies());
@@ -60,24 +61,24 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiateBy()
     {
-        $container = $this->getMock(ContainerInterface::class);
+        $container = $this->createMock(ContainerInterface::class);
         $pool = new \ArrayObject();
 
-        $parameter1 = $this->getMock(DependencyInterface::class);
+        $parameter1 = $this->createMock(DependencyInterface::class);
         $parameter1
             ->expects($this->once())
             ->method('instantiateBy')
             ->with($this->identicalTo($container), $this->identicalTo($pool))
             ->willReturn($parameter1Value = new \stdClass());
 
-        $parameter2 = $this->getMock(DependencyInterface::class);
+        $parameter2 = $this->createMock(DependencyInterface::class);
         $parameter2
             ->expects($this->once())
             ->method('instantiateBy')
             ->with($this->identicalTo($container), $this->identicalTo($pool))
             ->willReturn($parameter2Value = new \stdClass());
 
-        $factory = $this->getMock(\stdClass::class, ['__invoke']);
+        $factory = $this->createMock(Lambda::class, ['__invoke']);
         $factory
             ->expects($this->once())
             ->method('__invoke')
@@ -109,7 +110,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
         $original = new FactoryDependency(
             'foo',
             function() {},
-            [$this->getMock(DependencyInterface::class)]
+            [$this->createMock(DependencyInterface::class)]
         );
         $singleton = $original->asSingleton();
 

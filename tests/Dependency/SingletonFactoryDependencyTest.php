@@ -3,6 +3,7 @@
 namespace Emonkak\Di\Tests\Dependency;
 
 use Emonkak\Di\Dependency\SingletonFactoryDependency;
+use Emonkak\Di\Tests\Fixtures\Lambda;
 use Interop\Container\ContainerInterface;
 
 /**
@@ -12,12 +13,12 @@ class SingletonFactoryDependencyTest extends \PHPUnit_Framework_TestCase
 {
     public function testInstantiateBy()
     {
-        $container = $this->getMock(ContainerInterface::class);
+        $container = $this->createMock(ContainerInterface::class);
         $pool = new \ArrayObject();
 
         $expectedValue = new \stdClass();
 
-        $factory = $this->getMock(\stdClass::class, ['__invoke']);
+        $factory = $this->createMock(Lambda::class, ['__invoke']);
         $factory
             ->expects($this->once())
             ->method('__invoke')

@@ -21,11 +21,11 @@ class FactoryDefinitionTest extends \PHPUnit_Framework_TestCase
         $factoryMethod = new \ReflectionMethod(FactoryDefinitionTestServiceFactory::class, '__invoke');
         $factoryMethodParameters = $factoryMethod->getParameters();
 
-        $fooDependency = $this->getMock(DependencyInterface::class);
-        $barDependency = $this->getMock(DependencyInterface::class);
-        $bazDependency = $this->getMock(DependencyInterface::class);
+        $fooDependency = $this->createMock(DependencyInterface::class);
+        $barDependency = $this->createMock(DependencyInterface::class);
+        $bazDependency = $this->createMock(DependencyInterface::class);
 
-        $resolver = $this->getMock(ResolverInterface::class);
+        $resolver = $this->createMock(ResolverInterface::class);
         $resolver
             ->expects($this->exactly(3))
             ->method('resolveParameter')
@@ -40,7 +40,7 @@ class FactoryDefinitionTest extends \PHPUnit_Framework_TestCase
                 $bazDependency
             ));
 
-        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
 
         $factory = new FactoryDefinitionTestServiceFactory();
         $dependency = (new FactoryDefinition(FactoryDefinitionTestService::class, $factory))
@@ -54,26 +54,26 @@ class FactoryDefinitionTest extends \PHPUnit_Framework_TestCase
 
     public function testResolveDependencyWithPreDefining()
     {
-        $resolver = $this->getMock(ResolverInterface::class);
-        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $resolver = $this->createMock(ResolverInterface::class);
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
 
-        $fooDependency = $this->getMock(DependencyInterface::class);
-        $barDependency = $this->getMock(DependencyInterface::class);
-        $bazDependency = $this->getMock(DependencyInterface::class);
+        $fooDependency = $this->createMock(DependencyInterface::class);
+        $barDependency = $this->createMock(DependencyInterface::class);
+        $bazDependency = $this->createMock(DependencyInterface::class);
 
-        $fooDefinition = $this->getMock(DefinitionInterface::class);
+        $fooDefinition = $this->createMock(DefinitionInterface::class);
         $fooDefinition
             ->expects($this->once())
             ->method('resolveBy')
             ->with($this->identicalTo($resolver), $this->identicalTo($injectionPolicy))
             ->willReturn($fooDependency);
-        $barDefinition = $this->getMock(DefinitionInterface::class);
+        $barDefinition = $this->createMock(DefinitionInterface::class);
         $barDefinition
             ->expects($this->once())
             ->method('resolveBy')
             ->with($this->identicalTo($resolver), $this->identicalTo($injectionPolicy))
             ->willReturn($barDependency);
-        $bazDefinition = $this->getMock(DefinitionInterface::class);
+        $bazDefinition = $this->createMock(DefinitionInterface::class);
         $bazDefinition
             ->expects($this->once())
             ->method('resolveBy')
@@ -98,8 +98,8 @@ class FactoryDefinitionTest extends \PHPUnit_Framework_TestCase
             return new FactoryDefinitionTestServive(new Foo(), new Bar(), new Baz());
         };
 
-        $resolver = $this->getMock(ResolverInterface::class);
-        $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
+        $resolver = $this->createMock(ResolverInterface::class);
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
 
         $dependency = (new FactoryDefinition(FactoryDefinitionTestService::class, $factory))
             ->resolveBy($resolver, $injectionPolicy);
