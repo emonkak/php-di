@@ -10,15 +10,22 @@ use Interop\Container\ContainerInterface;
 class ValueDependency implements DefinitionInterface, DependencyInterface
 {
     /**
+     * @var string
+     */
+    private $key;
+
+    /**
      * @var mixed
      */
     private $value;
 
     /**
-     * @param mixed $value
+     * @param string $key
+     * @param mixed  $value
      */
-    public function __construct($value)
+    public function __construct($key, $value)
     {
+        $this->key = $key;
         $this->value = $value;
     }
 
@@ -59,7 +66,7 @@ class ValueDependency implements DefinitionInterface, DependencyInterface
      */
     public function getKey()
     {
-        return sha1(serialize($this->value));
+        return $this->key;
     }
 
     /**

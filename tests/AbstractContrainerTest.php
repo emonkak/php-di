@@ -56,7 +56,7 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
         $serviceClass = new \ReflectionClass(FooService::class);
         $parameters = $serviceClass->getConstructor()->getParameters();
 
-        $this->assertEquals(new ValueDependency(null), $this->container->resolveParameter($parameters[1]));
+        $this->assertEquals(new ValueDependency(BazService::class, null), $this->container->resolveParameter($parameters[1]));
     }
 
     /**
@@ -74,7 +74,7 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
     {
         $serviceClass = new \ReflectionClass(FooService::class);
 
-        $this->assertEquals(new ValueDependency('baz'), $this->container->resolveProperty($serviceClass->getProperty('baz')));
+        $this->assertEquals(new ValueDependency(BazInterface::class, 'baz'), $this->container->resolveProperty($serviceClass->getProperty('baz')));
     }
 
     /**

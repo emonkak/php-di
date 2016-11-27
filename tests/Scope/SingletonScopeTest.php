@@ -35,7 +35,7 @@ class SingletonScopeTest extends \PHPUnit_Framework_TestCase
         $referenceDependency = new ReferenceDependency('foo');
         $this->assertSame($referenceDependency, $scope->get($referenceDependency));
 
-        $valueDependency = new ValueDependency(123);
+        $valueDependency = new ValueDependency('foo', 123);
         $this->assertSame($valueDependency, $scope->get($valueDependency));
     }
 }

@@ -151,7 +151,7 @@ abstract class AbstractContainer implements ContainerInterface, ResolverInterfac
                 throw KeyNotFoundException::unresolvedParameter($key, $parameter, $e);
             }
             $defaultValue = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
-            return new ValueDependency($defaultValue);
+            return new ValueDependency($key, $defaultValue);
         }
     }
 
@@ -170,7 +170,7 @@ abstract class AbstractContainer implements ContainerInterface, ResolverInterfac
                 // XXX: Throws an exception even if the default value is null.
                 throw KeyNotFoundException::unresolvedProperty($key, $property, $e);
             }
-            return new ValueDependency($values[$property->name]);
+            return new ValueDependency($key, $values[$property->name]);
         }
     }
 }

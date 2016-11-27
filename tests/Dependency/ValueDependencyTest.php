@@ -15,14 +15,14 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
 {
     public function testTraverse()
     {
-        $dependency = new ValueDependency(123);
+        $dependency = new ValueDependency('foo', 123);
 
-        $this->assertEquals([$dependency], iterator_to_array($dependency, false));
+        $this->assertEquals(['foo' => $dependency], iterator_to_array($dependency));
     }
 
     public function testAccept()
     {
-        $dependency = new ValueDependency(123);
+        $dependency = new ValueDependency('foo', 123);
 
         $visitor = $this->getMock(DependencyVisitorInterface::class);
         $visitor
@@ -37,28 +37,28 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
     {
         $injectionPolicy = $this->getMock(InjectionPolicyInterface::class);
         $resolver = $this->getMock(ResolverInterface::class);
-        $dependency = new ValueDependency('foo');
+        $dependency = new ValueDependency('foo', 123);
 
         $this->assertSame($dependency, $dependency->resolveBy($resolver, $injectionPolicy));
     }
 
     public function testGetDependencies()
     {
-        $dependency = new ValueDependency(123);
+        $dependency = new ValueDependency('foo', 123);
 
         $this->assertEmpty($dependency->getDependencies());
     }
 
     public function testGetKey()
     {
-        $dependency = new ValueDependency(123);
+        $dependency = new ValueDependency('foo', 123);
 
-        $this->assertSame(sha1(serialize(123)), $dependency->getKey());
+        $this->assertSame('foo', $dependency->getKey());
     }
 
     public function testGetValue()
     {
-        $dependency = new ValueDependency(123);
+        $dependency = new ValueDependency('foo', 123);
 
         $this->assertSame(123, $dependency->getValue());
     }
@@ -68,7 +68,7 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
         $container = $this->getMock(ContainerInterface::class);
         $pool = new \ArrayObject();
 
-        $dependency = new ValueDependency(123);
+        $dependency = new ValueDependency('foo', 123);
 
         $this->assertSame(123, $dependency->instantiateBy($container, $pool));
     }
