@@ -7,6 +7,7 @@ use DI\ContainerBuilder;
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ApcuCache;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
+use Emonkak\Di\Benchmarks\Fixtures\FooInterface;
 
 /**
  * @Groups({"di"})
@@ -18,7 +19,7 @@ class PhpDiBench
         $builder = new ContainerBuilder();
         $builder->addDefinitions(__DIR__ . '/phpdi.php');
         $container = $builder->build();
-        assert($container->get('Emonkak\Di\Benchmarks\Fixtures\FooInterface') instanceof Foo);
+        assert($container->get(FooInterface::class) instanceof Foo);
     }
 
     public function benchGetWithCache()
@@ -27,6 +28,6 @@ class PhpDiBench
         $builder->addDefinitions(__DIR__ . '/phpdi.php');
         $builder->setDefinitionCache(extension_loaded('apcu') ? new ApcuCache() : new ApcCache());
         $cachedContainer = $builder->build();
-        assert($cachedContainer->get('Emonkak\Di\Benchmarks\Fixtures\Foo') instanceof Foo);
+        assert($cachedContainer->get(Foo::class) instanceof Foo);
     }
 }

@@ -13,7 +13,7 @@ class ContainerTest extends AbstractContrainerTest
 {
     public function testCreate()
     {
-        $this->assertInstanceOf('Emonkak\Di\Container', Container::create());
+        $this->assertInstanceOf(Container::class, Container::create());
     }
 
     protected function prepareContainer()

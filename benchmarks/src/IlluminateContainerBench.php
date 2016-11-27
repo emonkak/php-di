@@ -2,7 +2,12 @@
 
 namespace Emonkak\Di\Benchmarks;
 
+use Emonkak\Di\Benchmarks\Fixtures\Bar;
+use Emonkak\Di\Benchmarks\Fixtures\BarInterface;
+use Emonkak\Di\Benchmarks\Fixtures\Baz;
+use Emonkak\Di\Benchmarks\Fixtures\BazInterface;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
+use Emonkak\Di\Benchmarks\Fixtures\FooInterface;
 use Illuminate\Container\Container;
 
 /**
@@ -13,9 +18,9 @@ class IlluminateContainerBench
     public function benchGet()
     {
         $container = new Container();
-        $container->bind('Emonkak\Di\Benchmarks\Fixtures\FooInterface', 'Emonkak\Di\Benchmarks\Fixtures\Foo');
-        $container->bind('Emonkak\Di\Benchmarks\Fixtures\BarInterface', 'Emonkak\Di\Benchmarks\Fixtures\Bar');
-        $container->bind('Emonkak\Di\Benchmarks\Fixtures\BazInterface', 'Emonkak\Di\Benchmarks\Fixtures\Baz');
-        assert($container->make('Emonkak\Di\Benchmarks\Fixtures\FooInterface') instanceof Foo);
+        $container->bind(FooInterface::class, Foo::class);
+        $container->bind(BarInterface::class, Bar::class);
+        $container->bind(BazInterface::class, Baz::class);
+        assert($container->make(FooInterface::class) instanceof Foo);
     }
 }

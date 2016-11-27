@@ -4,6 +4,8 @@ namespace Emonkak\Di\Tests\Extras;
 
 use Emonkak\Di\Container;
 use Emonkak\Di\Extras\ServiceProviderGenerator;
+use Emonkak\Di\Tests\Extras\Stubs\Foo;
+use Emonkak\Di\Tests\Extras\Stubs\Bar;
 use Pimple\Container as Pimple;
 
 /**
@@ -20,7 +22,7 @@ class ServiceProviderGeneratorTest extends \PHPUnit_Framework_TestCase
             $className = 'Class_' . md5(mt_rand());
         } while (class_exists($className));
 
-        $dependency = $container->resolve('Emonkak\Di\Tests\Extras\Stubs\Foo');
+        $dependency = $container->resolve(Foo::class);
 
         $source = $generator->generate($className, $dependency);
 
@@ -37,9 +39,9 @@ class ServiceProviderGeneratorTest extends \PHPUnit_Framework_TestCase
         $pimple = new Pimple();
         $pimple->register($serviceProvider);
 
-        $foo = $pimple['Emonkak\Di\Tests\Extras\Stubs\Foo'];
-        $this->assertInstanceOf('Emonkak\Di\Tests\Extras\Stubs\Foo', $foo);
-        $this->assertInstanceOf('Emonkak\Di\Tests\Extras\Stubs\Bar', $foo->bar);
+        $foo = $pimple[Foo::class];
+        $this->assertInstanceOf(Foo::class, $foo);
+        $this->assertInstanceOf(Bar::class, $foo->bar);
         $this->assertSame('optional', $foo->optional1);
         $this->assertSame(123, $foo->optional2);
     }

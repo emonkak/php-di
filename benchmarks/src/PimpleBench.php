@@ -2,19 +2,22 @@
 
 namespace Emonkak\Di\Benchmarks;
 
+use Emonkak\Di\Benchmarks\Fixtures\Bar;
+use Emonkak\Di\Benchmarks\Fixtures\BarInterface;
+use Emonkak\Di\Benchmarks\Fixtures\Baz;
+use Emonkak\Di\Benchmarks\Fixtures\BazInterface;
+use Emonkak\Di\Benchmarks\Fixtures\Corge;
+use Emonkak\Di\Benchmarks\Fixtures\Foo;
+use Emonkak\Di\Benchmarks\Fixtures\FooInterface;
+use Emonkak\Di\Benchmarks\Fixtures\Fred;
+use Emonkak\Di\Benchmarks\Fixtures\Garply;
+use Emonkak\Di\Benchmarks\Fixtures\Grault;
+use Emonkak\Di\Benchmarks\Fixtures\Plugh;
+use Emonkak\Di\Benchmarks\Fixtures\Quux;
+use Emonkak\Di\Benchmarks\Fixtures\Qux;
+use Emonkak\Di\Benchmarks\Fixtures\Waldo;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Emonkak\Di\Benchmarks\Fixtures\Foo;
-use Emonkak\Di\Benchmarks\Fixtures\Bar;
-use Emonkak\Di\Benchmarks\Fixtures\Baz;
-use Emonkak\Di\Benchmarks\Fixtures\Qux;
-use Emonkak\Di\Benchmarks\Fixtures\Quux;
-use Emonkak\Di\Benchmarks\Fixtures\Corge;
-use Emonkak\Di\Benchmarks\Fixtures\Grault;
-use Emonkak\Di\Benchmarks\Fixtures\Garply;
-use Emonkak\Di\Benchmarks\Fixtures\Waldo;
-use Emonkak\Di\Benchmarks\Fixtures\Fred;
-use Emonkak\Di\Benchmarks\Fixtures\Plugh;
 
 /**
  * @Groups({"di"})
@@ -24,80 +27,80 @@ class PimpleBench
     public function benchGet()
     {
         $container = new Container();
-        $container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'] = function($c) {
-            return new Foo($c['Emonkak\Di\Benchmarks\Fixtures\Bar'], $c['Emonkak\Di\Benchmarks\Fixtures\Baz']);
+        $container[FooInterface::class] = function($c) {
+            return new Foo($c[Bar::class], $c[Baz::class]);
         };
-        $container['Emonkak\Di\Benchmarks\Fixtures\Bar'] = function($c) {
-            return new Bar($c['Emonkak\Di\Benchmarks\Fixtures\Qux'], $c['Emonkak\Di\Benchmarks\Fixtures\Quux']);
+        $container[Bar::class] = function($c) {
+            return new Bar($c[Qux::class], $c[Quux::class]);
         };
-        $container['Emonkak\Di\Benchmarks\Fixtures\Baz'] = function($c) {
-            return new Baz($c['Emonkak\Di\Benchmarks\Fixtures\Corge'], $c['Emonkak\Di\Benchmarks\Fixtures\Grault']);
+        $container[Baz::class] = function($c) {
+            return new Baz($c[Corge::class], $c[Grault::class]);
         };
-        $container['Emonkak\Di\Benchmarks\Fixtures\Qux'] = function($c) {
-            return new Qux($c['Emonkak\Di\Benchmarks\Fixtures\Garply']);
+        $container[Qux::class] = function($c) {
+            return new Qux($c[Garply::class]);
         };
-        $container['Emonkak\Di\Benchmarks\Fixtures\Quux'] = function($c) {
-            return new Quux($c['Emonkak\Di\Benchmarks\Fixtures\Waldo']);
+        $container[Quux::class] = function($c) {
+            return new Quux($c[Waldo::class]);
         };
-        $container['Emonkak\Di\Benchmarks\Fixtures\Corge'] = function($c) {
-            return new Corge($c['Emonkak\Di\Benchmarks\Fixtures\Fred']);
+        $container[Corge::class] = function($c) {
+            return new Corge($c[Fred::class]);
         };
-        $container['Emonkak\Di\Benchmarks\Fixtures\Grault'] = function($c) {
-            return new Grault($c['Emonkak\Di\Benchmarks\Fixtures\Plugh']);
+        $container[Grault::class] = function($c) {
+            return new Grault($c[Plugh::class]);
         };
-        $container['Emonkak\Di\Benchmarks\Fixtures\Garply'] = function() {
+        $container[Garply::class] = function() {
             return new Garply();
         };
-        $container['Emonkak\Di\Benchmarks\Fixtures\Waldo'] = function() {
+        $container[Waldo::class] = function() {
             return new Waldo();
         };
-        $container['Emonkak\Di\Benchmarks\Fixtures\Fred'] = function() {
+        $container[Fred::class] = function() {
             return new Fred();
         };
-        $container['Emonkak\Di\Benchmarks\Fixtures\Plugh'] = function() {
+        $container[Plugh::class] = function() {
             return new Plugh();
         };
 
-        assert($container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'] instanceof Foo);
+        assert($container[FooInterface::class] instanceof Foo);
     }
 
     public function benchFactory()
     {
         $container = new Container();
-        $container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'] = $container->factory(function($c) {
-            return new Foo($c['Emonkak\Di\Benchmarks\Fixtures\BarInterface'], $c['Emonkak\Di\Benchmarks\Fixtures\BazInterface']);
+        $container[FooInterface::class] = $container->factory(function($c) {
+            return new Foo($c[BarInterface::class], $c[BazInterface::class]);
         });
-        $container['Emonkak\Di\Benchmarks\Fixtures\BarInterface'] = $container->factory(function($c) {
-            return new Bar($c['Emonkak\Di\Benchmarks\Fixtures\Qux'], $c['Emonkak\Di\Benchmarks\Fixtures\Quux']);
+        $container[BarInterface::class] = $container->factory(function($c) {
+            return new Bar($c[Qux::class], $c[Quux::class]);
         });
-        $container['Emonkak\Di\Benchmarks\Fixtures\BazInterface'] = $container->factory(function($c) {
-            return new Baz($c['Emonkak\Di\Benchmarks\Fixtures\Corge'], $c['Emonkak\Di\Benchmarks\Fixtures\Grault']);
+        $container[BazInterface::class] = $container->factory(function($c) {
+            return new Baz($c[Corge::class], $c[Grault::class]);
         });
-        $container['Emonkak\Di\Benchmarks\Fixtures\Qux'] = $container->factory(function($c) {
-            return new Qux($c['Emonkak\Di\Benchmarks\Fixtures\Garply']);
+        $container[Qux::class] = $container->factory(function($c) {
+            return new Qux($c[Garply::class]);
         });
-        $container['Emonkak\Di\Benchmarks\Fixtures\Quux'] = $container->factory(function($c) {
-            return new Quux($c['Emonkak\Di\Benchmarks\Fixtures\Waldo']);
+        $container[Quux::class] = $container->factory(function($c) {
+            return new Quux($c[Waldo::class]);
         });
-        $container['Emonkak\Di\Benchmarks\Fixtures\Corge'] = $container->factory(function($c) {
-            return new Corge($c['Emonkak\Di\Benchmarks\Fixtures\Fred']);
+        $container[Corge::class] = $container->factory(function($c) {
+            return new Corge($c[Fred::class]);
         });
-        $container['Emonkak\Di\Benchmarks\Fixtures\Grault'] = $container->factory(function($c) {
-            return new Grault($c['Emonkak\Di\Benchmarks\Fixtures\Plugh']);
+        $container[Grault::class] = $container->factory(function($c) {
+            return new Grault($c[Plugh::class]);
         });
-        $container['Emonkak\Di\Benchmarks\Fixtures\Garply'] = $container->factory(function() {
+        $container[Garply::class] = $container->factory(function() {
             return new Garply();
         });
-        $container['Emonkak\Di\Benchmarks\Fixtures\Waldo'] = $container->factory(function() {
+        $container[Waldo::class] = $container->factory(function() {
             return new Waldo();
         });
-        $container['Emonkak\Di\Benchmarks\Fixtures\Fred'] = $container->factory(function() {
+        $container[Fred::class] = $container->factory(function() {
             return new Fred();
         });
-        $container['Emonkak\Di\Benchmarks\Fixtures\Plugh'] = $container->factory(function() {
+        $container[Plugh::class] = $container->factory(function() {
             return new Plugh();
         });
 
-        assert($container['Emonkak\Di\Benchmarks\Fixtures\FooInterface'] instanceof Foo);
+        assert($container[FooInterface::class] instanceof Foo);
     }
 }

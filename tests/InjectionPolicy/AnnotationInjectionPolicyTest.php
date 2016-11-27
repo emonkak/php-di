@@ -4,7 +4,11 @@ namespace Emonkak\Di\Tests\InjectionPolicy;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Emonkak\Di\InjectionPolicy\AnnotationInjectionPolicy;
+use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\Scope\PrototypeScope;
+use Emonkak\Di\Scope\SingletonScope;
+use Emonkak\Di\Tests\InjectionPolicy\Stubs\Bar;
+use Emonkak\Di\Tests\InjectionPolicy\Stubs\Baz;
 use Emonkak\Di\Tests\InjectionPolicy\Stubs\Foo;
 
 /**
@@ -14,18 +18,18 @@ class AnnotationInjectionPolicyTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->fallback = $this->getMock('Emonkak\Di\InjectionPolicy\InjectionPolicyInterface');
+        $this->fallback = $this->getMock(InjectionPolicyInterface::class);
         $this->injectionPolicy = new AnnotationInjectionPolicy($this->fallback, new AnnotationReader());
     }
 
     public function testCreate()
     {
-        $this->assertInstanceOf('Emonkak\Di\InjectionPolicy\AnnotationInjectionPolicy', AnnotationInjectionPolicy::create());
+        $this->assertInstanceOf(AnnotationInjectionPolicy::class, AnnotationInjectionPolicy::create());
     }
 
     public function testGetInjectableMethods()
     {
-        $fooClass = new \ReflectionClass('Emonkak\Di\Tests\InjectionPolicy\Stubs\Foo');
+        $fooClass = new \ReflectionClass(Foo::class);
 
         $this->fallback
             ->expects($this->once())
@@ -42,7 +46,7 @@ class AnnotationInjectionPolicyTest extends \PHPUnit_Framework_TestCase
 
     public function testGetInjectableProperties()
     {
-        $fooClass = new \ReflectionClass('Emonkak\Di\Tests\InjectionPolicy\Stubs\Foo');
+        $fooClass = new \ReflectionClass(Foo::class);
 
         $this->fallback
             ->expects($this->once())
@@ -59,7 +63,7 @@ class AnnotationInjectionPolicyTest extends \PHPUnit_Framework_TestCase
 
     public function testGetParameterKey()
     {
-        $fooClass = new \ReflectionClass('Emonkak\Di\Tests\InjectionPolicy\Stubs\Foo');
+        $fooClass = new \ReflectionClass(Foo::class);
 
         $constructor = $fooClass->getConstructor();
         $paramerters = $constructor->getParameters();
@@ -76,8 +80,8 @@ class AnnotationInjectionPolicyTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPropertyKey()
     {
-        $fooProperty = new \ReflectionProperty('Emonkak\Di\Tests\InjectionPolicy\Stubs\Foo', 'foo');
-        $foobarProperty = new \ReflectionProperty('Emonkak\Di\Tests\InjectionPolicy\Stubs\Foo', 'foobar');
+        $fooProperty = new \ReflectionProperty(Foo::class, 'foo');
+        $foobarProperty = new \ReflectionProperty(Foo::class, 'foobar');
 
         $this->fallback
             ->expects($this->once())
@@ -91,9 +95,9 @@ class AnnotationInjectionPolicyTest extends \PHPUnit_Framework_TestCase
 
     public function testGetScope()
     {
-        $fooClass = new \ReflectionClass('Emonkak\Di\Tests\InjectionPolicy\Stubs\Foo');
-        $barClass = new \ReflectionClass('Emonkak\Di\Tests\InjectionPolicy\Stubs\Bar');
-        $bazClass = new \ReflectionClass('Emonkak\Di\Tests\InjectionPolicy\Stubs\Baz');
+        $fooClass = new \ReflectionClass(Foo::class);
+        $barClass = new \ReflectionClass(Bar::class);
+        $bazClass = new \ReflectionClass(Baz::class);
 
         $this->fallback
             ->expects($this->once())
@@ -101,16 +105,16 @@ class AnnotationInjectionPolicyTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($bazClass))
             ->willReturn(PrototypeScope::getInstance());
 
-        $this->assertInstanceOf('Emonkak\Di\Scope\SingletonScope', $this->injectionPolicy->getScope($fooClass));
-        $this->assertInstanceOf('Emonkak\Di\Scope\PrototypeScope', $this->injectionPolicy->getScope($barClass));
-        $this->assertInstanceOf('Emonkak\Di\Scope\PrototypeScope', $this->injectionPolicy->getScope($bazClass));
+        $this->assertInstanceOf(SingletonScope::class, $this->injectionPolicy->getScope($fooClass));
+        $this->assertInstanceOf(PrototypeScope::class, $this->injectionPolicy->getScope($barClass));
+        $this->assertInstanceOf(PrototypeScope::class, $this->injectionPolicy->getScope($bazClass));
     }
 
     public function testIsInjectableClass()
     {
-        $fooClass = new \ReflectionClass('Emonkak\Di\Tests\InjectionPolicy\Stubs\Foo');
-        $barClass = new \ReflectionClass('Emonkak\Di\Tests\InjectionPolicy\Stubs\Bar');
-        $bazClass = new \ReflectionClass('Emonkak\Di\Tests\InjectionPolicy\Stubs\Baz');
+        $fooClass = new \ReflectionClass(Foo::class);
+        $barClass = new \ReflectionClass(Bar::class);
+        $bazClass = new \ReflectionClass(Baz::class);
 
         $this->fallback
             ->expects($this->once())

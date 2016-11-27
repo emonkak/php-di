@@ -11,11 +11,11 @@ class FooBundle implements ContainerConfiguratorInterface
     public function configure(AbstractContainer $container)
     {
         $container
-            ->bind('Emonkak\Di\Tests\Stubs\BarInterface')
-            ->to('Emonkak\Di\Tests\Stubs\Bar');
+            ->bind(BarInterface::class)
+            ->to(Bar::class);
         $container
-            ->bind('Emonkak\Di\Tests\Stubs\BazInterface')
-            ->to('Emonkak\Di\Tests\Stubs\Baz')
+            ->bind(BazInterface::class)
+            ->to(Baz::class)
             ->in(SingletonScope::getInstance());
         $container->alias('$piyo', '$payo');
         $container->set('$payo', 'payo');

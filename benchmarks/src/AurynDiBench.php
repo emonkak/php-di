@@ -4,7 +4,12 @@ namespace Emonkak\Di\Benchmarks;
 
 use Athletic\AthleticBench;
 use Auryn\Injector;
+use Emonkak\Di\Benchmarks\Fixtures\Bar;
+use Emonkak\Di\Benchmarks\Fixtures\BarInterface;
+use Emonkak\Di\Benchmarks\Fixtures\Baz;
+use Emonkak\Di\Benchmarks\Fixtures\BazInterface;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
+use Emonkak\Di\Benchmarks\Fixtures\FooInterface;
 
 /**
  * @Groups({"di"})
@@ -15,10 +20,10 @@ class AurynDiBench
     {
         $injector = new Injector();
 
-        $injector->alias('Emonkak\Di\Benchmarks\Fixtures\FooInterface', 'Emonkak\Di\Benchmarks\Fixtures\Foo');
-        $injector->alias('Emonkak\Di\Benchmarks\Fixtures\BarInterface', 'Emonkak\Di\Benchmarks\Fixtures\Bar');
-        $injector->alias('Emonkak\Di\Benchmarks\Fixtures\BazInterface', 'Emonkak\Di\Benchmarks\Fixtures\Baz');
+        $injector->alias(FooInterface::class, Foo::class);
+        $injector->alias(BarInterface::class, Bar::class);
+        $injector->alias(BazInterface::class, Baz::class);
 
-        assert($injector->make('Emonkak\Di\Benchmarks\Fixtures\FooInterface') instanceof Foo);
+        assert($injector->make(FooInterface::class) instanceof Foo);
     }
 }

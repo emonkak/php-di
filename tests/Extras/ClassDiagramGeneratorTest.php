@@ -5,6 +5,7 @@ namespace Emonkak\Di\Tests\Extras;
 use Emonkak\Di\Container;
 use Emonkak\Di\Extras\ClassDiagramGenerator;
 use Emonkak\Di\Tests\Extras\Stubs\Corge;
+use Emonkak\Di\Tests\Extras\Stubs\Foo;
 use Emonkak\Di\Tests\Extras\Stubs\Grault;
 use Emonkak\Di\Tests\Extras\Stubs\Quux;
 use Emonkak\Di\Tests\Extras\Stubs\Qux;
@@ -24,9 +25,9 @@ class ClassDiagramGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $this->container = Container::create();
         $this->container
-            ->bind('Emonkak\Di\Tests\Extras\Stubs\Foo')
+            ->bind(Foo::class)
             ->withMethod('setQux', [
-                $this->container->factory('Emonkak\Di\Tests\Extras\Stubs\Qux', function() {
+                $this->container->factory(Qux::class, function() {
                     return new Qux();
                 })
             ])
@@ -38,7 +39,7 @@ class ClassDiagramGeneratorTest extends \PHPUnit_Framework_TestCase
             ->withMethod('setAny', [
                 $this->container->set('$any', 'any')
             ])
-            ->withProperty('corge', $this->container->set('Emonkak\Di\Tests\Extras\Stubs\Corge', new Corge()))
+            ->withProperty('corge', $this->container->set(Corge::class, new Corge()))
             ->withProperty('grault', $this->container->set('$grault', new Grault()));
     }
 
@@ -58,8 +59,8 @@ class ClassDiagramGeneratorTest extends \PHPUnit_Framework_TestCase
     public function provideGenerate()
     {
         return [
-            ['Emonkak\Di\Tests\Extras\Stubs\Foo'],
-            ['stdClass'],
+            [Foo::class],
+            [\stdClass::class],
         ];
     }
 

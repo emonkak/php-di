@@ -94,11 +94,11 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
         $fooDependency = $this->container->resolve(Foo::class);
         $foo = $this->container->instantiate($fooDependency);
 
-        $this->assertInstanceOf('Emonkak\Di\Tests\Stubs\Foo', $foo);
-        $this->assertInstanceOf('Emonkak\Di\Tests\Stubs\Bar', $foo->bar);
-        $this->assertInstanceOf('Emonkak\Di\Tests\Stubs\Baz', $foo->bar->baz);
-        $this->assertInstanceOf('Emonkak\Di\Tests\Stubs\Baz', $foo->baz);
-        $this->assertInstanceOf('Closure', $foo->hoge);
+        $this->assertInstanceOf(Foo::class, $foo);
+        $this->assertInstanceOf(Bar::class, $foo->bar);
+        $this->assertInstanceOf(Baz::class, $foo->bar->baz);
+        $this->assertInstanceOf(Baz::class, $foo->baz);
+        $this->assertInstanceOf(\Closure::class, $foo->hoge);
         $this->assertSame($foo->baz, $foo->bar->baz);
         $this->assertSame('payo', $foo->baz->piyo);
         $this->assertSame('payo', $foo->baz->payo);

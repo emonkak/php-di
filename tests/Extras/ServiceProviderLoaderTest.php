@@ -11,7 +11,7 @@ class ServiceProviderLoaderTest extends AbstractServiceProviderLoaderTest
 {
     public function testCreate()
     {
-        $this->assertInstanceOf('Emonkak\Di\Extras\ServiceProviderLoader', ServiceProviderLoader::create());
+        $this->assertInstanceOf(ServiceProviderLoader::class, ServiceProviderLoader::create());
     }
 
     protected function prepareLoader()

@@ -21,9 +21,9 @@ class QualifierTest extends \PHPUnit_Framework_TestCase
     public function provideGetValue()
     {
         return [
-            [['foo' => 'bar'],       'foo', 'bar'],
-            [['foo' => '\stdClass'], 'foo', 'stdClass'],
-            [[],                     'foo', null],
+            [['foo' => 'bar'],            'foo', 'bar'],
+            [['foo' => \stdClass::class], 'foo', 'stdClass'],
+            [[],                          'foo', null],
         ];
     }
 
@@ -39,10 +39,10 @@ class QualifierTest extends \PHPUnit_Framework_TestCase
     public function provideGetSingleValue()
     {
         return [
-            [['value' => 'bar'],       'bar'],
-            [['value' => '\stdClass'], 'stdClass'],
-            [['foo' => 'bar'],         null],
-            [[],                       null],
+            [['value' => 'bar'],            'bar'],
+            [['value' => \stdClass::class], 'stdClass'],
+            [['foo' => 'bar'],               null],
+            [[],                             null],
         ];
     }
 }

@@ -80,7 +80,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo($container), $this->identicalTo($pool))
             ->willReturn($parameter2Value = new \stdClass());
 
-        $factory = $this->getMock('stdClass', ['__invoke']);
+        $factory = $this->getMock(\stdClass::class, ['__invoke']);
         $factory
             ->expects($this->once())
             ->method('__invoke')

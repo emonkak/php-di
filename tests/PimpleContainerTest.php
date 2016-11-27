@@ -13,7 +13,7 @@ class PimpleContainerTest extends AbstractContrainerTest
 {
     public function testCreate()
     {
-        $this->assertInstanceOf('Emonkak\Di\PimpleContainer', PimpleContainer::create());
+        $this->assertInstanceOf(PimpleContainer::class, PimpleContainer::create());
     }
 
     protected function prepareContainer()

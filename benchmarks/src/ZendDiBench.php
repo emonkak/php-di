@@ -2,8 +2,12 @@
 
 namespace Emonkak\Di\Benchmarks;
 
-use Auryn\Injector;
+use Emonkak\Di\Benchmarks\Fixtures\Bar;
+use Emonkak\Di\Benchmarks\Fixtures\BarInterface;
+use Emonkak\Di\Benchmarks\Fixtures\Baz;
+use Emonkak\Di\Benchmarks\Fixtures\BazInterface;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
+use Emonkak\Di\Benchmarks\Fixtures\FooInterface;
 use Zend\Di\Di;
 
 /**
@@ -16,10 +20,10 @@ class ZendDiBench
         $di = new Di();
 
         $di->instanceManager()
-            ->addTypePreference('Emonkak\Di\Benchmarks\Fixtures\FooInterface', 'Emonkak\Di\Benchmarks\Fixtures\Foo')
-            ->addTypePreference('Emonkak\Di\Benchmarks\Fixtures\BarInterface', 'Emonkak\Di\Benchmarks\Fixtures\Bar')
-            ->addTypePreference('Emonkak\Di\Benchmarks\Fixtures\BazInterface', 'Emonkak\Di\Benchmarks\Fixtures\Baz');
+            ->addTypePreference(FooInterface::class, Foo::class)
+            ->addTypePreference(BarInterface::class, Bar::class)
+            ->addTypePreference(BazInterface::class, Baz::class);
 
-        assert($di->get('Emonkak\Di\Benchmarks\Fixtures\Foo') instanceof Foo);
+        assert($di->get(Foo::class) instanceof Foo);
     }
 }
