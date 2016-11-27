@@ -15,7 +15,7 @@ class KeyNotFoundException extends \RuntimeException implements NotFoundExceptio
      * @param KeyNotFoundException $prev
      * @return KeyNotFoundException
      */
-    public static function fromProperty($key, \ReflectionProperty $property, KeyNotFoundException $prev)
+    public static function unresolvedProperty($key, \ReflectionProperty $property, KeyNotFoundException $prev)
     {
         $reflectionClass = $property->getDeclaringClass();
 
@@ -35,7 +35,7 @@ class KeyNotFoundException extends \RuntimeException implements NotFoundExceptio
      * @param KeyNotFoundException $prev
      * @return KeyNotFoundException
      */
-    public static function fromParameter($key, \ReflectionParameter $parameter, KeyNotFoundException $prev)
+    public static function unresolvedParameter($key, \ReflectionParameter $parameter, KeyNotFoundException $prev)
     {
         $reflectionFunction = $parameter->getDeclaringFunction();
         $reflectionClass = $parameter->getDeclaringClass();

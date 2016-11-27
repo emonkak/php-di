@@ -4,9 +4,9 @@ namespace Emonkak\Di\Tests\Stubs;
 
 class Optional
 {
-    private $foo;
+    public $foo;
 
-    private $optionalFoo = null;
+    public $optionalFoo = 123;
 
     public function __construct(Foo $foo, FooInterface $fooInterface = null)
     {

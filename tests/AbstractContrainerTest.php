@@ -11,6 +11,7 @@ use Emonkak\Di\Tests\Stubs\Baz;
 use Emonkak\Di\Tests\Stubs\Foo;
 use Emonkak\Di\Tests\Stubs\FooBundle;
 use Emonkak\Di\Tests\Stubs\Optional;
+use Emonkak\Di\Tests\Stubs\Required;
 
 abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,9 +41,9 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Interop\Container\Exception\NotFoundException
+     * @expectedException Emonkak\Di\Exception\KeyNotFoundException
      */
-    public function testResolveThrowsNotFoundException()
+    public function testResolveThrowsKeyNotFoundException()
     {
         $this->container->resolve(FooInterface::class);
     }
@@ -59,15 +60,36 @@ abstract class AbstractContrainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($nullDependency, $this->container->resolveParameter($parameters[1]));
     }
 
+    /**
+     * @expectedException Emonkak\Di\Exception\KeyNotFoundException
+     */
+    public function testResolveParameterDependencyThrowsKeyNotFoundException()
+    {
+        $required = new \ReflectionClass(Required::class);
+        $parameters = $required->getConstructor()->getParameters();
+
+        $this->container->resolveParameter($parameters[0]);
+    }
+
     public function testResolvePropertyDependency()
     {
         $optional = new \ReflectionClass(Optional::class);
 
         $fooDependency = $this->container->set('$foo', $this->container->get(Foo::class));
-        $nullDependency = new ValueDependency(null);
+        $valueDependency = new ValueDependency(123);
 
         $this->assertEquals($fooDependency, $this->container->resolveProperty($optional->getProperty('foo')));
-        $this->assertEquals($nullDependency, $this->container->resolveProperty($optional->getProperty('optionalFoo')));
+        $this->assertEquals($valueDependency, $this->container->resolveProperty($optional->getProperty('optionalFoo')));
+    }
+
+    /**
+     * @expectedException Emonkak\Di\Exception\KeyNotFoundException
+     */
+    public function testResolvePropertyDependencyThrowsKeyNotFoundException()
+    {
+        $required = new \ReflectionClass(Required::class);
+
+        $this->container->resolveProperty($required->getProperty('foo'));
     }
 
     public function testGet()
