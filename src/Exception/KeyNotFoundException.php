@@ -4,19 +4,22 @@ namespace Emonkak\Di\Exception;
 
 use Interop\Container\Exception\NotFoundException;
 
+/**
+ * @internal
+ */
 class KeyNotFoundException extends \RuntimeException implements NotFoundException
 {
     /**
-     * @param string              $key
-     * @param \ReflectionProperty $property
-     * @param NotFoundException   $prev
-     * @return NotFoundException
+     * @param string               $key
+     * @param \ReflectionProperty  $property
+     * @param KeyNotFoundException $prev
+     * @return KeyNotFoundException
      */
     public static function fromProperty($key, \ReflectionProperty $property, NotFoundException $prev)
     {
         $reflectionClass = $property->getDeclaringClass();
 
-        return new NotFoundException(sprintf(
+        return new KeyNotFoundException(sprintf(
             'Error while resolving "%s" from "%s::$%s" in %s:%d',
             $key,
             $reflectionClass->name,
@@ -29,10 +32,10 @@ class KeyNotFoundException extends \RuntimeException implements NotFoundExceptio
     /**
      * @param string               $key
      * @param \ReflectionParameter $parameter
-     * @param NotFoundException    $prev
-     * @return NotFoundException
+     * @param KeyNotFoundException $prev
+     * @return KeyNotFoundException
      */
-    public static function fromParameter($key, \ReflectionParameter $parameter, NotFoundException $prev)
+    public static function fromParameter($key, \ReflectionParameter $parameter, KeyNotFoundException $prev)
     {
         $reflectionFunction = $parameter->getDeclaringFunction();
         $reflectionClass = $parameter->getDeclaringClass();
@@ -41,7 +44,7 @@ class KeyNotFoundException extends \RuntimeException implements NotFoundExceptio
             ? sprintf('%s::%s()', $reflectionClass->name, $reflectionFunction->name)
             : $reflectionFunction->name;
 
-        return new NotFoundException(sprintf(
+        return new KeyNotFoundException(sprintf(
             'Error while resolving "%s" from "%s" in %s:%d',
             $key,
             $source,

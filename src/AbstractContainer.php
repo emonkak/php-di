@@ -12,7 +12,6 @@ use Emonkak\Di\Dependency\ValueDependency;
 use Emonkak\Di\Exception\KeyNotFoundException;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\NotFoundException;
 
 abstract class AbstractContainer implements ContainerInterface, ResolverInterface
 {
@@ -147,7 +146,7 @@ abstract class AbstractContainer implements ContainerInterface, ResolverInterfac
         $key = $this->injectionPolicy->getParameterKey($parameter);
         try {
             return $this->resolve($key);
-        } catch (NotFoundException $e) {
+        } catch (KeyNotFoundException $e) {
             if (!$parameter->isOptional()) {
                 throw KeyNotFoundException::fromParameter($key, $parameter, $e);
             }
@@ -164,7 +163,7 @@ abstract class AbstractContainer implements ContainerInterface, ResolverInterfac
         $key = $this->injectionPolicy->getPropertyKey($property);
         try {
             return $this->resolve($key);
-        } catch (NotFoundException $e) {
+        } catch (KeyNotFoundException $e) {
             $class = $property->getDeclaringClass();
             $values = $class->getDefaultProperties();
             if (!array_key_exists($property->name, $values)) {
