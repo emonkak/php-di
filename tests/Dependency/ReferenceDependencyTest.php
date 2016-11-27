@@ -67,11 +67,4 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($expectedValue, $dependency->materializeBy($container, $pool));
     }
-
-    public function testIsSingleton()
-    {
-        $dependency = new ReferenceDependency('foo', function() {}, []);
-
-        $this->assertTrue($dependency->isSingleton());
-    }
 }

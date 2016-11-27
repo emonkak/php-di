@@ -85,7 +85,7 @@ class FactoryDependency implements DependencyInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @return boolean
      */
     public function isSingleton()
     {

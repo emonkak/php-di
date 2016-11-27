@@ -108,7 +108,7 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
             )
         ];
 
-        return [$this->createServiceFactoryDefinition($dependency, $factoryStmts)];
+        return [$this->createServiceFactoryDefinition($dependency, $factoryStmts, $dependency->isSingleton())];
     }
 
     /**
@@ -143,7 +143,7 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
 
         $factoryStmts[] = new Stmt\Return_($variable);
 
-        return [$this->createServiceFactoryDefinition($dependency, $factoryStmts)];
+        return [$this->createServiceFactoryDefinition($dependency, $factoryStmts, $dependency->isSingleton())];
     }
 
     /**
@@ -186,16 +186,17 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
     /**
      * @param DependencyInterface $dependency
      * @param Node[]              $stmts
+     * @param boolean             $isSingleton
      * @return Expr
      */
-    private function createServiceFactory(DependencyInterface $dependency, array $stmts)
+    private function createServiceFactory(DependencyInterface $dependency, array $stmts, $isSingleton)
     {
         $factory = new Expr\Closure([
             'params' => [new Param('c')],
             'stmts' => $stmts,
         ]);
 
-        if (!$dependency->isSingleton()) {
+        if (!$isSingleton) {
             $factory = new Expr\MethodCall(
                 new Expr\Variable('c'),
                 'factory',
@@ -209,16 +210,17 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
     /**
      * @param DependencyInterface $dependency
      * @param Node[]              $stmts
+     * @param boolean             $isSingleton
      * @return Node
      */
-    private function createServiceFactoryDefinition(DependencyInterface $dependency, array $stmts)
+    private function createServiceFactoryDefinition(DependencyInterface $dependency, array $stmts, $isSingleton)
     {
         $definition = new Expr\Assign(
             $this->createContainerAccessor($dependency),
-            $this->createServiceFactory($dependency, $stmts)
+            $this->createServiceFactory($dependency, $stmts, $isSingleton)
         );
 
-        if ($dependency->isSingleton()) {
+        if ($isSingleton) {
             $definition = new Stmt\If_(
                 new Expr\BooleanNot(
                     new Expr\Isset_([$this->createContainerAccessor($dependency)])

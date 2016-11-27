@@ -64,11 +64,4 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(123, $dependency->materializeBy($container, $pool));
     }
-
-    public function testIsSingleton()
-    {
-        $dependency = new ValueDependency(123);
-
-        $this->assertTrue($dependency->isSingleton());
-    }
 }

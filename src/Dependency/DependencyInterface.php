@@ -28,9 +28,4 @@ interface DependencyInterface extends \IteratorAggregate
      * @return mixed
      */
     public function materializeBy(ContainerInterface $container, \ArrayAccess $pool);
-
-    /**
-     * @return boolean
-     */
-    public function isSingleton();
 }

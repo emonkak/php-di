@@ -67,12 +67,4 @@ class ValueDependency implements DependencyInterface
     {
         return $this->value;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isSingleton()
-    {
-        return true;
-    }
 }

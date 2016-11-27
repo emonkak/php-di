@@ -69,12 +69,4 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     {
         return $container->get($this->key);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isSingleton()
-    {
-        return true;
-    }
 }
