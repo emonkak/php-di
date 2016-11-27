@@ -1,6 +1,6 @@
 <?php
 
-namespace Emonkak\Di\Tests\Utils\Stubs;
+namespace Emonkak\Di\Tests\Internal\Stubs;
 
 class Lambda
 {

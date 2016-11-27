@@ -3,7 +3,6 @@
 namespace Emonkak\Di\Dependency;
 
 use Emonkak\Di\Scope\ScopeInterface;
-use Emonkak\Di\Utils\ReflectionUtils;
 use Interop\Container\ContainerInterface;
 
 class ObjectDependency implements DependencyInterface
@@ -88,14 +87,14 @@ class ObjectDependency implements DependencyInterface
         foreach ($this->constructorDependencies as $parameter) {
             $args[] = $parameter->materializeBy($container, $pool);
         }
-        $instance = ReflectionUtils::newInstance($this->className, $args);
+        $instance = new $this->className(...$args);
 
         foreach ($this->methodDependencies as $method => $parameters) {
             $args = [];
             foreach ($parameters as $parameter) {
                 $args[] = $parameter->materializeBy($container, $pool);
             }
-            ReflectionUtils::callMethod($instance, $method, $args);
+            $instance->$method(...$args);
         }
 
         foreach ($this->propertyDependencies as $property => $value) {

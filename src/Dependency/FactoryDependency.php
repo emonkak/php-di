@@ -2,7 +2,6 @@
 
 namespace Emonkak\Di\Dependency;
 
-use Emonkak\Di\Utils\ReflectionUtils;
 use Interop\Container\ContainerInterface;
 
 class FactoryDependency implements DependencyInterface
@@ -67,7 +66,8 @@ class FactoryDependency implements DependencyInterface
         foreach ($this->parameters as $parameter) {
             $args[] = $parameter->materializeBy($container, $pool);
         }
-        return ReflectionUtils::callFunction($this->factory, $args);
+        $factory = $this->factory;
+        return $factory(...$args);
     }
 
     /**

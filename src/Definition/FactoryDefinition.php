@@ -5,10 +5,10 @@ namespace Emonkak\Di\Definition;
 use Emonkak\Di\Dependency\DependencyFinders;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\Internal\Reflectors;
 use Emonkak\Di\ResolverInterface;
 use Emonkak\Di\Scope\PrototypeScope;
 use Emonkak\Di\Scope\ScopeInterface;
-use Emonkak\Di\Utils\ReflectionUtils;
 use SuperClosure\SerializableClosure;
 
 class FactoryDefinition extends AbstractDefinition
@@ -65,7 +65,7 @@ class FactoryDefinition extends AbstractDefinition
                 $dependencies[] = $definition->resolveBy($resolver, $injectionPolicy);
             }
         } else {
-            $function = ReflectionUtils::getFunction($this->factory);
+            $function = Reflectors::getFunction($this->factory);
             foreach ($function->getParameters() as $parameter) {
                 $dependencies[] = $resolver->resolveParameter($parameter);
             }
