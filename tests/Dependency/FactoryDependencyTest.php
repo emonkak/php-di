@@ -13,6 +13,24 @@ use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
  */
 class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 {
+    public function testGetIterator()
+    {
+        $bar = $this->getMock(DependencyInterface::class);
+        $bar
+            ->expects($this->once())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator(['bar' => $bar]));
+        $baz = $this->getMock(DependencyInterface::class);
+        $baz
+            ->expects($this->once())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator(['baz' => $baz]));
+
+        $foo = new FactoryDependency('foo', function() {}, [$bar, $baz]);
+
+        $this->assertEquals(['foo' => $foo, 'bar' => $bar, 'baz' => $baz], iterator_to_array($foo));
+    }
+
     public function testAccept()
     {
         $dependency = new FactoryDependency('foo', function() {}, []);
@@ -79,31 +97,6 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
         $dependency = new FactoryDependency('foo', function() {}, []);
 
         $this->assertFalse($dependency->isSingleton());
-    }
-
-    public function testTraverse()
-    {
-        $callback = $this->getMock('stdClass', ['__invoke']);
-
-        $parameter1 = $this->getMock(DependencyInterface::class);
-        $parameter1
-            ->expects($this->once())
-            ->method('traverse')
-            ->with($this->identicalTo($callback));
-        $parameter2 = $this->getMock(DependencyInterface::class);
-        $parameter2
-            ->expects($this->once())
-            ->method('traverse')
-            ->with($this->identicalTo($callback));
-
-        $dependency = new FactoryDependency('foo', $callback, [$parameter1, $parameter2]);
-
-        $callback
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->identicalTo($dependency), 'foo');
-
-        $dependency->traverse($callback);
     }
 
     public function testGetFactory()

@@ -4,7 +4,7 @@ namespace Emonkak\Di\Dependency;
 
 use Interop\Container\ContainerInterface;
 
-interface DependencyInterface
+interface DependencyInterface extends \IteratorAggregate
 {
     /**
      * @param DependencyVisitorInterface $visitor
@@ -33,9 +33,4 @@ interface DependencyInterface
      * @return boolean
      */
     public function isSingleton();
-
-    /**
-     * @param callable $callback (dependency, key) => ()
-     */
-    public function traverse(callable $callback);
 }

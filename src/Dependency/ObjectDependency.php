@@ -51,6 +51,34 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
+    public function getIterator()
+    {
+        yield $this->key => $this;
+
+        foreach ($this->constructorDependencies as $key => $dependency) {
+            foreach ($dependency as $key => $value) {
+                yield $key => $value;
+            }
+        }
+
+        foreach ($this->methodDependencies as $dependencies) {
+            foreach ($dependencies as $dependency) {
+                foreach ($dependency as $key => $value) {
+                    yield $key => $value;
+                }
+            }
+        }
+
+        foreach ($this->propertyDependencies as $dependency) {
+            foreach ($dependency as $key => $value) {
+                yield $key => $value;
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function accept(DependencyVisitorInterface $visitor)
     {
         return $visitor->visitObjectDependency($this);
@@ -64,7 +92,7 @@ class ObjectDependency implements DependencyInterface
         $dependencies = $this->constructorDependencies;
 
         foreach ($this->methodDependencies as $method => $parameters) {
-            $dependencies = array_merge($dependencies, array_values($parameters));
+            $dependencies = array_merge($dependencies, $parameters);
         }
 
         return array_merge($dependencies, array_values($this->propertyDependencies));
@@ -110,28 +138,6 @@ class ObjectDependency implements DependencyInterface
     public function isSingleton()
     {
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function traverse(callable $callback)
-    {
-        $callback($this, $this->key);
-
-        foreach ($this->constructorDependencies as $parameter) {
-            $parameter->traverse($callback);
-        }
-
-        foreach ($this->methodDependencies as $method => $parameters) {
-            foreach ($parameters as $parameter) {
-                $parameter->traverse($callback);
-            }
-        }
-
-        foreach ($this->propertyDependencies as $propery => $value) {
-            $value->traverse($callback);
-        }
     }
 
     /**

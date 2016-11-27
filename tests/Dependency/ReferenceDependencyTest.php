@@ -12,6 +12,13 @@ use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
  */
 class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
 {
+    public function testGetIterator()
+    {
+        $dependency = new ReferenceDependency('foo');
+
+        $this->assertEquals(['foo' => $dependency], iterator_to_array($dependency));
+    }
+
     public function testAccept()
     {
         $dependency = new ReferenceDependency('foo');
@@ -66,18 +73,5 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
         $dependency = new ReferenceDependency('foo', function() {}, []);
 
         $this->assertTrue($dependency->isSingleton());
-    }
-
-    public function testTraverse()
-    {
-        $dependency = new ReferenceDependency('foo');
-
-        $callback = $this->getMock('stdClass', ['__invoke']);
-        $callback
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->identicalTo($dependency));
-
-        $dependency->traverse($callback);
     }
 }

@@ -23,6 +23,14 @@ class ValueDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
+    public function getIterator()
+    {
+        yield $this->getKey() => $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getValue()
     {
         return $this->value;
@@ -66,13 +74,5 @@ class ValueDependency implements DependencyInterface
     public function isSingleton()
     {
         return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function traverse(callable $callback)
-    {
-        $callback($this, $this->getKey());
     }
 }

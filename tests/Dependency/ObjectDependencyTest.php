@@ -17,6 +17,33 @@ use Emonkak\Di\Tests\Dependency\Stubs\Qux;
  */
 class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
 {
+    public function testTraverse()
+    {
+        $bar = $this->getMock(DependencyInterface::class);
+        $bar
+            ->expects($this->once())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator(['bar' => $bar]));
+        $baz = $this->getMock(DependencyInterface::class);
+        $baz
+            ->expects($this->once())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator(['baz' => $baz]));
+        $qux = $this->getMock(DependencyInterface::class);
+        $qux
+            ->expects($this->once())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator(['qux' => $qux]));
+
+        $foo = new ObjectDependency(
+            'foo',
+            \stdClass::class,
+            [$bar], ['setBaz' => [$baz]], ['qux' => $qux]
+        );
+
+        $this->assertEquals(['foo' => $foo, 'bar' => $bar, 'baz' => $baz, 'qux' => $qux], iterator_to_array($foo));
+    }
+
     public function testAccept()
     {
         $dependency = new ObjectDependency('foo', \stdClass::class, [], [], []);
@@ -122,41 +149,6 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
         $dependency = new ObjectDependency('foo', \stdClass::class, [], [], []);
 
         $this->assertFalse($dependency->isSingleton());
-    }
-
-    public function testTraverse()
-    {
-        $callback = $this->getMock(\stdClass::class, ['__invoke']);
-
-        $parameter1 = $this->getMock(DependencyInterface::class);
-        $parameter1
-            ->expects($this->once())
-            ->method('traverse')
-            ->with($this->identicalTo($callback));
-        $parameter2 = $this->getMock(DependencyInterface::class);
-        $parameter2
-            ->expects($this->once())
-            ->method('traverse')
-            ->with($this->identicalTo($callback));
-        $parameter3 = $this->getMock(DependencyInterface::class);
-        $parameter3
-            ->expects($this->once())
-            ->method('traverse')
-            ->with($this->identicalTo($callback));
-
-        $dependency = new ObjectDependency(
-            'foo',
-            \stdClass::class,
-            [$parameter1], ['setBaz' => [$parameter2]], ['qux' => $parameter3]
-        );
-
-
-        $callback
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->identicalTo($dependency), 'foo');
-
-        $dependency->traverse($callback);
     }
 
     public function testGetClassName()

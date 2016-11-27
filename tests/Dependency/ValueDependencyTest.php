@@ -12,6 +12,13 @@ use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
  */
 class ValueDependencyTest extends \PHPUnit_Framework_TestCase
 {
+    public function testTraverse()
+    {
+        $dependency = new ValueDependency(123);
+
+        $this->assertEquals([$dependency], iterator_to_array($dependency, false));
+    }
+
     public function testAccept()
     {
         $dependency = new ValueDependency(123);
@@ -63,18 +70,5 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
         $dependency = new ValueDependency(123);
 
         $this->assertTrue($dependency->isSingleton());
-    }
-
-    public function testTraverse()
-    {
-        $dependency = new ValueDependency(123);
-
-        $callback = $this->getMock('stdClass', ['__invoke']);
-        $callback
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->identicalTo($dependency));
-
-        $dependency->traverse($callback);
     }
 }

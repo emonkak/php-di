@@ -36,6 +36,20 @@ class FactoryDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
+    public function getIterator()
+    {
+        yield $this->key => $this;
+
+        foreach ($this->parameters as $parameter) {
+            foreach ($parameter->getIterator() as $key => $value) {
+                yield $key => $value;
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function accept(DependencyVisitorInterface $visitor)
     {
         return $visitor->visitFactoryDependency($this);
@@ -76,18 +90,6 @@ class FactoryDependency implements DependencyInterface
     public function isSingleton()
     {
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function traverse(callable $callback)
-    {
-        $callback($this, $this->key);
-
-        foreach ($this->parameters as $parameter) {
-             $parameter->traverse($callback);
-        }
     }
 
     /**

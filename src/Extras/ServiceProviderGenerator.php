@@ -65,15 +65,15 @@ class ServiceProviderGenerator implements DependencyVisitorInterface, ServicePro
             ->setTypeHint(new Name\FullyQualified('Pimple\Container')));
         $traversed = [];
 
-        $dependency->traverse(function($dependency, $key) use (&$traversed, $registerBuilder) {
+        foreach ($dependency as $key => $child) {
             if (!isset($traversed[$key])) {
-                $stmts = $dependency->accept($this);
+                $stmts = $child->accept($this);
                 foreach ($stmts as $stmt) {
                     $registerBuilder->addStmt($stmt);
                 }
                 $traversed[$key] = true;
             }
-        });
+        }
 
         list ($namespace, $className) = $this->splitToNamesapceAndClass($className);
 

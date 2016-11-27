@@ -25,6 +25,14 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
+    public function getIterator()
+    {
+        yield $this->key => $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function accept(DependencyVisitorInterface $visitor)
     {
         return $visitor->visitReferenceDependency($this);
@@ -68,13 +76,5 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     public function isSingleton()
     {
         return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function traverse(callable $callback)
-    {
-        $callback($this, $this->key);
     }
 }
