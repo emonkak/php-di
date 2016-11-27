@@ -4,21 +4,8 @@ namespace Emonkak\Di\Dependency;
 
 use Interop\Container\ContainerInterface;
 
-class FlyweightFactoryDependency extends FactoryDependency
+class SingletonFactoryDependency extends FactoryDependency
 {
-    /**
-     * @param FactoryDependency $dependency
-     * @return SharedDependency
-     */
-    public static function from(FactoryDependency $dependency)
-    {
-        return new self(
-            $dependency->key,
-            $dependency->factory,
-            $dependency->parameters
-        );
-    }
-
     /**
      * {@inheritDoc}
      */

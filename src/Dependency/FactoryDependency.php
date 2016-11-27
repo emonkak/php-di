@@ -105,4 +105,16 @@ class FactoryDependency implements DependencyInterface
     {
         return $this->parameters;
     }
+
+    /**
+     * @return SingletonFactoryDependency
+     */
+    public function asSingleton()
+    {
+        return new SingletonFactoryDependency(
+            $this->key,
+            $this->factory,
+            $this->parameters
+        );
+    }
 }

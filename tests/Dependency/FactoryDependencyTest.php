@@ -3,6 +3,8 @@
 namespace Emonkak\Di\Tests\Dependency;
 
 use Emonkak\Di\Container;
+use Emonkak\Di\Dependency\DependencyInterface;
+use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 
@@ -15,7 +17,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
     {
         $dependency = new FactoryDependency('foo', function() {}, []);
 
-        $visitor = $this->getMock('Emonkak\Di\Dependency\DependencyVisitorInterface');
+        $visitor = $this->getMock(DependencyVisitorInterface::class);
         $visitor
             ->expects($this->once())
             ->method('visitFactoryDependency')
@@ -26,7 +28,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testDependencies()
     {
-        $paramerters = [$this->getMock('Emonkak\Di\Dependency\DependencyInterface')];
+        $paramerters = [$this->getMock(DependencyInterface::class)];
         $dependency = new FactoryDependency('foo', function() {}, $paramerters);
 
         $this->assertSame($paramerters, $dependency->getDependencies());
@@ -46,14 +48,14 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
         $pool = new \ArrayObject();
         $container = new Container($injectionPolicy, $cache, $pool);
 
-        $parameter1 = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
+        $parameter1 = $this->getMock(DependencyInterface::class);
         $parameter1
             ->expects($this->once())
             ->method('materializeBy')
             ->with($this->identicalTo($container), $this->identicalTo($pool))
             ->willReturn($parameter1Value = new \stdClass());
 
-        $parameter2 = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
+        $parameter2 = $this->getMock(DependencyInterface::class);
         $parameter2
             ->expects($this->once())
             ->method('materializeBy')
@@ -83,12 +85,12 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
     {
         $callback = $this->getMock('stdClass', ['__invoke']);
 
-        $parameter1 = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
+        $parameter1 = $this->getMock(DependencyInterface::class);
         $parameter1
             ->expects($this->once())
             ->method('traverse')
             ->with($this->identicalTo($callback));
-        $parameter2 = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
+        $parameter2 = $this->getMock(DependencyInterface::class);
         $parameter2
             ->expects($this->once())
             ->method('traverse')
@@ -114,9 +116,24 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testGetParameters()
     {
-        $paramerters = [$this->getMock('Emonkak\Di\Dependency\DependencyInterface')];
+        $paramerters = [$this->getMock(DependencyInterface::class)];
         $dependency = new FactoryDependency('foo', function() {}, $paramerters);
 
         $this->assertSame($paramerters, $dependency->getParameters());
+    }
+
+    public function testAsSingleton()
+    {
+        $original = new FactoryDependency(
+            'foo',
+            function() {},
+            [$this->getMock(DependencyInterface::class)]
+        );
+        $singleton = $original->asSingleton();
+
+        $this->assertSame($original->getKey(), $singleton->getKey());
+        $this->assertSame($original->getFactory(), $singleton->getFactory());
+        $this->assertSame($original->getParameters(), $singleton->getParameters());
+        $this->assertTrue($singleton->isSingleton());
     }
 }

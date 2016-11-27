@@ -3,6 +3,7 @@
 namespace Emonkak\Di\Tests\Dependency;
 
 use Emonkak\Di\Container;
+use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\ReferenceDependency;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 
@@ -15,7 +16,7 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
     {
         $dependency = new ReferenceDependency('foo');
 
-        $visitor = $this->getMock('Emonkak\Di\Dependency\DependencyVisitorInterface');
+        $visitor = $this->getMock(DependencyVisitorInterface::class);
         $visitor
             ->expects($this->once())
             ->method('visitReferenceDependency')

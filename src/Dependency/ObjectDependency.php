@@ -151,7 +151,7 @@ class ObjectDependency implements DependencyInterface
     }
 
     /**
-     * @return array (string => DependencyInterface[])
+     * @return array array(string => DependencyInterface[])
      */
     public function getMethodDependencies()
     {
@@ -159,10 +159,24 @@ class ObjectDependency implements DependencyInterface
     }
 
     /**
-     * @return array (string => DependencyInterface)
+     * @return array array(string => DependencyInterface)
      */
     public function getPropertyDependencies()
     {
         return $this->propertyDependencies;
+    }
+
+    /**
+     * @return SingletonDependency
+     */
+    public function asSingleton()
+    {
+        return new SingletonDependency(
+            $this->key,
+            $this->className,
+            $this->constructorDependencies,
+            $this->methodDependencies,
+            $this->propertyDependencies
+        );
     }
 }

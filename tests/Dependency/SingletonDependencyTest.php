@@ -14,24 +14,6 @@ use Emonkak\Di\Tests\Dependency\Stubs\Qux;
  */
 class SingletonDependencyTest extends \PHPUnit_Framework_TestCase
 {
-    public function testFrom()
-    {
-        $original = new ObjectDependency(
-            'foo',
-            'stdClass',
-            [$this->getMock('Emonkak\Di\Dependency\DependencyInterface')],
-            ['setBaz' => $this->getMock('Emonkak\Di\Dependency\DependencyInterface')],
-            ['qux' => $this->getMock('Emonkak\Di\Dependency\DependencyInterface')]
-        );
-        $new = SingletonDependency::from($original);
-
-        $this->assertInstanceOf('Emonkak\Di\Dependency\SingletonDependency', $new);
-        $this->assertSame($original->getKey(), $new->getKey());
-        $this->assertSame($original->getClassName(), $new->getClassName());
-        $this->assertSame($original->getMethodDependencies(), $new->getMethodDependencies());
-        $this->assertSame($original->getPropertyDependencies(), $new->getPropertyDependencies());
-    }
-
     public function testMaterializeBy()
     {
         $injectionPolicy = new DefaultInjectionPolicy();
@@ -40,8 +22,8 @@ class SingletonDependencyTest extends \PHPUnit_Framework_TestCase
         $container = new Container($injectionPolicy, $cache, $pool);
 
         $dependency = new SingletonDependency(
-            'stdClass',
-            'stdClass',
+            \stdClass::class,
+            \stdClass::class,
             [], [], []
         );
 
@@ -52,7 +34,7 @@ class SingletonDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testIsSingleton()
     {
-        $dependency = new SingletonDependency('foo', 'stdClass', [], [], []);
+        $dependency = new SingletonDependency('foo', \stdClass::class, [], [], []);
 
         $this->assertTrue($dependency->isSingleton());
     }
