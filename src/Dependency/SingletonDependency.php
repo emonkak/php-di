@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Dependency;
 
-use Emonkak\Di\ContainerInterface;
+use Interop\Container\ContainerInterface;
 
 class SingletonDependency extends ObjectDependency 
 {

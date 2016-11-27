@@ -2,9 +2,9 @@
 
 namespace Emonkak\Di\Definition;
 
-use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
 use Emonkak\Di\Scope\ScopeInterface;
 
 abstract class AbstractDefinition implements DefinitionInterface
@@ -16,7 +16,7 @@ abstract class AbstractDefinition implements DefinitionInterface
 
     /**
      * @param ScopeInterface
-     * @return AbstractDefinition
+     * @return $this
      */
     public function in(ScopeInterface $scope)
     {
@@ -27,22 +27,24 @@ abstract class AbstractDefinition implements DefinitionInterface
     /**
      * {@inheritDoc}
      */
-    public function resolveBy(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
+    public function resolveBy(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy)
     {
-        $scope = $this->scope ?: $this->resolveScope($container, $injectionPolicy);
+        $scope = $this->scope ?: $this->resolveScope($resolver, $injectionPolicy);
 
-        return $scope->get($this->resolveDependency($container, $injectionPolicy));
+        return $scope->get($this->resolveDependency($resolver, $injectionPolicy));
     }
 
     /**
-     * @param Container $container
+     * @param ResolverInterface        $resolver
+     * @param InjectionPolicyInterface $injectionPolicy
      * @return DependencyInterface
      */
-    abstract protected function resolveDependency(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy);
+    abstract protected function resolveDependency(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy);
 
     /**
-     * @param ContainerInterface $container
+     * @param ResolverInterface        $resolver
+     * @param InjectionPolicyInterface $injectionPolicy
      * @return ScopeInterface
      */
-    abstract protected function resolveScope(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy);
+    abstract protected function resolveScope(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy);
 }

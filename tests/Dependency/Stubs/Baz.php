@@ -2,6 +2,6 @@
 
 namespace Emonkak\Di\Tests\Dependency\Stubs;
 
-class Baz implements BarInterface
+class Baz
 {
 }

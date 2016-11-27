@@ -2,8 +2,8 @@
 
 namespace Emonkak\Di\Dependency;
 
-use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Utils\ReflectionUtils;
+use Interop\Container\ContainerInterface;
 
 class FactoryDependency implements DependencyInterface
 {

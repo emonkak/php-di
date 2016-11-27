@@ -2,10 +2,10 @@
 
 namespace Emonkak\Di\Definition;
 
-use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyFinders;
 use Emonkak\Di\Dependency\ObjectDependency;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
 use Emonkak\Di\Scope\ScopeInterface;
 
 class BindingDefinition extends AbstractDefinition
@@ -26,12 +26,12 @@ class BindingDefinition extends AbstractDefinition
     private $constructorParameters;
 
     /**
-     * @var DefinitionInterface[] array(methodName => paramerters)
+     * @var array array(string => DefinitionInterface[])
      */
     private $methodInjections = [];
 
     /**
-     * @var DefinitionInterface[] array(propertyName => value)
+     * @var array array(string => DefinitionInterface)
      */
     private $propertyInjections = [];
 
@@ -46,6 +46,7 @@ class BindingDefinition extends AbstractDefinition
 
     /**
      * @param string $target
+     * @return $this
      */
     public function to($target)
     {
@@ -55,7 +56,7 @@ class BindingDefinition extends AbstractDefinition
 
     /**
      * @param DefinitionInterface[] $parameters
-     * @return BindingDefinition
+     * @return $this
      */
     public function with(array $parameters)
     {
@@ -66,7 +67,7 @@ class BindingDefinition extends AbstractDefinition
     /**
      * @param string                $method
      * @param DefinitionInterface[] $parameters
-     * @return BindingDefinition
+     * @return $this
      */
     public function withMethod($method, array $parameters)
     {
@@ -77,7 +78,7 @@ class BindingDefinition extends AbstractDefinition
     /**
      * @param string                $method
      * @param DefinitionInterface[] $parameters
-     * @return BindingDefinition
+     * @return $this
      */
     public function withProperty($property, DefinitionInterface $value)
     {
@@ -88,37 +89,45 @@ class BindingDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolveDependency(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
+    protected function resolveDependency(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy)
     {
         $class = new \ReflectionClass($this->target);
-
         if (!$injectionPolicy->isInjectableClass($class)) {
             throw new \LogicException(
                 sprintf('Class "%s" is not injectable.', $class->name)
             );
         }
 
+        $constructorDependencies = [];
         if ($this->constructorParameters !== null) {
-            $constructorDependencies = [];
             foreach ($this->constructorParameters as $definition) {
-                $constructorDependencies[] = $definition->resolveBy($container, $injectionPolicy);
+                $constructorDependencies[] = $definition->resolveBy($resolver, $injectionPolicy);
             }
         } else {
-            $constructorDependencies = DependencyFinders::getConstructorDependencies($container, $injectionPolicy, $class);
+            $constructor = $class->getConstructor();
+            if ($constructor !== null) {
+                $constructorDependencies = $this->getParameterDependencies($resolver, $constructor);
+            }
         }
 
-        $methodDependencies = DependencyFinders::getMethodDependencies($container, $injectionPolicy, $class);
+        $methodDependencies = [];
+        foreach ($injectionPolicy->getInjectableMethods($class) as $method) {
+            $methodDependencies[$method->name] = $this->getParameterDependencies($resolver, $method);
+        }
         foreach ($this->methodInjections as $method => $definitions) {
             $dependencies = [];
             foreach ($definitions as $definition) {
-                $dependencies[] = $definition->resolveBy($container, $injectionPolicy);
+                $dependencies[] = $definition->resolveBy($resolver, $injectionPolicy);
             }
             $methodDependencies[$method] = $dependencies;
         }
 
-        $propertyDependencies = DependencyFinders::getPropertyDependencies($container, $injectionPolicy, $class);
+        $propertyDependencies = [];
+        foreach ($injectionPolicy->getInjectableProperties($class) as $property) {
+            $propertyDependencies[$property->name] = $resolver->resolveProperty($property);
+        }
         foreach ($this->propertyInjections as $property => $definition) {
-            $propertyDependencies[$property] = $definition->resolveBy($container, $injectionPolicy);
+            $propertyDependencies[$property] = $definition->resolveBy($resolver, $injectionPolicy);
         }
 
         return new ObjectDependency(
@@ -133,10 +142,23 @@ class BindingDefinition extends AbstractDefinition
     /**
      * {@inheritDoc}
      */
-    protected function resolveScope(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
+    protected function resolveScope(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy)
     {
         $class = new \ReflectionClass($this->target);
-
         return $injectionPolicy->getScope($class);
+    }
+
+    /**
+     * @param ResolverInterface           $resolver
+     * @param \ReflectionFunctionAbstract $function
+     * @return DependencyInterface[]
+     */
+    private function getParameterDependencies(ResolverInterface $resolver, \ReflectionFunctionAbstract $function)
+    {
+        $dependencies = [];
+        foreach ($function->getParameters() as $parameter) {
+            $dependencies[] = $resolver->resolveParameter($parameter);
+        }
+        return $dependencies;
     }
 }

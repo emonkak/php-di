@@ -2,9 +2,9 @@
 
 namespace Emonkak\Di\Dependency;
 
-use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Scope\ScopeInterface;
 use Emonkak\Di\Utils\ReflectionUtils;
+use Interop\Container\ContainerInterface;
 
 class ObjectDependency implements DependencyInterface
 {

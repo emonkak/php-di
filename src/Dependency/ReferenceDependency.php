@@ -2,9 +2,10 @@
 
 namespace Emonkak\Di\Dependency;
 
-use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Definition\DefinitionInterface;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
+use Interop\Container\ContainerInterface;
 
 class ReferenceDependency implements DefinitionInterface, DependencyInterface
 {
@@ -32,7 +33,7 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function resolveBy(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
+    public function resolveBy(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy)
     {
         return $this;
     }

@@ -15,7 +15,6 @@ class QualifierTest extends \PHPUnit_Framework_TestCase
     public function testGetValue(array $values, $name, $expectedValue)
     {
         $qualifier = new Qualifier($values);
-
         $this->assertSame($expectedValue, $qualifier->getValue($name));
     }
 
@@ -34,7 +33,6 @@ class QualifierTest extends \PHPUnit_Framework_TestCase
     public function testGetSingleValue(array $values, $expectedValue)
     {
         $qualifier = new Qualifier($values);
-
         $this->assertSame($expectedValue, $qualifier->getSingleValue());
     }
 

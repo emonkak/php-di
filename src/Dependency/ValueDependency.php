@@ -2,8 +2,8 @@
 
 namespace Emonkak\Di\Dependency;
 
-use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Interop\Container\ContainerInterface;
 
 class ValueDependency implements DependencyInterface
 {

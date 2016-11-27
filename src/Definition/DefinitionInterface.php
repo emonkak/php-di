@@ -2,16 +2,16 @@
 
 namespace Emonkak\Di\Definition;
 
-use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
 
 interface DefinitionInterface
 {
     /**
-     * @param ContainerInterface $container
+     * @param ResolverInterface $resolver
      * @param InjectionPolicyInterface $injectionPolicy
      * @return DependencyInterface
      */
-    public function resolveBy(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy);
+    public function resolveBy(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy);
 }

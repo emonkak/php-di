@@ -8,10 +8,13 @@ use Emonkak\Di\Definition\DefinitionInterface;
 use Emonkak\Di\Definition\FactoryDefinition;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\ReferenceDependency;
+use Emonkak\Di\Dependency\ValueDependency;
 use Emonkak\Di\Exception\NotFoundException;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\NotFoundException as InteropNotFoundException;
 
-abstract class AbstractContainer implements ContainerInterface
+abstract class AbstractContainer implements ContainerInterface, ResolverInterface
 {
     /**
      * @var InjectionPolicyInterface
@@ -125,6 +128,41 @@ abstract class AbstractContainer implements ContainerInterface
         $this->cache[$key] = $dependency;
 
         return $dependency;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function resolveParameter(\ReflectionParameter $parameter)
+    {
+        $key = $this->injectionPolicy->getParameterKey($parameter);
+        try {
+            return $this->resolve($key);
+        } catch (InteropNotFoundException $e) {
+            if (!$parameter->isOptional()) {
+                throw NotFoundException::ofParameter($key, $parameter, $e);
+            }
+            $defaultValue = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
+            return new ValueDependency($defaultValue);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function resolveProperty(\ReflectionProperty $property)
+    {
+        $key = $this->injectionPolicy->getPropertyKey($property);
+        try {
+            return $this->resolve($key);
+        } catch (InteropNotFoundException $e) {
+            $class = $property->getDeclaringClass();
+            $values = $class->getDefaultProperties();
+            if (!array_key_exists($property->name, $values)) {
+                throw NotFoundException::ofProperty($key, $property, $e);
+            }
+            return new ValueDependency($values[$property->name]);
+        }
     }
 
     /**

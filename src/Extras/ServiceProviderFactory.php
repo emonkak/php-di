@@ -2,8 +2,8 @@
 
 namespace Emonkak\Di\Extras;
 
-use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
+use Emonkak\Di\ResolverInterface;
 use Pimple\ServiceProviderInterface;
 
 /**
@@ -22,15 +22,20 @@ class ServiceProviderFactory
     private $loader;
 
     /**
+     * @var ResolverInterface
+     */
+    private $resolver;
+
+    /**
      * @param ServiceProviderGenerator       $generator
      * @param ServiceProviderLoaderInterface $loader
-     * @param ContainerInterface             $container
+     * @param ResolverInterface              $resolver
      */
-    public function __construct(ServiceProviderGenerator $generator, ServiceProviderLoaderInterface $loader, ContainerInterface $container)
+    public function __construct(ServiceProviderGenerator $generator, ServiceProviderLoaderInterface $loader, ResolverInterface $resolver)
     {
         $this->generator = $generator;
         $this->loader = $loader;
-        $this->container = $container;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -44,7 +49,7 @@ class ServiceProviderFactory
     {
         if (!class_exists($serviceProviderClass, false)) {
             if (!$this->loader->canLoad($serviceProviderClass)) {
-                $dependency = $this->container->resolve($target);
+                $dependency = $this->resolver->resolve($target);
                 $source = $this->generator->generate($serviceProviderClass, $dependency);
 
                 $this->loader->write($serviceProviderClass, $source);
