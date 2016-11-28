@@ -15,7 +15,6 @@ use Emonkak\Di\Container;
 use Emonkak\Di\Extras\ServiceProviderGenerator;
 use Emonkak\Di\Extras\ServiceProviderLoader;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
-use Emonkak\Di\PimpleContainer;
 use Pimple\Container as Pimple;
 
 /**
@@ -25,7 +24,10 @@ class EmonkakDiBench
 {
     public function benchGet()
     {
-        $container = Container::create();
+        $container = new Container(
+            new DefaultInjectionPolicy(),
+            new \ArrayObject()
+        );
         $container->bind(FooInterface::class)->to(Foo::class);
         $container->bind(BarInterface::class)->to(Bar::class);
         $container->bind(BazInterface::class)->to(Baz::class);
@@ -36,18 +38,8 @@ class EmonkakDiBench
     {
         $container = new Container(
             new DefaultInjectionPolicy(),
-            extension_loaded('apcu') ? new ApcuCache('container') : new ApcCache('container'),
-            new \ArrayObject()
+            extension_loaded('apcu') ? new ApcuCache('container') : new ApcCache('container')
         );
-        $container->bind(FooInterface::class)->to(Foo::class);
-        $container->bind(BarInterface::class)->to(Bar::class);
-        $container->bind(BazInterface::class)->to(Baz::class);
-        assert($container->get(Foo::class) instanceof Foo);
-    }
-
-    public function benchGetWithPimple()
-    {
-        $container = PimpleContainer::create();
         $container->bind(FooInterface::class)->to(Foo::class);
         $container->bind(BarInterface::class)->to(Bar::class);
         $container->bind(BazInterface::class)->to(Baz::class);
