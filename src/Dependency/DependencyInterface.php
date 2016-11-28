@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Dependency;
 
-use Interop\Container\ContainerInterface;
+use Emonkak\Di\ContainerInterface;
 
 interface DependencyInterface extends \IteratorAggregate
 {
@@ -24,8 +24,7 @@ interface DependencyInterface extends \IteratorAggregate
 
     /**
      * @param ContainerInterface $container
-     * @param array              &$pool
      * @return mixed
      */
-    public function instantiateBy(ContainerInterface $container, array &$pool);
+    public function instantiateBy(ContainerInterface $container);
 }

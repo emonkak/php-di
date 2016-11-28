@@ -107,23 +107,6 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->container->has(Foo::class));
         $this->assertFalse($this->container->has(FooInterface::class));
     }
-
-    public function testInstantiate()
-    {
-        $this->container->merge(new FooModule());
-
-        $dependency = $this->container->resolve(FooService::class);
-        $service = $this->container->instantiate($dependency);
-
-        $this->assertInstanceOf(FooService::class, $service);
-        $this->assertInstanceOf(BarService::class, $service->barService);
-        $this->assertInstanceOf(Baz::class, $service->barService->baz);
-        $this->assertInstanceOf(Foo::class, $service->bazService->foo);
-        $this->assertInstanceOf(Bar::class, $service->bazService->bar);
-        $this->assertInstanceOf(Baz::class, $service->bazService->baz);
-        $this->assertInstanceOf(Baz::class, $service->baz);
-        $this->assertSame($service->bazService->baz, $service->baz);
-    }
 }
 
 class FooService

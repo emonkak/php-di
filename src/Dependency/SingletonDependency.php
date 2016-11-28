@@ -2,22 +2,21 @@
 
 namespace Emonkak\Di\Dependency;
 
-use Interop\Container\ContainerInterface;
+use Emonkak\Di\ContainerInterface;
 
 class SingletonDependency extends ObjectDependency
 {
     /**
      * {@inheritDoc}
      */
-    public function instantiateBy(ContainerInterface $container, array &$pool)
+    public function instantiateBy(ContainerInterface $container)
     {
-        if (isset($pool[$this->key])) {
-            return $pool[$this->key];
+        if ($container->isStored($this->key)) {
+            $instance = $container->get($this->key);
+        } else {
+            $instance = parent::instantiateBy($container);
+            $container->store($this->key, $instance);
         }
-
-        $instance = parent::instantiateBy($container, $pool);
-        $pool[$this->key] = $instance;
-
         return $instance;
     }
 

@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
-use Interop\Container\ContainerInterface;
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\ReferenceDependency;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
@@ -63,10 +63,9 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('get')
             ->willReturn(123);
-        $pool = [];
 
         $dependency = new ReferenceDependency('foo');
 
-        $this->assertSame(123, $dependency->instantiateBy($container, $pool));
+        $this->assertSame(123, $dependency->instantiateBy($container));
     }
 }

@@ -5,7 +5,7 @@ namespace Emonkak\Di\Dependency;
 use Emonkak\Di\Definition\DefinitionInterface;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\ResolverInterface;
-use Interop\Container\ContainerInterface;
+use Emonkak\Di\ContainerInterface;
 
 class ReferenceDependency implements DefinitionInterface, DependencyInterface
 {
@@ -65,7 +65,7 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function instantiateBy(ContainerInterface $container, array &$pool)
+    public function instantiateBy(ContainerInterface $container)
     {
         return $container->get($this->key);
     }

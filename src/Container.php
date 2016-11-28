@@ -8,7 +8,6 @@ use Emonkak\Di\Dependency\ValueDependency;
 use Emonkak\Di\Exception\KeyNotFoundException;
 use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
-use Interop\Container\ContainerInterface;
 
 class Container extends Module implements ResolverInterface, ContainerInterface
 {
@@ -56,7 +55,7 @@ class Container extends Module implements ResolverInterface, ContainerInterface
             return $this->values[$key];
         }
 
-        return $this->resolve($key)->instantiateBy($this, $this->values);
+        return $this->resolve($key)->instantiateBy($this);
     }
 
     /**
@@ -65,6 +64,22 @@ class Container extends Module implements ResolverInterface, ContainerInterface
     public function has($key)
     {
         return isset($this->definitions[$key]) || isset($this->values[$key]) || isset($this->cache[$key]) || class_exists($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function store($key, $value)
+    {
+        $this->values[$key] = $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isStored($key)
+    {
+        return isset($this->values[$key]);
     }
 
     /**
@@ -127,14 +142,5 @@ class Container extends Module implements ResolverInterface, ContainerInterface
             }
             return new ValueDependency($key, $values[$property->name]);
         }
-    }
-
-    /**
-     * @param DependencyInterface $dependency
-     * @return mixed
-     */
-    public function instantiate(DependencyInterface $dependency)
-    {
-        return $dependency->instantiateBy($this, $this->values);
     }
 }

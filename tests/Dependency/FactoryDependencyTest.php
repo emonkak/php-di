@@ -2,11 +2,11 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\Tests\Fixtures\Lambda;
-use Interop\Container\ContainerInterface;
 
 /**
  * @covers Emonkak\Di\Dependency\FactoryDependency
@@ -62,20 +62,19 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
     public function testInstantiateBy()
     {
         $container = $this->createMock(ContainerInterface::class);
-        $pool = [];
 
         $parameter1 = $this->createMock(DependencyInterface::class);
         $parameter1
             ->expects($this->once())
             ->method('instantiateBy')
-            ->with($this->identicalTo($container), $this->identicalTo($pool))
+            ->with($this->identicalTo($container))
             ->willReturn($parameter1Value = new \stdClass());
 
         $parameter2 = $this->createMock(DependencyInterface::class);
         $parameter2
             ->expects($this->once())
             ->method('instantiateBy')
-            ->with($this->identicalTo($container), $this->identicalTo($pool))
+            ->with($this->identicalTo($container))
             ->willReturn($parameter2Value = new \stdClass());
 
         $factory = $this->createMock(Lambda::class, ['__invoke']);
@@ -87,7 +86,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
         $dependency = new FactoryDependency('foo', $factory, [$parameter1, $parameter2]);
 
-        $this->assertSame($expectedValue, $dependency->instantiateBy($container, $pool));
+        $this->assertSame($expectedValue, $dependency->instantiateBy($container));
     }
 
     public function testIsSingleton()

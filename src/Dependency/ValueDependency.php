@@ -2,10 +2,10 @@
 
 namespace Emonkak\Di\Dependency;
 
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Definition\DefinitionInterface;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
 use Emonkak\Di\ResolverInterface;
-use Interop\Container\ContainerInterface;
 
 class ValueDependency implements DefinitionInterface, DependencyInterface
 {
@@ -72,7 +72,7 @@ class ValueDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function instantiateBy(ContainerInterface $container, array &$pool)
+    public function instantiateBy(ContainerInterface $container)
     {
         return $this->value;
     }

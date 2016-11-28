@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
-use Interop\Container\ContainerInterface;
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyInterface;
 use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\ObjectDependency;
@@ -102,7 +102,6 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
     public function testInstantiateBy()
     {
         $container = $this->createMock(ContainerInterface::class);
-        $pool = [];
 
         $fooDependency = new ObjectDependency(
             'foo',
@@ -134,7 +133,7 @@ class ObjectDependencyTest extends \PHPUnit_Framework_TestCase
             ['baz' => $bazDependency]
         );
 
-        $service = $dependency->instantiateBy($container, $pool);
+        $service = $dependency->instantiateBy($container);
 
         $this->assertInstanceOf(ObjectDependencyTestService::class, $service);
         $this->assertInstanceOf(Foo::class, $service->foo);

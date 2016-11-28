@@ -3,7 +3,7 @@
 namespace Emonkak\Di\Dependency;
 
 use Emonkak\Di\Scope\ScopeInterface;
-use Interop\Container\ContainerInterface;
+use Emonkak\Di\ContainerInterface;
 
 class ObjectDependency implements DependencyInterface
 {
@@ -109,24 +109,24 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function instantiateBy(ContainerInterface $container, array &$pool)
+    public function instantiateBy(ContainerInterface $container)
     {
         $args = [];
         foreach ($this->constructorDependencies as $parameter) {
-            $args[] = $parameter->instantiateBy($container, $pool);
+            $args[] = $parameter->instantiateBy($container);
         }
         $instance = new $this->className(...$args);
 
         foreach ($this->methodDependencies as $method => $parameters) {
             $args = [];
             foreach ($parameters as $parameter) {
-                $args[] = $parameter->instantiateBy($container, $pool);
+                $args[] = $parameter->instantiateBy($container);
             }
             $instance->$method(...$args);
         }
 
         foreach ($this->propertyDependencies as $property => $value) {
-            $instance->$property = $value->instantiateBy($container, $pool);
+            $instance->$property = $value->instantiateBy($container);
         }
 
         return $instance;

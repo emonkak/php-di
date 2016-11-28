@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
-use Interop\Container\ContainerInterface;
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\ValueDependency;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
@@ -66,10 +66,9 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
     public function testInstantiateBy()
     {
         $container = $this->createMock(ContainerInterface::class);
-        $pool = [];
 
         $dependency = new ValueDependency('foo', 123);
 
-        $this->assertSame(123, $dependency->instantiateBy($container, $pool));
+        $this->assertSame(123, $dependency->instantiateBy($container));
     }
 }

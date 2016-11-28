@@ -2,7 +2,7 @@
 
 namespace Emonkak\Di\Dependency;
 
-use Interop\Container\ContainerInterface;
+use Emonkak\Di\ContainerInterface;
 
 class FactoryDependency implements DependencyInterface
 {
@@ -74,11 +74,11 @@ class FactoryDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function instantiateBy(ContainerInterface $container, array &$pool)
+    public function instantiateBy(ContainerInterface $container)
     {
         $args = [];
         foreach ($this->parameterDependencies as $dependency) {
-            $args[] = $dependency->instantiateBy($container, $pool);
+            $args[] = $dependency->instantiateBy($container);
         }
         $factory = $this->factory;
         return $factory(...$args);
