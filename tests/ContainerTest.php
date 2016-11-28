@@ -28,7 +28,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->container = Container::create(AnnotationInjectionPolicy::create());
+        $this->container = new Container(AnnotationInjectionPolicy::create(), new \ArrayObject());
     }
 
     public function testCreate()

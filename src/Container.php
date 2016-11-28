@@ -22,18 +22,11 @@ class Container extends Module implements ResolverInterface, ContainerInterface
     protected $cache;
 
     /**
-     * @param InjectionPolicyInterface $injectionPolicy
-     * @param \ArrayAccess             $cache
      * @return Container
      */
-    public static function create(
-        InjectionPolicyInterface $injectionPolicy = null,
-        \ArrayAccess $cache = null
-    ) {
-        return new Container(
-            $injectionPolicy ?: new DefaultInjectionPolicy(),
-            $cache ?: new \ArrayObject()
-        );
+    public static function create()
+    {
+        return new Container(new DefaultInjectionPolicy(), new \ArrayObject());
     }
 
     /**
