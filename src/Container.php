@@ -96,7 +96,7 @@ class Container extends Module implements ResolverInterface, ContainerInterface
         } else {
             if (!class_exists($key)) {
                 throw new KeyNotFoundException(
-                    sprintf('Key "%s" does not registered in this container.', $key)
+                    sprintf('Key "%s" is not registered in the container.', $key)
                 );
             }
             $definition = new BindingDefinition($key);
@@ -118,7 +118,7 @@ class Container extends Module implements ResolverInterface, ContainerInterface
             return $this->resolve($key);
         } catch (KeyNotFoundException $e) {
             if (!$parameter->isOptional()) {
-                throw KeyNotFoundException::unresolvedParameter($key, $parameter, $e);
+                throw KeyNotFoundException::unresolvedParameter($parameter, $e);
             }
             $defaultValue = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
             return new ValueDependency($key, $defaultValue);
@@ -138,7 +138,7 @@ class Container extends Module implements ResolverInterface, ContainerInterface
             $values = $class->getDefaultProperties();
             if (!isset($values[$property->name])) {
                 // XXX: Throws an exception even if the default value is null.
-                throw KeyNotFoundException::unresolvedProperty($key, $property, $e);
+                throw KeyNotFoundException::unresolvedProperty($property, $e);
             }
             return new ValueDependency($key, $values[$property->name]);
         }

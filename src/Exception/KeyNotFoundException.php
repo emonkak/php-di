@@ -2,6 +2,7 @@
 
 namespace Emonkak\Di\Exception;
 
+use Emonkak\Di\Internal\Reflectors;
 use Interop\Container\Exception\NotFoundException;
 
 /**
@@ -10,46 +11,41 @@ use Interop\Container\Exception\NotFoundException;
 class KeyNotFoundException extends \RuntimeException implements NotFoundException
 {
     /**
-     * @param string               $key
      * @param \ReflectionProperty  $property
      * @param KeyNotFoundException $prev
      * @return KeyNotFoundException
      */
-    public static function unresolvedProperty($key, \ReflectionProperty $property, KeyNotFoundException $prev)
+    public static function unresolvedProperty(\ReflectionProperty $property, KeyNotFoundException $prev)
     {
         $reflectionClass = $property->getDeclaringClass();
 
         return new KeyNotFoundException(sprintf(
-            'Error while resolving "%s" from "%s::$%s" in %s:%d',
-            $key,
+            'Error while resolving the property "%s::$%s"',
             $reflectionClass->name,
-            $property->name,
-            $reflectionClass->getFileName(),
-            $reflectionClass->getStartLine()
+            $property->name
         ), 0, $prev);
     }
 
     /**
-     * @param string               $key
      * @param \ReflectionParameter $parameter
      * @param KeyNotFoundException $prev
      * @return KeyNotFoundException
      */
-    public static function unresolvedParameter($key, \ReflectionParameter $parameter, KeyNotFoundException $prev)
+    public static function unresolvedParameter(\ReflectionParameter $parameter, KeyNotFoundException $prev)
     {
         $reflectionFunction = $parameter->getDeclaringFunction();
         $reflectionClass = $parameter->getDeclaringClass();
 
-        $source = $reflectionClass
+        $typeHint = Reflectors::getTypeHint($parameter);
+        $parameterName = ($typeHint !== null ? $typeHint . ' ' : '') . '$' . $parameter->name;
+        $functionName = $reflectionClass
             ? sprintf('%s::%s()', $reflectionClass->name, $reflectionFunction->name)
-            : $reflectionFunction->name;
+            : sprintf('%s()', $reflectionFunction->name);
 
         return new KeyNotFoundException(sprintf(
-            'Error while resolving "%s" from "%s" in %s:%d',
-            $key,
-            $source,
-            $reflectionFunction->getFileName(),
-            $reflectionFunction->getStartLine()
+            'Error while resolving the parameter "%s" from function "%s"',
+            $parameterName,
+            $functionName
         ), 0, $prev);
     }
 }

@@ -8,24 +8,22 @@ class KeyNotFoundExceptionTest extends \PHPUnit_Framework_TestCase
 {
     public function testUnresolvedProperty()
     {
-        $key = 'foo';
         $property = new \ReflectionProperty(KeyNotFoundExceptionTestService::class, 'foo');
         $prev = new KeyNotFoundException();
-        $exception = KeyNotFoundException::unresolvedProperty('foo', $property, $prev);
+        $exception = KeyNotFoundException::unresolvedProperty($property, $prev);
 
         $this->assertInstanceOf(KeyNotFoundException::class, $exception);
-        $this->assertStringMatchesFormat('Error while resolving "%s" from "%s::$%s" in %s:%d', $exception->getMessage());
+        $this->assertStringMatchesFormat('Error while resolving the property "%s::$%s"', $exception->getMessage());
     }
 
     public function testUnresolvedParameter()
     {
-        $key = 'foo';
         $parameters = (new \ReflectionClass(KeyNotFoundExceptionTestService::class))->getConstructor()->getParameters();
         $prev = new KeyNotFoundException();
-        $exception = KeyNotFoundException::unresolvedParameter('foo', $parameters[0], $prev);
+        $exception = KeyNotFoundException::unresolvedParameter($parameters[0], $prev);
 
         $this->assertInstanceOf(KeyNotFoundException::class, $exception);
-        $this->assertStringMatchesFormat('Error while resolving "%s" from "%s::%s" in %s:%d', $exception->getMessage());
+        $this->assertStringMatchesFormat('Error while resolving the parameter "%s" from function "%s"', $exception->getMessage());
     }
 }
 

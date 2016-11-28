@@ -27,4 +27,26 @@ final class Reflectors
 
         return new \ReflectionFunction($function);
     }
+
+    /**
+     * @param \ReflectionParameter $parameter
+     * @return string|null
+     */
+    public static function getTypeHint(\ReflectionParameter $parameter)
+    {
+        if ($parameter->isArray()) {
+            return 'array';
+        }
+
+        if ($parameter->isCallable()) {
+            return 'callable';
+        }
+
+        $class = $parameter->getClass();
+        if ($class !== null) {
+            return $class->name;
+        }
+
+        return null;
+    }
 }
