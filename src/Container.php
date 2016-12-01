@@ -56,7 +56,7 @@ class Container extends Module implements ResolverInterface, ContainerInterface
      */
     public function has($key)
     {
-        return isset($this->definitions[$key]) || isset($this->values[$key]) || isset($this->cache[$key]) || class_exists($key);
+        return isset($this->definitions[$key]) || isset($this->values[$key]) || class_exists($key);
     }
 
     /**
