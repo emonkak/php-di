@@ -22,14 +22,9 @@ class ClassDiagramGenerator implements DependencyVisitorInterface
         $edges = [];
         $traversed = [];
 
-        $dependency->traverse(function($dependency, $key) use (
-            &$clusters,
-            &$nodes,
-            &$edges,
-            &$traversed
-        ) {
+        foreach ($dependency as $key => $child) {
             if (!isset($traversed[$key])) {
-                $item = $dependency->accept($this);
+                $item = $child->accept($this);
 
                 if ($item['namespace'] !== '') {
                     $fragments = [];
@@ -56,7 +51,7 @@ class ClassDiagramGenerator implements DependencyVisitorInterface
                 $edges = array_merge($edges, $item['edges']);
                 $traversed[$key] = true;
             }
-        });
+        }
 
         foreach ($clusters['children'] as $cluster) {
             $nodes[] = $this->showSubgraph($cluster);
@@ -91,7 +86,7 @@ EOL;
         $key = $dependency->getKey();
         if (class_exists($key) || interface_exists($key)) {
             $class = new \ReflectionClass($key);
-            return $this->getItemByClass($dependency, $class, $class->getShortName() . '@factory', $key);
+            return $this->getItemByClass($dependency, $class, $class->getShortName() . '@factory');
         } else {
             return [
                 'key' => $key,

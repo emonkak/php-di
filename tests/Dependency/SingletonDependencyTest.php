@@ -1,58 +1,46 @@
 <?php
 
-use Emonkak\Di\Container;
-use Emonkak\Di\Dependency\ObjectDependency;
+use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\SingletonDependency;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
-use Emonkak\Di\Tests\Dependency\Stubs\Bar;
-use Emonkak\Di\Tests\Dependency\Stubs\Baz;
-use Emonkak\Di\Tests\Dependency\Stubs\Foo;
-use Emonkak\Di\Tests\Dependency\Stubs\Qux;
 
 /**
  * @covers Emonkak\Di\Dependency\SingletonDependency
  */
 class SingletonDependencyTest extends \PHPUnit_Framework_TestCase
 {
-    public function testFrom()
+    public function testInstantiateBy()
     {
-        $original = new ObjectDependency(
-            'foo',
-            'stdClass',
-            [$this->getMock('Emonkak\Di\Dependency\DependencyInterface')],
-            ['setBaz' => $this->getMock('Emonkak\Di\Dependency\DependencyInterface')],
-            ['qux' => $this->getMock('Emonkak\Di\Dependency\DependencyInterface')]
-        );
-        $new = SingletonDependency::from($original);
-
-        $this->assertInstanceOf('Emonkak\Di\Dependency\SingletonDependency', $new);
-        $this->assertSame($original->getKey(), $new->getKey());
-        $this->assertSame($original->getClassName(), $new->getClassName());
-        $this->assertSame($original->getMethodDependencies(), $new->getMethodDependencies());
-        $this->assertSame($original->getPropertyDependencies(), $new->getPropertyDependencies());
-    }
-
-    public function testMaterializeBy()
-    {
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $cache = new \ArrayObject();
-        $pool = new \ArrayObject();
-        $container = new Container($injectionPolicy, $cache, $pool);
+        $container = $this->createMock(ContainerInterface::class);
+        $container
+            ->expects($this->exactly(2))
+            ->method('isStored')
+            ->with(\stdClass::class)
+            ->will($this->onConsecutiveCalls(false, true));
+        $container
+            ->expects($this->once())
+            ->method('store')
+            ->with(\stdClass::class, $this->isInstanceOf(\stdClass::class));
+        $container
+            ->expects($this->once())
+            ->method('get')
+            ->with(\stdClass::class)
+            ->willReturn(new \stdClass());
 
         $dependency = new SingletonDependency(
-            'stdClass',
-            'stdClass',
-            [], [], []
+            \stdClass::class,
+            \stdClass::class,
+            [],
+            [],
+            []
         );
 
-        $obj = $dependency->materializeBy($container, $pool);
-
-        $this->assertSame($obj, $dependency->materializeBy($container, $pool));
+        $this->assertInstanceof(\stdClass::class, $dependency->instantiateBy($container));
+        $this->assertInstanceof(\stdClass::class, $dependency->instantiateBy($container));
     }
 
     public function testIsSingleton()
     {
-        $dependency = new SingletonDependency('foo', 'stdClass', [], [], []);
+        $dependency = new SingletonDependency(\stdClass::class, \stdClass::class, [], [], []);
 
         $this->assertTrue($dependency->isSingleton());
     }

@@ -4,35 +4,19 @@ namespace Emonkak\Di\Dependency;
 
 use Emonkak\Di\ContainerInterface;
 
-class SingletonDependency extends ObjectDependency 
+class SingletonDependency extends ObjectDependency
 {
-    /**
-     * @param ObjectDependency $dependency
-     * @return SingletonDependency
-     */
-    public static function from(ObjectDependency $dependency)
-    {
-        return new self(
-            $dependency->key,
-            $dependency->className,
-            $dependency->constructorDependencies,
-            $dependency->methodDependencies,
-            $dependency->propertyDependencies
-        );
-    }
-
     /**
      * {@inheritDoc}
      */
-    public function materializeBy(ContainerInterface $container, \ArrayAccess $pool)
+    public function instantiateBy(ContainerInterface $container)
     {
-        if (isset($pool[$this->key])) {
-            return $pool[$this->key];
+        if ($container->isStored($this->key)) {
+            $instance = $container->get($this->key);
+        } else {
+            $instance = parent::instantiateBy($container);
+            $container->store($this->key, $instance);
         }
-
-        $instance = parent::materializeBy($container, $pool);
-        $pool[$this->key] = $instance;
-
         return $instance;
     }
 

@@ -2,9 +2,10 @@
 
 namespace Emonkak\Di\Dependency;
 
-use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Definition\DefinitionInterface;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
+use Emonkak\Di\ContainerInterface;
 
 class ReferenceDependency implements DefinitionInterface, DependencyInterface
 {
@@ -24,6 +25,14 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
+    public function getIterator()
+    {
+        yield $this->key => $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function accept(DependencyVisitorInterface $visitor)
     {
         return $visitor->visitReferenceDependency($this);
@@ -32,7 +41,7 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function resolveBy(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
+    public function resolveBy(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy)
     {
         return $this;
     }
@@ -56,24 +65,8 @@ class ReferenceDependency implements DefinitionInterface, DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function materializeBy(ContainerInterface $container, \ArrayAccess $pool)
+    public function instantiateBy(ContainerInterface $container)
     {
         return $container->get($this->key);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isSingleton()
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function traverse(callable $callback)
-    {
-        $callback($this, $this->key);
     }
 }

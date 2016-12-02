@@ -2,20 +2,29 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
-use Emonkak\Di\Container;
+use Emonkak\Di\ContainerInterface;
+use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\ValueDependency;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
+use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
 
 /**
  * @covers Emonkak\Di\Dependency\ValueDependency
  */
 class ValueDependencyTest extends \PHPUnit_Framework_TestCase
 {
+    public function testTraverse()
+    {
+        $dependency = new ValueDependency('foo', 123);
+
+        $this->assertEquals(['foo' => $dependency], iterator_to_array($dependency));
+    }
+
     public function testAccept()
     {
-        $dependency = new ValueDependency(123);
+        $dependency = new ValueDependency('foo', 123);
 
-        $visitor = $this->getMock('Emonkak\Di\Dependency\DependencyVisitorInterface');
+        $visitor = $this->createMock(DependencyVisitorInterface::class);
         $visitor
             ->expects($this->once())
             ->method('visitValueDependency')
@@ -24,56 +33,42 @@ class ValueDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expectedValue, $dependency->accept($visitor));
     }
 
+    public function testResolveBy()
+    {
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
+        $resolver = $this->createMock(ResolverInterface::class);
+        $dependency = new ValueDependency('foo', 123);
+
+        $this->assertSame($dependency, $dependency->resolveBy($resolver, $injectionPolicy));
+    }
+
     public function testGetDependencies()
     {
-        $dependency = new ValueDependency(123);
+        $dependency = new ValueDependency('foo', 123);
 
         $this->assertEmpty($dependency->getDependencies());
     }
 
     public function testGetKey()
     {
-        $dependency = new ValueDependency(123);
+        $dependency = new ValueDependency('foo', 123);
 
-        $this->assertSame(sha1(serialize(123)), $dependency->getKey());
+        $this->assertSame('foo', $dependency->getKey());
     }
 
     public function testGetValue()
     {
-        $dependency = new ValueDependency(123);
+        $dependency = new ValueDependency('foo', 123);
 
         $this->assertSame(123, $dependency->getValue());
     }
 
-    public function testMaterializeBy()
+    public function testInstantiateBy()
     {
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $cache = new \ArrayObject();
-        $pool = new \ArrayObject();
-        $container = new Container($injectionPolicy, $cache, $pool);
+        $container = $this->createMock(ContainerInterface::class);
 
-        $dependency = new ValueDependency(123);
+        $dependency = new ValueDependency('foo', 123);
 
-        $this->assertSame(123, $dependency->materializeBy($container, $pool));
-    }
-
-    public function testIsSingleton()
-    {
-        $dependency = new ValueDependency(123);
-
-        $this->assertTrue($dependency->isSingleton());
-    }
-
-    public function testTraverse()
-    {
-        $dependency = new ValueDependency(123);
-
-        $callback = $this->getMock('stdClass', ['__invoke']);
-        $callback
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->identicalTo($dependency));
-
-        $dependency->traverse($callback);
+        $this->assertSame(123, $dependency->instantiateBy($container));
     }
 }

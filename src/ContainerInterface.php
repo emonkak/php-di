@@ -8,7 +8,13 @@ interface ContainerInterface extends InteropContainerInterface
 {
     /**
      * @param string $key
-     * @return DependencyInterface
+     * @param mixed  $value
      */
-    public function resolve($key);
+    public function store($key, $value);
+
+    /**
+     * @param string $key
+     * @return boolean
+     */
+    public function isStored($key);
 }

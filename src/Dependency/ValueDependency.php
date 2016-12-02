@@ -3,29 +3,38 @@
 namespace Emonkak\Di\Dependency;
 
 use Emonkak\Di\ContainerInterface;
+use Emonkak\Di\Definition\DefinitionInterface;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
 
-class ValueDependency implements DependencyInterface
+class ValueDependency implements DefinitionInterface, DependencyInterface
 {
+    /**
+     * @var string
+     */
+    private $key;
+
     /**
      * @var mixed
      */
     private $value;
 
     /**
-     * @param mixed $value
+     * @param string $key
+     * @param mixed  $value
      */
-    public function __construct($value)
+    public function __construct($key, $value)
     {
+        $this->key = $key;
         $this->value = $value;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getValue()
+    public function getIterator()
     {
-        return $this->value;
+        yield $this->getKey() => $this;
     }
 
     /**
@@ -34,6 +43,14 @@ class ValueDependency implements DependencyInterface
     public function accept(DependencyVisitorInterface $visitor)
     {
         return $visitor->visitValueDependency($this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function resolveBy(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy)
+    {
+        return $this;
     }
 
     /**
@@ -49,30 +66,22 @@ class ValueDependency implements DependencyInterface
      */
     public function getKey()
     {
-        return sha1(serialize($this->value));
+        return $this->key;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function materializeBy(ContainerInterface $container, \ArrayAccess $pool)
+    public function instantiateBy(ContainerInterface $container)
     {
         return $this->value;
     }
 
     /**
-     * {@inheritDoc}
+     * @return mixed
      */
-    public function isSingleton()
+    public function getValue()
     {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function traverse(callable $callback)
-    {
-        $callback($this, $this->getKey());
+        return $this->value;
     }
 }

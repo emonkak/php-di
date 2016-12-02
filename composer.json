@@ -9,27 +9,21 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
+        "php": ">=5.6",
         "jeremeamia/SuperClosure": ">=1.0",
         "container-interop/container-interop": "~1.1"
     },
     "require-dev": {
         "doctrine/annotations": "~1.2",
-        "nikic/php-parser": "~1.2",
-        "phpunit/phpunit": "~4.4",
-        "pimple/pimple": "~3.0",
+        "phpunit/phpunit": "~5.4",
         "satooshi/php-coveralls": "~1.0",
-        "symfony/filesystem": "~2.6",
         "symfony/process": "~2.6"
     },
     "conflict": {
         "phpdocumentor/reflection-docblock": ">=3.0"
     },
     "suggest": {
-        "doctrine/annotations": "Used for AnnotationInjectionPolicy",
-        "pimple/pimple": "Used for PimpleContainer",
-        "nikic/php-parser": "Used for ServiceProviderGenerator",
-        "symfony/filesystem": "Used for ServiceProviderLoaderOnFilesystem"
+        "doctrine/annotations": "Used for AnnotationInjectionPolicy"
     },
     "autoload": {
         "psr-4": {

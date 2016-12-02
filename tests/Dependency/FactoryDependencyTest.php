@@ -2,20 +2,40 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
-use Emonkak\Di\Container;
+use Emonkak\Di\ContainerInterface;
+use Emonkak\Di\Dependency\DependencyInterface;
+use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\FactoryDependency;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
+use Emonkak\Di\Tests\Fixtures\Lambda;
 
 /**
  * @covers Emonkak\Di\Dependency\FactoryDependency
  */
 class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 {
+    public function testGetIterator()
+    {
+        $bar = $this->createMock(DependencyInterface::class);
+        $bar
+            ->expects($this->once())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator(['bar' => $bar]));
+        $baz = $this->createMock(DependencyInterface::class);
+        $baz
+            ->expects($this->once())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator(['baz' => $baz]));
+
+        $foo = new FactoryDependency('foo', function() {}, [$bar, $baz]);
+
+        $this->assertEquals(['foo' => $foo, 'bar' => $bar, 'baz' => $baz], iterator_to_array($foo));
+    }
+
     public function testAccept()
     {
         $dependency = new FactoryDependency('foo', function() {}, []);
 
-        $visitor = $this->getMock('Emonkak\Di\Dependency\DependencyVisitorInterface');
+        $visitor = $this->createMock(DependencyVisitorInterface::class);
         $visitor
             ->expects($this->once())
             ->method('visitFactoryDependency')
@@ -26,7 +46,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testDependencies()
     {
-        $paramerters = [$this->getMock('Emonkak\Di\Dependency\DependencyInterface')];
+        $paramerters = [$this->createMock(DependencyInterface::class)];
         $dependency = new FactoryDependency('foo', function() {}, $paramerters);
 
         $this->assertSame($paramerters, $dependency->getDependencies());
@@ -39,28 +59,25 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo', $dependency->getKey());
     }
 
-    public function testMaterializeBy()
+    public function testInstantiateBy()
     {
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $cache = new \ArrayObject();
-        $pool = new \ArrayObject();
-        $container = new Container($injectionPolicy, $cache, $pool);
+        $container = $this->createMock(ContainerInterface::class);
 
-        $parameter1 = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
+        $parameter1 = $this->createMock(DependencyInterface::class);
         $parameter1
             ->expects($this->once())
-            ->method('materializeBy')
-            ->with($this->identicalTo($container), $this->identicalTo($pool))
+            ->method('instantiateBy')
+            ->with($this->identicalTo($container))
             ->willReturn($parameter1Value = new \stdClass());
 
-        $parameter2 = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
+        $parameter2 = $this->createMock(DependencyInterface::class);
         $parameter2
             ->expects($this->once())
-            ->method('materializeBy')
-            ->with($this->identicalTo($container), $this->identicalTo($pool))
+            ->method('instantiateBy')
+            ->with($this->identicalTo($container))
             ->willReturn($parameter2Value = new \stdClass());
 
-        $factory = $this->getMock('stdClass', ['__invoke']);
+        $factory = $this->createMock(Lambda::class, ['__invoke']);
         $factory
             ->expects($this->once())
             ->method('__invoke')
@@ -69,7 +86,7 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
 
         $dependency = new FactoryDependency('foo', $factory, [$parameter1, $parameter2]);
 
-        $this->assertSame($expectedValue, $dependency->materializeBy($container, $pool));
+        $this->assertSame($expectedValue, $dependency->instantiateBy($container));
     }
 
     public function testIsSingleton()
@@ -77,31 +94,6 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
         $dependency = new FactoryDependency('foo', function() {}, []);
 
         $this->assertFalse($dependency->isSingleton());
-    }
-
-    public function testTraverse()
-    {
-        $callback = $this->getMock('stdClass', ['__invoke']);
-
-        $parameter1 = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
-        $parameter1
-            ->expects($this->once())
-            ->method('traverse')
-            ->with($this->identicalTo($callback));
-        $parameter2 = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
-        $parameter2
-            ->expects($this->once())
-            ->method('traverse')
-            ->with($this->identicalTo($callback));
-
-        $dependency = new FactoryDependency('foo', $callback, [$parameter1, $parameter2]);
-
-        $callback
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->identicalTo($dependency), 'foo');
-
-        $dependency->traverse($callback);
     }
 
     public function testGetFactory()
@@ -112,11 +104,18 @@ class FactoryDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($factory, $dependency->getFactory());
     }
 
-    public function testGetParameters()
+    public function testAsSingleton()
     {
-        $paramerters = [$this->getMock('Emonkak\Di\Dependency\DependencyInterface')];
-        $dependency = new FactoryDependency('foo', function() {}, $paramerters);
+        $original = new FactoryDependency(
+            'foo',
+            function() {},
+            [$this->createMock(DependencyInterface::class)]
+        );
+        $singleton = $original->asSingleton();
 
-        $this->assertSame($paramerters, $dependency->getParameters());
+        $this->assertSame($original->getKey(), $singleton->getKey());
+        $this->assertSame($original->getFactory(), $singleton->getFactory());
+        $this->assertSame($original->getDependencies(), $singleton->getDependencies());
+        $this->assertTrue($singleton->isSingleton());
     }
 }

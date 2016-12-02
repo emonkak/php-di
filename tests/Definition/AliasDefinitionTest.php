@@ -3,6 +3,9 @@
 namespace Emonkak\Di\Tests\Definition;
 
 use Emonkak\Di\Definition\AliasDefinition;
+use Emonkak\Di\Dependency\DependencyInterface;
+use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
 
 /**
  * @covers Emonkak\Di\Definition\AliasDefinition
@@ -11,17 +14,19 @@ class AliasDefinitionTest extends \PHPUnit_Framework_TestCase
 {
     public function testResolveBy()
     {
-        $definition = new AliasDefinition('stdClass');
-        $dependency = $this->getMock('Emonkak\Di\Dependency\DependencyInterface');
+        $dependency = $this->createMock(DependencyInterface::class);
 
-        $container = $this->getMock('Emonkak\Di\ContainerInterface');
-        $container
+        $resolver = $this->createMock(ResolverInterface::class);
+        $resolver
             ->expects($this->once())
             ->method('resolve')
-            ->with($this->identicalTo('stdClass'))
+            ->with(\stdClass::class)
             ->willReturn($dependency);
-        $injectionPolicy = $this->getMock('Emonkak\Di\InjectionPolicy\InjectionPolicyInterface');
 
-        $this->assertSame($dependency, $definition->resolveBy($container, $injectionPolicy));
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
+
+        $definition = new AliasDefinition(\stdClass::class);
+
+        $this->assertSame($dependency, $definition->resolveBy($resolver, $injectionPolicy));
     }
 }

@@ -3,7 +3,6 @@
 namespace Emonkak\Di\Dependency;
 
 use Emonkak\Di\ContainerInterface;
-use Emonkak\Di\Utils\ReflectionUtils;
 
 class FactoryDependency implements DependencyInterface
 {
@@ -13,25 +12,39 @@ class FactoryDependency implements DependencyInterface
     protected $key;
 
     /**
-     * @var callbale
+     * @var callable
      */
     protected $factory;
 
     /**
      * @var DependencyInterface[]
      */
-    protected $parameters;
+    protected $parameterDependencies;
 
     /**
      * @param string                $key
      * @param callable              $factory
-     * @param DependencyInterface[] $parameters
+     * @param DependencyInterface[] $parameterDependencies
      */
-    public function __construct($key, callable $factory, array $parameters)
+    public function __construct($key, callable $factory, array $parameterDependencies)
     {
         $this->key = $key;
         $this->factory = $factory;
-        $this->parameters = $parameters;
+        $this->parameterDependencies = $parameterDependencies;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIterator()
+    {
+        yield $this->key => $this;
+
+        foreach ($this->parameterDependencies as $dependency) {
+            foreach ($dependency as $key => $value) {
+                yield $key => $value;
+            }
+        }
     }
 
     /**
@@ -47,7 +60,7 @@ class FactoryDependency implements DependencyInterface
      */
     public function getDependencies()
     {
-        return array_values($this->parameters);
+        return $this->parameterDependencies;
     }
 
     /**
@@ -61,33 +74,22 @@ class FactoryDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function materializeBy(ContainerInterface $container, \ArrayAccess $pool)
+    public function instantiateBy(ContainerInterface $container)
     {
         $args = [];
-        foreach ($this->parameters as $parameter) {
-            $args[] = $parameter->materializeBy($container, $pool);
+        foreach ($this->parameterDependencies as $dependency) {
+            $args[] = $dependency->instantiateBy($container);
         }
-        return ReflectionUtils::callFunction($this->factory, $args);
+        $factory = $this->factory;
+        return $factory(...$args);
     }
 
     /**
-     * {@inheritDoc}
+     * @return boolean
      */
     public function isSingleton()
     {
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function traverse(callable $callback)
-    {
-        $callback($this, $this->key);
-
-        foreach ($this->parameters as $parameter) {
-             $parameter->traverse($callback);
-        }
     }
 
     /**
@@ -99,10 +101,14 @@ class FactoryDependency implements DependencyInterface
     }
 
     /**
-     * @return DependencyInterface[]
+     * @return SingletonFactoryDependency
      */
-    public function getParameters()
+    public function asSingleton()
     {
-        return $this->parameters;
+        return new SingletonFactoryDependency(
+            $this->key,
+            $this->factory,
+            $this->parameterDependencies
+        );
     }
 }

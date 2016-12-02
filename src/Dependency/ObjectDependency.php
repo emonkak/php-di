@@ -2,9 +2,8 @@
 
 namespace Emonkak\Di\Dependency;
 
-use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Scope\ScopeInterface;
-use Emonkak\Di\Utils\ReflectionUtils;
+use Emonkak\Di\ContainerInterface;
 
 class ObjectDependency implements DependencyInterface
 {
@@ -52,6 +51,34 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
+    public function getIterator()
+    {
+        yield $this->key => $this;
+
+        foreach ($this->constructorDependencies as $key => $dependency) {
+            foreach ($dependency as $key => $value) {
+                yield $key => $value;
+            }
+        }
+
+        foreach ($this->methodDependencies as $dependencies) {
+            foreach ($dependencies as $dependency) {
+                foreach ($dependency as $key => $value) {
+                    yield $key => $value;
+                }
+            }
+        }
+
+        foreach ($this->propertyDependencies as $dependency) {
+            foreach ($dependency as $key => $value) {
+                yield $key => $value;
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function accept(DependencyVisitorInterface $visitor)
     {
         return $visitor->visitObjectDependency($this);
@@ -65,7 +92,7 @@ class ObjectDependency implements DependencyInterface
         $dependencies = $this->constructorDependencies;
 
         foreach ($this->methodDependencies as $method => $parameters) {
-            $dependencies = array_merge($dependencies, array_values($parameters));
+            $dependencies = array_merge($dependencies, $parameters);
         }
 
         return array_merge($dependencies, array_values($this->propertyDependencies));
@@ -82,57 +109,27 @@ class ObjectDependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function materializeBy(ContainerInterface $container, \ArrayAccess $pool)
+    public function instantiateBy(ContainerInterface $container)
     {
         $args = [];
         foreach ($this->constructorDependencies as $parameter) {
-            $args[] = $parameter->materializeBy($container, $pool);
+            $args[] = $parameter->instantiateBy($container);
         }
-        $instance = ReflectionUtils::newInstance($this->className, $args);
+        $instance = new $this->className(...$args);
 
         foreach ($this->methodDependencies as $method => $parameters) {
             $args = [];
             foreach ($parameters as $parameter) {
-                $args[] = $parameter->materializeBy($container, $pool);
+                $args[] = $parameter->instantiateBy($container);
             }
-            ReflectionUtils::callMethod($instance, $method, $args);
+            $instance->$method(...$args);
         }
 
         foreach ($this->propertyDependencies as $property => $value) {
-            $instance->$property = $value->materializeBy($container, $pool);
+            $instance->$property = $value->instantiateBy($container);
         }
 
         return $instance;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isSingleton()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function traverse(callable $callback)
-    {
-        $callback($this, $this->key);
-
-        foreach ($this->constructorDependencies as $parameter) {
-            $parameter->traverse($callback);
-        }
-
-        foreach ($this->methodDependencies as $method => $parameters) {
-            foreach ($parameters as $parameter) {
-                $parameter->traverse($callback);
-            }
-        }
-
-        foreach ($this->propertyDependencies as $propery => $value) {
-            $value->traverse($callback);
-        }
     }
 
     /**
@@ -152,7 +149,7 @@ class ObjectDependency implements DependencyInterface
     }
 
     /**
-     * @return array (string => DependencyInterface[])
+     * @return array array(string => DependencyInterface[])
      */
     public function getMethodDependencies()
     {
@@ -160,10 +157,32 @@ class ObjectDependency implements DependencyInterface
     }
 
     /**
-     * @return array (string => DependencyInterface)
+     * @return array array(string => DependencyInterface)
      */
     public function getPropertyDependencies()
     {
         return $this->propertyDependencies;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSingleton()
+    {
+        return false;
+    }
+
+    /**
+     * @return SingletonDependency
+     */
+    public function asSingleton()
+    {
+        return new SingletonDependency(
+            $this->key,
+            $this->className,
+            $this->constructorDependencies,
+            $this->methodDependencies,
+            $this->propertyDependencies
+        );
     }
 }

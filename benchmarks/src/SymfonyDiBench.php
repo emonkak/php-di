@@ -2,7 +2,20 @@
 
 namespace Emonkak\Di\Benchmarks;
 
+use Emonkak\Di\Benchmarks\Fixtures\Bar;
+use Emonkak\Di\Benchmarks\Fixtures\BarInterface;
+use Emonkak\Di\Benchmarks\Fixtures\Baz;
+use Emonkak\Di\Benchmarks\Fixtures\BazInterface;
+use Emonkak\Di\Benchmarks\Fixtures\Corge;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
+use Emonkak\Di\Benchmarks\Fixtures\FooInterface;
+use Emonkak\Di\Benchmarks\Fixtures\Fred;
+use Emonkak\Di\Benchmarks\Fixtures\Garply;
+use Emonkak\Di\Benchmarks\Fixtures\Grault;
+use Emonkak\Di\Benchmarks\Fixtures\Plugh;
+use Emonkak\Di\Benchmarks\Fixtures\Quux;
+use Emonkak\Di\Benchmarks\Fixtures\Qux;
+use Emonkak\Di\Benchmarks\Fixtures\Waldo;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
@@ -15,32 +28,32 @@ class SymfonyDiBench
     {
         $container = new ContainerBuilder();
 
-        $container->register('Emonkak\Di\Benchmarks\Fixtures\FooInterface', 'Emonkak\Di\Benchmarks\Fixtures\Foo')
-            ->addArgument(new Reference('Emonkak\Di\Benchmarks\Fixtures\BarInterface'))
-            ->addArgument(new Reference('Emonkak\Di\Benchmarks\Fixtures\BazInterface'));
+        $container->register(FooInterface::class, Foo::class)
+            ->addArgument(new Reference(BarInterface::class))
+            ->addArgument(new Reference(BazInterface::class));
 
-        $container->register('Emonkak\Di\Benchmarks\Fixtures\BarInterface', 'Emonkak\Di\Benchmarks\Fixtures\Bar')
-            ->addArgument(new Reference('Emonkak\Di\Benchmarks\Fixtures\Qux'))
-            ->addArgument(new Reference('Emonkak\Di\Benchmarks\Fixtures\Quux'));
+        $container->register(BarInterface::class, Bar::class)
+            ->addArgument(new Reference(Qux::class))
+            ->addArgument(new Reference(Quux::class));
 
-        $container->register('Emonkak\Di\Benchmarks\Fixtures\BazInterface', 'Emonkak\Di\Benchmarks\Fixtures\Baz')
-            ->addArgument(new Reference('Emonkak\Di\Benchmarks\Fixtures\Corge'))
-            ->addArgument(new Reference('Emonkak\Di\Benchmarks\Fixtures\Grault'));
+        $container->register(BazInterface::class, Baz::class)
+            ->addArgument(new Reference(Corge::class))
+            ->addArgument(new Reference(Grault::class));
 
-        $container->register('Emonkak\Di\Benchmarks\Fixtures\Qux', 'Emonkak\Di\Benchmarks\Fixtures\Qux')
-            ->addArgument(new Reference('Emonkak\Di\Benchmarks\Fixtures\Garply'));
-        $container->register('Emonkak\Di\Benchmarks\Fixtures\Quux', 'Emonkak\Di\Benchmarks\Fixtures\Quux')
-            ->addArgument(new Reference('Emonkak\Di\Benchmarks\Fixtures\Waldo'));
-        $container->register('Emonkak\Di\Benchmarks\Fixtures\Corge', 'Emonkak\Di\Benchmarks\Fixtures\Corge')
-            ->addArgument(new Reference('Emonkak\Di\Benchmarks\Fixtures\Fred'));
-        $container->register('Emonkak\Di\Benchmarks\Fixtures\Grault', 'Emonkak\Di\Benchmarks\Fixtures\Grault')
-            ->addArgument(new Reference('Emonkak\Di\Benchmarks\Fixtures\Plugh'));
+        $container->register(Qux::class, Qux::class)
+            ->addArgument(new Reference(Garply::class));
+        $container->register(Quux::class, Quux::class)
+            ->addArgument(new Reference(Waldo::class));
+        $container->register(Corge::class, Corge::class)
+            ->addArgument(new Reference(Fred::class));
+        $container->register(Grault::class, Grault::class)
+            ->addArgument(new Reference(Plugh::class));
 
-        $container->register('Emonkak\Di\Benchmarks\Fixtures\Garply', 'Emonkak\Di\Benchmarks\Fixtures\Garply');
-        $container->register('Emonkak\Di\Benchmarks\Fixtures\Waldo', 'Emonkak\Di\Benchmarks\Fixtures\Waldo');
-        $container->register('Emonkak\Di\Benchmarks\Fixtures\Fred', 'Emonkak\Di\Benchmarks\Fixtures\Fred');
-        $container->register('Emonkak\Di\Benchmarks\Fixtures\Plugh', 'Emonkak\Di\Benchmarks\Fixtures\Plugh');
+        $container->register(Garply::class, Garply::class);
+        $container->register(Waldo::class, Waldo::class);
+        $container->register(Fred::class, Fred::class);
+        $container->register(Plugh::class, Plugh::class);
 
-        assert($container->get('Emonkak\Di\Benchmarks\Fixtures\FooInterface') instanceof Foo);
+        assert($container->get(FooInterface::class) instanceof Foo);
     }
 }

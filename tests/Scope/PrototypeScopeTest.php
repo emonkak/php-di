@@ -23,7 +23,7 @@ class PrototypeScopeTest extends \PHPUnit_Framework_TestCase
     {
         $scope = PrototypeScope::getInstance();
         $factoryDependency = new FactoryDependency('foo', function() {}, []);
-        $objectDependency = new ObjectDependency('foo', 'stdClass', [], [], []);
+        $objectDependency = new ObjectDependency('foo', \stdClass::class, [], [], []);
         $referenceDependency = new ReferenceDependency('foo');
 
         $this->assertSame($factoryDependency, $scope->get($factoryDependency));

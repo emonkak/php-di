@@ -3,6 +3,8 @@
 namespace Emonkak\Di\Tests\Annotation;
 
 use Emonkak\Di\Annotation\Scope;
+use Emonkak\Di\Scope\PrototypeScope;
+use Emonkak\Di\Scope\SingletonScope;
 
 /**
  * @covers Emonkak\Di\Annotation\Scope
@@ -30,8 +32,8 @@ class ScopeTest extends \PHPUnit_Framework_TestCase
     public function provideGetScope()
     {
         return [
-            [Scope::PROTOTYPE, 'Emonkak\Di\Scope\PrototypeScope'],
-            [Scope::SINGLETON, 'Emonkak\Di\Scope\SingletonScope'],
+            [Scope::PROTOTYPE, PrototypeScope::class],
+            [Scope::SINGLETON, SingletonScope::class],
         ];
     }
 }

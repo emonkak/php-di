@@ -2,13 +2,13 @@
 
 namespace Emonkak\Di\Definition;
 
-use Emonkak\Di\ContainerInterface;
 use Emonkak\Di\Dependency\DependencyFinders;
 use Emonkak\Di\Dependency\FactoryDependency;
 use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\Internal\Reflectors;
+use Emonkak\Di\ResolverInterface;
 use Emonkak\Di\Scope\PrototypeScope;
 use Emonkak\Di\Scope\ScopeInterface;
-use Emonkak\Di\Utils\ReflectionUtils;
 use SuperClosure\SerializableClosure;
 
 class FactoryDefinition extends AbstractDefinition
@@ -24,12 +24,12 @@ class FactoryDefinition extends AbstractDefinition
     private $factory;
 
     /**
-     * @var DependencyInterface[]
+     * @var DefinitionInterface[]
      */
-    private $parameters;
+    private $injections;
 
     /**
-     * @param stirng $key
+     * @param string   $key
      * @param callable $factory
      */
     public function __construct($key, callable $factory)
@@ -39,44 +39,45 @@ class FactoryDefinition extends AbstractDefinition
     }
 
     /**
-     * @param DefinitionInterface[] $parameters
-     * @return BindingDefinition
+     * @param DefinitionInterface[] $injections
+     * @return $this
      */
-    public function with(array $parameters)
+    public function with(array $injections)
     {
-        $this->parameters = $parameters;
+        $this->injections = $injections;
         return $this;
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function resolveDependency(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
+    protected function resolveDependency(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy)
     {
-        $function = ReflectionUtils::getFunction($this->factory);
-
         if ($this->factory instanceof \Closure) {
             $factory = new SerializableClosure($this->factory);
         } else {
             $factory = $this->factory;
         }
 
-        if ($this->parameters !== null) {
-            $parameters = [];
-            foreach ($this->parameters as $definition) {
-                $parameters[] = $definition->resolveBy($container, $injectionPolicy);
+        $dependencies = [];
+        if ($this->injections !== null) {
+            foreach ($this->injections as $definition) {
+                $dependencies[] = $definition->resolveBy($resolver, $injectionPolicy);
             }
         } else {
-            $parameters = DependencyFinders::getParameterDependencies($container, $injectionPolicy, $function);
+            $function = Reflectors::getFunction($this->factory);
+            foreach ($function->getParameters() as $parameter) {
+                $dependencies[] = $resolver->resolveParameter($parameter);
+            }
         }
 
-        return new FactoryDependency($this->key, $factory, $parameters);
+        return new FactoryDependency($this->key, $factory, $dependencies);
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function resolveScope(ContainerInterface $container, InjectionPolicyInterface $injectionPolicy)
+    protected function resolveScope(ResolverInterface $resolver, InjectionPolicyInterface $injectionPolicy)
     {
         return PrototypeScope::getInstance();
     }

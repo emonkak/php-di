@@ -13,10 +13,14 @@ use Emonkak\Di\Scope\SingletonScope;
 
 class AnnotationInjectionPolicy implements InjectionPolicyInterface
 {
-    private static $isRegistered = false;
-
+    /**
+     * @var InjectionPolicyInterface
+     */
     private $fallback;
 
+    /**
+     * @var AnnotationReader
+     */
     private $reader;
 
     /**
@@ -24,16 +28,18 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
      */
     public static function create()
     {
-        return new self(new DefaultInjectionPolicy(), new AnnotationReader());
+        return new AnnotationInjectionPolicy(new DefaultInjectionPolicy(), new AnnotationReader());
     }
 
     /**
      * @codeCoverageIgnore
      */
-    private static function registerLoader()
+    private static function registerLoaderIfNotRegistered()
     {
-        if (!self::$isRegistered) {
-            self::$isRegistered = true;
+        static $isRegistered = false;
+
+        if (!$isRegistered) {
+            $isRegistered = true;
             $loader = new ClassLoader();
             $loader->addPsr4('Emonkak\\Di\\Annotation\\', realpath(__DIR__ . '/../Annotation'));
             AnnotationRegistry::registerLoader([$loader, 'loadClass']);
@@ -46,7 +52,7 @@ class AnnotationInjectionPolicy implements InjectionPolicyInterface
      */
     public function __construct(InjectionPolicyInterface $fallback, Reader $reader)
     {
-        self::registerLoader();
+        self::registerLoaderIfNotRegistered();
 
         $this->fallback = $fallback;
         $this->reader = $reader;

@@ -2,20 +2,29 @@
 
 namespace Emonkak\Di\Tests\Dependency;
 
-use Emonkak\Di\Container;
+use Emonkak\Di\ContainerInterface;
+use Emonkak\Di\Dependency\DependencyVisitorInterface;
 use Emonkak\Di\Dependency\ReferenceDependency;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
+use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\ResolverInterface;
 
 /**
  * @covers Emonkak\Di\Dependency\ReferenceDependency
  */
 class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
 {
+    public function testGetIterator()
+    {
+        $dependency = new ReferenceDependency('foo');
+
+        $this->assertEquals(['foo' => $dependency], iterator_to_array($dependency));
+    }
+
     public function testAccept()
     {
         $dependency = new ReferenceDependency('foo');
 
-        $visitor = $this->getMock('Emonkak\Di\Dependency\DependencyVisitorInterface');
+        $visitor = $this->createMock(DependencyVisitorInterface::class);
         $visitor
             ->expects($this->once())
             ->method('visitReferenceDependency')
@@ -26,11 +35,11 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testResolveBy()
     {
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $container = Container::create($injectionPolicy);
+        $injectionPolicy = $this->createMock(InjectionPolicyInterface::class);
+        $resolver = $this->createMock(ResolverInterface::class);
         $dependency = new ReferenceDependency('foo');
 
-        $this->assertSame($dependency, $dependency->resolveBy($container, $injectionPolicy));
+        $this->assertSame($dependency, $dependency->resolveBy($resolver, $injectionPolicy));
     }
 
     public function testGetDependencies()
@@ -47,36 +56,16 @@ class ReferenceDependencyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo', $dependency->getKey());
     }
 
-    public function testMaterializeBy()
+    public function testInstantiateBy()
     {
-        $injectionPolicy = new DefaultInjectionPolicy();
-        $cache = new \ArrayObject();
-        $pool = new \ArrayObject();
-        $container = new Container($injectionPolicy, $cache, $pool);
-        $container->set('foo', $expectedValue = new \stdClass());
-
-        $dependency = new ReferenceDependency('foo');
-
-        $this->assertSame($expectedValue, $dependency->materializeBy($container, $pool));
-    }
-
-    public function testIsSingleton()
-    {
-        $dependency = new ReferenceDependency('foo', function() {}, []);
-
-        $this->assertTrue($dependency->isSingleton());
-    }
-
-    public function testTraverse()
-    {
-        $dependency = new ReferenceDependency('foo');
-
-        $callback = $this->getMock('stdClass', ['__invoke']);
-        $callback
+        $container = $this->createMock(ContainerInterface::class);
+        $container
             ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->identicalTo($dependency));
+            ->method('get')
+            ->willReturn(123);
 
-        $dependency->traverse($callback);
+        $dependency = new ReferenceDependency('foo');
+
+        $this->assertSame(123, $dependency->instantiateBy($container));
     }
 }

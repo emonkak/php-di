@@ -18,13 +18,18 @@ class PrototypeScope implements ScopeInterface
         static $instance;
 
         if (!isset($instance)) {
-            $instance = new self();
+            $instance = new PrototypeScope();
         }
 
         return $instance;
     }
 
-    private function __construct() {}
+    /**
+     * @codeCoverageIgnore
+     */
+    private function __construct()
+    {
+    }
 
     /**
      * {@inheritDoc}
