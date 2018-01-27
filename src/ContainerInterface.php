@@ -3,8 +3,9 @@
 namespace Emonkak\Di;
 
 use Interop\Container\ContainerInterface as InteropContainerInterface;
+use Psr\Container\ContainerInterface as PsrContainerInterface;
 
-interface ContainerInterface extends InteropContainerInterface
+interface ContainerInterface extends PsrContainerInterface, InteropContainerInterface
 {
     /**
      * @param string $key
