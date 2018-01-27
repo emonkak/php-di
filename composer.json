@@ -10,20 +10,20 @@
     ],
     "require": {
         "php": ">=5.6",
-        "jeremeamia/SuperClosure": ">=1.0",
-        "container-interop/container-interop": "~1.1"
+        "jeremeamia/SuperClosure": "^2.0",
+        "container-interop/container-interop": "^1.1",
+        "psr/container": "^1.0"
     },
     "require-dev": {
-        "doctrine/annotations": "~1.2",
-        "phpunit/phpunit": "~5.4",
-        "satooshi/php-coveralls": "~1.0",
-        "symfony/process": "~2.6"
-    },
-    "conflict": {
-        "phpdocumentor/reflection-docblock": ">=3.0"
+        "doctrine/annotations": "^1.2",
+        "phpunit/phpunit": "^5.7",
+        "satooshi/php-coveralls": "^2.0",
+        "symfony/filesystem": "^3.0",
+        "symfony/process": "^3.0"
     },
     "suggest": {
-        "doctrine/annotations": "Used for AnnotationInjectionPolicy"
+        "doctrine/annotations": "Used for AnnotationInjectionPolicy",
+        "symfony/filesystem": "Used for ServiceProviderLoaderOnFilesystem"
     },
     "autoload": {
         "psr-4": {

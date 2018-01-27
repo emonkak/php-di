@@ -3,12 +3,13 @@
 namespace Emonkak\Di\Exception;
 
 use Emonkak\Di\Internal\Reflectors;
-use Interop\Container\Exception\NotFoundException;
+use Interop\Container\Exception\NotFoundException as InteropNotFoundException;
+use Psr\Container\NotFoundExceptionInterface as PsrNotFoundExceptionInterface;
 
 /**
  * @internal
  */
-class KeyNotFoundException extends \RuntimeException implements NotFoundException
+class KeyNotFoundException extends \RuntimeException implements PsrNotFoundExceptionInterface, InteropNotFoundException
 {
     /**
      * @param \ReflectionProperty  $property
