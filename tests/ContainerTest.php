@@ -1,194 +1,72 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Emonkak\Di\Tests;
 
-use Emonkak\Di\Annotation\Inject;
-use Emonkak\Di\Annotation\Qualifier;
+use Emonkak\Di\Binding\BindingInterface;
 use Emonkak\Di\Container;
-use Emonkak\Di\ContainerConfiguratorInterface;
-use Emonkak\Di\Dependency\DependencyInterface;
-use Emonkak\Di\Dependency\ObjectDependency;
-use Emonkak\Di\Dependency\ValueDependency;
-use Emonkak\Di\InjectionPolicy\AnnotationInjectionPolicy;
+use Emonkak\Di\Inspector\InspectorInterface;
+use Emonkak\Di\Instantiator\InstantiatorInterface;
 use Emonkak\Di\Module;
-use Emonkak\Di\Scope\SingletonScope;
-use Emonkak\Di\Tests\Fixtures\Bar;
-use Emonkak\Di\Tests\Fixtures\BarInterface;
-use Emonkak\Di\Tests\Fixtures\Baz;
-use Emonkak\Di\Tests\Fixtures\BazInterface;
-use Emonkak\Di\Tests\Fixtures\Foo;
-use Emonkak\Di\Tests\Fixtures\FooInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Emonkak\Di\Container
+ * @covers \Emonkak\Di\Container
  */
-class ContainerTest extends \PHPUnit_Framework_TestCase
+class ContainerTest extends TestCase
 {
-    private $container;
+    private InspectorInterface $inspector;
 
-    public function setUp()
+    private InstantiatorInterface $instantiator;
+
+    private Container $container;
+
+    public function setUp(): void
     {
-        $this->container = new Container(AnnotationInjectionPolicy::create(), new \ArrayObject());
+        $this->container = new Container(
+            $this->inspector = $this->createMock(InspectorInterface::class),
+            $this->instantiator = $this->createMock(InstantiatorInterface::class)
+        );
     }
 
-    public function testCreate()
+    public function testCreateDefault(): void
     {
-        $this->assertInstanceOf(Container::class, Container::create());
+        $this->assertInstanceOf(Container::class, Container::createDefault());
     }
 
-    public function testResolve()
+    public function testGet(): void
     {
-        $dependency = $this->container->resolve(Foo::class);
-        $this->assertInstanceOf(ObjectDependency::class, $dependency);
+        $key = 'key';
+        $bindings = [$key => $this->createMock(BindingInterface::class)];
+        $dependency = new \stdClass();
+        $instance = new \stdClass();
+
+        $this->inspector
+            ->expects($this->once())
+            ->method('inspect')
+            ->with($this->identicalTo($key), $this->identicalTo($bindings))
+            ->willReturn($dependency);
+        $this->instantiator
+            ->expects($this->once())
+            ->method('instantiate')
+            ->with($this->identicalTo($dependency), $this->identicalTo($bindings))
+            ->willReturn($instance);
+
+        $this->container->merge(new Module($bindings));
+
+        $this->assertSame($instance, $this->container->get($key));
     }
 
-    /**
-     * @expectedException Emonkak\Di\Exception\KeyNotFoundException
-     */
-    public function testResolveThrowsKeyNotFoundException()
+    public function testHas(): void
     {
-        $this->container->resolve(FooService::class);
-    }
+        $key = 'key';
+        $bindings = [$key => $this->createMock(BindingInterface::class)];
 
-    public function testResolveParameterDependency()
-    {
-        $serviceClass = new \ReflectionClass(FooService::class);
-        $parameters = $serviceClass->getConstructor()->getParameters();
+        $this->container->merge(new Module($bindings));
 
-        $this->assertEquals(new ValueDependency(BazService::class, null), $this->container->resolveParameter($parameters[1]));
-    }
-
-    /**
-     * @expectedException Emonkak\Di\Exception\KeyNotFoundException
-     */
-    public function testResolveParameterDependencyThrowsKeyNotFoundException()
-    {
-        $serviceClass = new \ReflectionClass(BarService::class);
-        $parameters = $serviceClass->getConstructor()->getParameters();
-
-        $this->container->resolveParameter($parameters[0]);
-    }
-
-    public function testResolvePropertyDependency()
-    {
-        $serviceClass = new \ReflectionClass(FooService::class);
-
-        $this->assertEquals(new ValueDependency(BazInterface::class, 'baz'), $this->container->resolveProperty($serviceClass->getProperty('baz')));
-    }
-
-    /**
-     * @expectedException Emonkak\Di\Exception\KeyNotFoundException
-     */
-    public function testResolvePropertyDependencyThrowsKeyNotFoundException()
-    {
-        $serviceClass = new \ReflectionClass(FooService::class);
-
-        $this->container->resolveProperty($serviceClass->getProperty('barService'));
-    }
-
-    public function testGet()
-    {
-        $this->container->merge(new FooModule());
-
-        $service = $this->container->get(FooService::class);
-
-        $this->assertInstanceOf(FooService::class, $service);
-        $this->assertInstanceOf(BarService::class, $service->barService);
-        $this->assertInstanceOf(Baz::class, $service->barService->baz);
-        $this->assertInstanceOf(Foo::class, $service->bazService->foo);
-        $this->assertInstanceOf(Bar::class, $service->bazService->bar);
-        $this->assertInstanceOf(Baz::class, $service->bazService->baz);
-        $this->assertInstanceOf(Baz::class, $service->baz);
-        $this->assertSame($service->bazService->baz, $service->baz);
-    }
-
-    public function testHas()
-    {
-        $this->assertTrue($this->container->has(Foo::class));
-        $this->assertFalse($this->container->has(FooInterface::class));
-    }
-}
-
-class FooService
-{
-    public $barService;
-
-    public $bazService;
-
-    /**
-     * @Inject
-     * @Qualifier(BazInterface::class)
-     */
-    public $baz = 'baz';
-
-    public function __construct(BarService $barService, BazService $bazService = null)
-    {
-        $this->barService = $barService;
-        $this->bazService = $bazService;
-    }
-}
-
-class BarService
-{
-    public $baz;
-
-    public function __construct(BazInterface $baz)
-    {
-        $this->baz = $baz;
-    }
-}
-
-class BazService
-{
-    public $foo;
-
-    public $bar;
-
-    public $baz;
-
-    /**
-     * @Inject
-     */
-    public function setFoo($foo)
-    {
-        $this->foo = $foo;
-    }
-
-    /**
-     * @Inject
-     */
-    public function setBar($bar)
-    {
-        $this->bar = $bar;
-    }
-
-    /**
-     * @Inject
-     */
-    public function setBaz($baz)
-    {
-        $this->baz = $baz;
-    }
-}
-
-class FooModule extends Module
-{
-    public function __construct()
-    {
-        $this
-            ->bind(FooInterface::class)
-            ->to(Bar::class);
-        $this
-            ->bind(BarInterface::class)
-            ->to(Bar::class);
-        $this
-            ->bind(BazInterface::class)
-            ->to(Baz::class)
-            ->in(SingletonScope::getInstance());
-        $this->factory('$foo', function() {
-            return new Foo();
-        });
-        $this->set('$bar', new Bar());
-        $this->alias('$baz', BazInterface::class);
+        $this->assertTrue($this->container->has($key));
+        $this->assertTrue($this->container->has(\DateTime::class));
+        $this->assertFalse($this->container->has('invalid key'));
     }
 }

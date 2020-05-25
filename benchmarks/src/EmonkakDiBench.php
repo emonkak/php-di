@@ -8,13 +8,10 @@ use Emonkak\Di\Benchmarks\Fixtures\Baz;
 use Emonkak\Di\Benchmarks\Fixtures\BazInterface;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Emonkak\Di\Benchmarks\Fixtures\FooInterface;
-use Emonkak\Di\Cache\ApcCache;
 use Emonkak\Di\Cache\ApcuCache;
-use Emonkak\Di\Cache\FilesystemCache;
 use Emonkak\Di\Container;
-use Emonkak\Di\Extras\ServiceProviderGenerator;
-use Emonkak\Di\Extras\ServiceProviderLoader;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
+use Emonkak\Di\Inspector\Inspector;
+use Emonkak\Di\Instantiator\Instantiator;
 use Pimple\Container as Pimple;
 
 /**
@@ -25,24 +22,24 @@ class EmonkakDiBench
     public function benchGet()
     {
         $container = new Container(
-            new DefaultInjectionPolicy(),
-            new \ArrayObject()
+            Inspector::createDefault(),
+            new Instantiator()
         );
-        $container->bind(FooInterface::class)->to(Foo::class);
-        $container->bind(BarInterface::class)->to(Bar::class);
-        $container->bind(BazInterface::class)->to(Baz::class);
+        $container->implement(FooInterface::class, Foo::class);
+        $container->implement(BarInterface::class, Bar::class);
+        $container->implement(BazInterface::class, Baz::class);
         assert($container->get(FooInterface::class) instanceof Foo);
     }
 
-    public function benchGetWithApcCache()
+    public function benchGetWithCache()
     {
         $container = new Container(
-            new DefaultInjectionPolicy(),
-            extension_loaded('apcu') ? new ApcuCache('container') : new ApcCache('container')
+            Inspector::createDefault()->withCache(new ApcuCache()),
+            new Instantiator()
         );
-        $container->bind(FooInterface::class)->to(Foo::class);
-        $container->bind(BarInterface::class)->to(Bar::class);
-        $container->bind(BazInterface::class)->to(Baz::class);
+        $container->implement(FooInterface::class, Foo::class);
+        $container->implement(BarInterface::class, Bar::class);
+        $container->implement(BazInterface::class, Baz::class);
         assert($container->get(Foo::class) instanceof Foo);
     }
 }

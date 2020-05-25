@@ -18,9 +18,9 @@ class BrickDiBench
     public function benchGet()
     {
         $container = new Container(new BrickDiPolicy());
-        $container->bind(FooInterface::class)->to(Foo::class);
-        $container->bind(BarInterface::class)->to(Bar::class);
-        $container->bind(BazInterface::class)->to(Baz::class);
+        $container->bind(FooInterface::class, Foo::class);
+        $container->bind(BarInterface::class, Bar::class);
+        $container->bind(BazInterface::class, Baz::class);
         assert($container->get(FooInterface::class) instanceof Foo);
     }
 }

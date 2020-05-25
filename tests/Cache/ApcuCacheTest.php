@@ -1,47 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Emonkak\Di\Tests\Cache;
 
 use Emonkak\Di\Cache\ApcuCache;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @requires extension apcu
  *
- * @covers Emonkak\Di\Cache\ApcuCache
+ * @covers \Emonkak\Di\Cache\ApcuCache
  */
-class ApcuCacheTest extends \PHPUnit_Framework_TestCase
+class ApcuCacheTest extends TestCase
 {
     public function test()
     {
-        $fooCache = new ApcuCache('foo.');
-        $barCache = new ApcuCache('bar.');
+        $cache = new ApcuCache('prefix.');
 
-        $fooCache['x'] = 123;
-        $fooCache['y'] = 456;
-        $barCache['z'] = 789;
+        $cache['a'] = 123;
+        $cache['b'] = 456;
 
-        $this->assertSame(123, $fooCache['x']);
-        $this->assertSame(456, $fooCache['y']);
-        $this->assertSame(789, $barCache['z']);
+        $this->assertSame(123, $cache['a']);
+        $this->assertSame(456, $cache['b']);
+        $this->assertNull($cache['c']);
 
-        $this->assertTrue(isset($fooCache['x']));
-        $this->assertTrue(isset($fooCache['y']));
-        $this->assertFalse(isset($fooCache['z']));
+        $this->assertTrue(isset($cache['a']));
+        $this->assertTrue(isset($cache['b']));
+        $this->assertFalse(isset($cache['c']));
 
-        $this->assertFalse(isset($barCache['x']));
-        $this->assertFalse(isset($barCache['y']));
-        $this->assertTrue(isset($barCache['z']));
+        unset($cache['a']);
+        unset($cache['b']);
+        unset($cache['c']);
 
-        unset($fooCache['x']);
-        unset($fooCache['y']);
-        unset($barCache['z']);
-
-        $this->assertFalse(isset($fooCache['x']));
-        $this->assertFalse(isset($fooCache['y']));
-        $this->assertFalse(isset($fooCache['z']));
-
-        $this->assertFalse(isset($barCache['x']));
-        $this->assertFalse(isset($barCache['y']));
-        $this->assertFalse(isset($barCache['z']));
+        $this->assertFalse(isset($cache['a']));
+        $this->assertFalse(isset($cache['b']));
+        $this->assertFalse(isset($cache['c']));
     }
 }

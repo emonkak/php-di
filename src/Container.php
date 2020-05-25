@@ -1,139 +1,58 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Emonkak\Di;
 
-use Emonkak\Di\Definition\BindingDefinition;
-use Emonkak\Di\Dependency\DependencyInterface;
-use Emonkak\Di\Dependency\ValueDependency;
-use Emonkak\Di\Exception\KeyNotFoundException;
-use Emonkak\Di\InjectionPolicy\DefaultInjectionPolicy;
-use Emonkak\Di\InjectionPolicy\InjectionPolicyInterface;
+use Emonkak\Di\Inspector\Inspector;
+use Emonkak\Di\Inspector\InspectorInterface;
+use Emonkak\Di\Instantiator\Instantiator;
+use Emonkak\Di\Instantiator\InstantiatorInterface;
+use Psr\Container\ContainerInterface;
 
-class Container extends Module implements ResolverInterface, ContainerInterface
+/**
+ * @template TDependency
+ */
+class Container extends Module implements ContainerInterface
 {
     /**
-     * @var InjectionPolicyInterface
+     * @var InspectorInterface<TDependency>
      */
-    protected $injectionPolicy;
+    private InspectorInterface $inspector;
 
     /**
-     * @var \ArrayAccess
+     * @var InstantiatorInterface<TDependency>
      */
-    protected $cache;
+    private InstantiatorInterface $instantiator;
 
     /**
-     * @return Container
+     * @return self<array>
      */
-    public static function create()
+    public static function createDefault(): self
     {
-        return new Container(new DefaultInjectionPolicy(), new \ArrayObject());
+        return new Container(Inspector::createDefault(), new Instantiator());
     }
 
     /**
-     * @param InjectionPolicyInterface $injectionPolicy
-     * @param \ArrayAccess             $cache
+     * @param InspectorInterface<TDependency> $inspector
+     * @param InstantiatorInterface<TDependency> $instantiator
      */
-    public function __construct(InjectionPolicyInterface $injectionPolicy, \ArrayAccess $cache)
+    public function __construct(InspectorInterface $inspector, InstantiatorInterface $instantiator)
     {
-        $this->injectionPolicy = $injectionPolicy;
-        $this->cache = $cache;
+        parent::__construct();
+
+        $this->inspector = $inspector;
+        $this->instantiator = $instantiator;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function get($key)
     {
-        if (isset($this->values[$key])) {
-            return $this->values[$key];
-        }
-
-        return $this->resolve($key)->instantiateBy($this);
+        $dependency = $this->inspector->inspect($key, $this->bindings);
+        return $this->instantiator->instantiate($dependency, $this->bindings);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function has($key)
     {
-        return isset($this->definitions[$key]) || isset($this->values[$key]) || class_exists($key);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function store($key, $value)
-    {
-        $this->values[$key] = $value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isStored($key)
-    {
-        return isset($this->values[$key]);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function resolve($key)
-    {
-        if (isset($this->cache[$key])) {
-            return $this->cache[$key];
-        }
-
-        if (isset($this->definitions[$key])) {
-            $definition = $this->definitions[$key];
-        } else {
-            if (!class_exists($key)) {
-                throw new KeyNotFoundException(
-                    sprintf('Key "%s" is not registered in the container.', $key)
-                );
-            }
-            $definition = new BindingDefinition($key);
-        }
-
-        $dependency = $definition->resolveBy($this, $this->injectionPolicy);
-        $this->cache[$key] = $dependency;
-
-        return $dependency;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function resolveParameter(\ReflectionParameter $parameter)
-    {
-        $key = $this->injectionPolicy->getParameterKey($parameter);
-        try {
-            return $this->resolve($key);
-        } catch (KeyNotFoundException $e) {
-            if (!$parameter->isOptional()) {
-                throw KeyNotFoundException::unresolvedParameter($parameter, $e);
-            }
-            $defaultValue = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
-            return new ValueDependency($key, $defaultValue);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function resolveProperty(\ReflectionProperty $property)
-    {
-        $key = $this->injectionPolicy->getPropertyKey($property);
-        try {
-            return $this->resolve($key);
-        } catch (KeyNotFoundException $e) {
-            $class = $property->getDeclaringClass();
-            $values = $class->getDefaultProperties();
-            if (!isset($values[$property->name])) {
-                // XXX: Throws an exception even if the default value is null.
-                throw KeyNotFoundException::unresolvedProperty($property, $e);
-            }
-            return new ValueDependency($key, $values[$property->name]);
-        }
+        return isset($this->bindings[$key]) || class_exists($key, true);
     }
 }

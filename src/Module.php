@@ -1,74 +1,121 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Emonkak\Di;
 
-use Emonkak\Di\Definition\AliasDefinition;
-use Emonkak\Di\Definition\BindingDefinition;
-use Emonkak\Di\Definition\DefinitionInterface;
-use Emonkak\Di\Definition\FactoryDefinition;
-use Emonkak\Di\Dependency\ReferenceDependency;
-use Emonkak\Di\Dependency\ValueDependency;
+use Emonkak\Di\Binding\BindingInterface;
+use Emonkak\Di\Binding\Factory;
+use Emonkak\Di\Binding\Implementation;
+use Emonkak\Di\Binding\Singleton;
+use Emonkak\Di\Binding\Value;
 
 class Module
 {
     /**
-     * @var array array(string => DefinitionInterface)
+     * @var array<string,BindingInterface>
      */
-    protected $definitions = [];
+    protected array $bindings;
+
+    public function __construct(array $bindings = [])
+    {
+        $this->bindings = $bindings;
+    }
 
     /**
-     * @var array array(string => mixed)
+     * @return array<string,BindingInterface>
      */
-    protected $values = [];
+    public function getBindings(): array
+    {
+        return $this->bindings;
+    }
 
     /**
-     * @param Module $module
+     * @template T
+     * @param BindingInterface<T> $binding
+     * @return BindingInterface<T>
+     */
+    public function addBinding(string $key, BindingInterface $binding): BindingInterface
+    {
+        return $this->bindings[$key] = $binding;
+    }
+
+    /**
      * @return $this
      */
-    public function merge(Module $module)
+    public function merge(self $other): self
     {
-        $this->definitions = $module->definitions + $this->definitions;
-        $this->values = $module->values + $this->values;
+        $this->bindings = $other->bindings + $this->bindings;
         return $this;
     }
 
     /**
-     * @param string $key
-     * @param string $target
-     * @return AliasDefinition
+     * @template T
+     * @param class-string<T> $key
+     * @return BindingInterface<T>
      */
-    public function alias($key, $target)
+    public function bind(string $key): BindingInterface
     {
-        return $this->definitions[$key] = new AliasDefinition($target);
+        return $this->bindings[$key] = new Implementation($key);
     }
 
     /**
-     * @param string $target
-     * @return BindingDefinition
+     * @template T
+     * @param class-string<T> $key
+     * @return BindingInterface<T>
      */
-    public function bind($target)
+    public function bindSingleton(string $key): BindingInterface
     {
-        return $this->definitions[$target] = new BindingDefinition($target);
+        return $this->bindings[$key] = new Singleton(new Implementation($key));
     }
 
     /**
-     * @param string   $key
-     * @param callable $target
-     * @return FactoryDefinition
+     * @template T
+     * @param class-string<T> $className
+     * @return BindingInterface<T>
      */
-    public function factory($key, callable $target)
+    public function implement(string $key, string $className): BindingInterface
     {
-        return $this->definitions[$key] = new FactoryDefinition($key, $target);
+        return $this->bindings[$key] = new Implementation($className);
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
-     * @return ReferenceDependency
+     * @template T
+     * @param class-string<T> $className
+     * @return BindingInterface<T>
      */
-    public function set($key, $value)
+    public function implementSingleton(string $key, string $className): BindingInterface
     {
-        $this->values[$key] = $value;
-        return $this->definitions[$key] = new ReferenceDependency($key);
+        return $this->bindings[$key] = new Singleton(new Implementation($className));
+    }
+
+    /**
+     * @template T
+     * @param callable(mixed...):T $factoryFunction
+     * @return BindingInterface<T>
+     */
+    public function provide(string $key, callable $factoryFunction): BindingInterface
+    {
+        return $this->bindings[$key] = new Factory($factoryFunction);
+    }
+
+    /**
+     * @template T
+     * @param callable(mixed...):T $factoryFunction
+     * @return BindingInterface<T>
+     */
+    public function provideSingleton(string $key, callable $factoryFunction): BindingInterface
+    {
+        return $this->bindings[$key] = new Singleton(new Factory($factoryFunction));
+    }
+
+    /**
+     * @template T
+     * @param T $value
+     * @return BindingInterface<T>
+     */
+    public function set(string $key, $value): BindingInterface
+    {
+        return $this->bindings[$key] = new Value($value);
     }
 }
