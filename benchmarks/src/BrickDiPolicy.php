@@ -9,7 +9,7 @@ class BrickDiPolicy implements InjectionPolicy
     /**
      * {@inheritdoc}
      */
-    public function isClassInjected(\ReflectionClass $class)
+    public function isClassInjected(\ReflectionClass $class): bool
     {
         return true;
     }
@@ -17,7 +17,7 @@ class BrickDiPolicy implements InjectionPolicy
     /**
      * {@inheritdoc}
      */
-    public function isMethodInjected(\ReflectionMethod $method)
+    public function isMethodInjected(\ReflectionMethod $method): bool
     {
         return false;
     }
@@ -25,7 +25,7 @@ class BrickDiPolicy implements InjectionPolicy
     /**
      * {@inheritdoc}
      */
-    public function isPropertyInjected(\ReflectionProperty $property)
+    public function isPropertyInjected(\ReflectionProperty $property): bool
     {
         return false;
     }
@@ -33,7 +33,7 @@ class BrickDiPolicy implements InjectionPolicy
     /**
      * {@inheritdoc}
      */
-    public function getParameterKey(\ReflectionParameter $parameter)
+    public function getParameterKey(\ReflectionParameter $parameter): string
     {
         return $parameter->getClass()->name;
     }
@@ -41,7 +41,7 @@ class BrickDiPolicy implements InjectionPolicy
     /**
      * {@inheritdoc}
      */
-    public function getPropertyKey(\ReflectionProperty $property)
+    public function getPropertyKey(\ReflectionProperty $property): string
     {
         return $property->getClass()->name;
     }

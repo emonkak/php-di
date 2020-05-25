@@ -3,25 +3,15 @@
 namespace Emonkak\Di\Cache;
 
 /**
- * Provides the cache from APCu.
+ * @implements \ArrayAccess<string,?mixed>
  */
 class ApcuCache implements \ArrayAccess
 {
-    /**
-     * @var string
-     */
-    private $prefix;
+    private string  $prefix;
 
-    /**
-     * @var integer
-     */
-    private $lifetime;
+    private int $lifetime;
 
-    /**
-     * @param string  $prefix   The string to be prepended to a key.
-     * @param integer $lifetime The time until a cache expiration.
-     */
-    public function __construct($prefix = '', $lifetime = 0)
+    public function __construct(string $prefix = '', int $lifetime = 0)
     {
         $this->prefix = $prefix;
         $this->lifetime = $lifetime;
@@ -32,7 +22,8 @@ class ApcuCache implements \ArrayAccess
      */
     public function offsetGet($offset)
     {
-        return apcu_fetch($this->prefix . $offset);
+        $value = apcu_fetch($this->prefix . $offset, $success);
+        return $success ? $value : null;
     }
 
     /**
