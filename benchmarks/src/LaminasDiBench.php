@@ -4,25 +4,31 @@ declare(strict_types=1);
 
 namespace Emonkak\Di\Benchmarks;
 
-use Brick\Di\Container;
 use Emonkak\Di\Benchmarks\Fixtures\Bar;
 use Emonkak\Di\Benchmarks\Fixtures\BarInterface;
 use Emonkak\Di\Benchmarks\Fixtures\Baz;
 use Emonkak\Di\Benchmarks\Fixtures\BazInterface;
 use Emonkak\Di\Benchmarks\Fixtures\Foo;
 use Emonkak\Di\Benchmarks\Fixtures\FooInterface;
+use Zend\Di\Di;
+use Laminas\Di\Injector;
+use Laminas\Di\Config;
 
 /**
  * @Groups({"di"})
  */
-class BrickDiBench
+class LaminasDiBench
 {
     public function benchGet()
     {
-        $container = new Container(new BrickDiPolicy());
-        $container->bind(FooInterface::class, Foo::class);
-        $container->bind(BarInterface::class, Bar::class);
-        $container->bind(BazInterface::class, Baz::class);
-        assert($container->get(FooInterface::class) instanceof Foo);
+        $injector = new Injector(new Config([
+            'preferences' => [
+                FooInterface::class => Foo::class,
+                BarInterface::class => Bar::class,
+                BazInterface::class => Baz::class,
+            ],
+        ]));
+
+        assert($injector->create(Foo::class) instanceof Foo);
     }
 }

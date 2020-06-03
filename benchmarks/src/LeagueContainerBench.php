@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Emonkak\Di\Benchmarks;
 
 use Emonkak\Di\Benchmarks\Fixtures\Bar;
@@ -24,14 +26,14 @@ class LeagueContainerBench
         $container->delegate(new ReflectionContainer());
 
         $container->add(FooInterface::class, Foo::class)
-            ->withArgument(BarInterface::class)
-            ->withArgument(BazInterface::class);
+            ->addArgument(BarInterface::class)
+            ->addArgument(BazInterface::class);
         $container->add(BarInterface::class, Bar::class)
-            ->withArgument(Qux::class)
-            ->withArgument(Quux::class);
+            ->addArgument(Qux::class)
+            ->addArgument(Quux::class);
         $container->add(BazInterface::class, Baz::class)
-            ->withArgument(Corge::class)
-            ->withArgument(Grault::class);
+            ->addArgument(Corge::class)
+            ->addArgument(Grault::class);
 
         assert($container->get(FooInterface::class) instanceof Foo);
     }

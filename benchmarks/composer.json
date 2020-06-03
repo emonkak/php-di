@@ -1,22 +1,22 @@
 {
     "require": {
-        "aura/di": "~3.2",
+        "aura/di": "^4.1",
         "brick/di": "dev-master",
-        "doctrine/cache": "~1.6",
-        "emonkak/di": "dev-master",
-        "illuminate/container": "~5.3",
-        "league/container": "~2.2",
-        "php-di/php-di": "~5.4",
-        "phpbench/phpbench": "~0.10",
-        "pimple/pimple": "~3.0",
-        "ray/di": "~2.4",
-        "rdlowrey/auryn": "~1.4",
-        "symfony/dependency-injection": "~3.1",
-        "zendframework/zend-di": "~2.6",
-        "mindplay/unbox": "~2.0"
+        "illuminate/container": "^7.14",
+        "laminas/laminas-di": "^3.1",
+        "league/container": "^3.3.1",
+        "mindplay/unbox": "^2.0",
+        "php": ">=7.4",
+        "php-di/php-di": "^6.1",
+        "phpbench/phpbench": "^0.17",
+        "pimple/pimple": "^3.3",
+        "ray/di": "^2.10",
+        "rdlowrey/auryn": "^1.4",
+        "symfony/dependency-injection": "^5.1"
     },
     "autoload": {
         "psr-4": {
+            "Emonkak\\Di\\": "../src/",
             "Emonkak\\Di\\Benchmarks\\": "src/"
         }
     },
